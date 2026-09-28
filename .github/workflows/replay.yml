@@ -5,6 +5,11 @@ name: Signal replay
 on:
   schedule:
     - cron: '17 */6 * * *'   # 4 times a day; each run replays whatever days the archive has published since the last run
+  push:                        # re-run when the replay code or the engine copy changes (data commits don't match these paths)
+    branches: [main]
+    paths:
+      - 'tools/**'
+      - '.github/workflows/replay.yml'
   workflow_dispatch:
     inputs:
       backfill:
