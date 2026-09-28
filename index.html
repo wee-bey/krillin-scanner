@@ -25,6 +25,7 @@
   --warn: #9C5B00; --warn-soft: #FBEFD9; --info: #2A64CC; --info-soft: #E3ECFB; --block: #6A7084; --block-soft: #ECEEF3;
   --ma-e13: #C98A00; --ma-e21: #E0621A; --ma-m100: #1F6FD6; --ma-e200: #1F2233; --ma-m300: #C2189B; --ma-4h: #6A4BD8; --trend-band: rgba(224, 150, 26, .16);
   --candle-up: #16946B; --candle-dn: #D2475A; --grid: #E8EAF0;
+  --gain: #1F6FD6; --loss: #BE3448;
   --shadow: 0 1px 2px rgba(20,22,31,.06), 0 4px 16px rgba(20,22,31,.06);
   --r: 10px; --r-sm: 6px;
   --f-display: "Archivo", "Arial Narrow", system-ui, sans-serif;
@@ -40,7 +41,7 @@
     --long: #3FCB98; --long-soft: #15302A; --short: #FF6F83; --short-soft: #3A1C24;
     --warn: #F0AC43; --warn-soft: #3A2B12; --info: #72A6FF; --info-soft: #182640; --block: #8B91A4; --block-soft: #222633;
     --ma-e13: #F2C14E; --ma-e21: #F08A4B; --ma-m100: #5AA9FF; --ma-e200: #ECEAF4; --ma-m300: #FF6FD8; --ma-4h: #9D7CFF; --trend-band: rgba(242, 170, 78, .16);
-    --candle-up: #34C48E; --candle-dn: #F0596D; --grid: #20242F;
+    --candle-up: #34C48E; --candle-dn: #F0596D; --grid: #20242F; --gain: #3D8BF0; --loss: #EB4E5A;
     --shadow: 0 1px 2px rgba(0,0,0,.4), 0 6px 20px rgba(0,0,0,.35);
   }
 }
@@ -52,7 +53,7 @@
   --long: #3FCB98; --long-soft: #15302A; --short: #FF6F83; --short-soft: #3A1C24;
   --warn: #F0AC43; --warn-soft: #3A2B12; --info: #72A6FF; --info-soft: #182640; --block: #8B91A4; --block-soft: #222633;
   --ma-e13: #F2C14E; --ma-e21: #F08A4B; --ma-m100: #5AA9FF; --ma-e200: #ECEAF4; --ma-m300: #FF6FD8; --ma-4h: #9D7CFF; --trend-band: rgba(242, 170, 78, .16);
-  --candle-up: #34C48E; --candle-dn: #F0596D; --grid: #20242F;
+  --candle-up: #34C48E; --candle-dn: #F0596D; --grid: #20242F; --gain: #3D8BF0; --loss: #EB4E5A;
   --shadow: 0 1px 2px rgba(0,0,0,.4), 0 6px 20px rgba(0,0,0,.35);
 }
 * { box-sizing: border-box; }
@@ -61,6 +62,7 @@ body { background: var(--bg); color: var(--ink); font: 14px/1.45 var(--f-body); 
 button, input, select { font: inherit; color: inherit; }
 a { color: var(--accent); }
 .num, td.n, .mono { font-family: var(--f-mono); font-variant-numeric: tabular-nums; font-feature-settings: "tnum"; }
+[hidden] { display: none !important; }
 :focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; border-radius: 4px; }
 @media (prefers-reduced-motion: reduce) { * { animation: none !important; transition: none !important; } }
 
@@ -204,6 +206,37 @@ dialog h2 { font: 800 19px var(--f-display); margin: 0; }
 .field input, .field select { padding: 6px 8px; border: 1px solid var(--line-2); border-radius: var(--r-sm); background: var(--surface-2); width: 100%; }
 .field small { grid-column: 1 / -1; color: var(--muted); margin-top: -6px; }
 .foot { margin-top: 24px; color: var(--muted); font-size: 12px; max-width: 80ch; }
+.results { margin-top: 16px; display: grid; gap: 14px; }
+.results .rhead { display: flex; flex-wrap: wrap; gap: 8px 16px; align-items: baseline; justify-content: space-between; }
+.results .rhead h2 { font: 800 21px var(--f-display); margin: 0; }
+.results .rmeta { color: var(--muted); font-size: 12.5px; }
+.rfilters { display: flex; flex-wrap: wrap; gap: 8px; align-items: center; }
+.rfilters select, .rfilters input[type=date] { padding: 7px 8px; border: 1px solid var(--line-2); border-radius: var(--r-sm); background: var(--surface); color: var(--ink); font: 13px var(--f-body); }
+.rfilters .daynav { display: inline-flex; gap: 4px; align-items: center; }
+.rfilters label.chk { display: inline-flex; gap: 6px; align-items: center; font-size: 13px; color: var(--ink-2); }
+.kpis { display: grid; grid-template-columns: repeat(auto-fill, minmax(165px, 1fr)); gap: 10px; }
+.kpi { background: var(--surface); border: 1px solid var(--line); border-radius: var(--r); padding: 12px; }
+.kpi h3 { font: 700 11px/1.2 var(--f-body); letter-spacing: .07em; text-transform: uppercase; color: var(--muted); margin: 0 0 6px; }
+.kpi .v { font: 700 21px/1.1 var(--f-mono); font-variant-numeric: tabular-nums; }
+.kpi .s { color: var(--ink-2); font-size: 12px; margin-top: 4px; }
+.kpi .v.sm { font-size: 17px; line-height: 1.25; }
+.rcharts { display: grid; grid-template-columns: repeat(auto-fit, minmax(320px, 1fr)); gap: 12px; }
+.rchart { background: var(--surface); border: 1px solid var(--line); border-radius: var(--r); padding: 12px; position: relative; }
+.rchart canvas { width: 100%; height: 220px; display: block; touch-action: pan-y; }
+.rtip { position: absolute; pointer-events: none; background: var(--surface); border: 1px solid var(--line-2); border-radius: var(--r-sm); box-shadow: var(--shadow); padding: 6px 8px; font-size: 12px; white-space: nowrap; z-index: 3; }
+.rtip b { font: 700 13px var(--f-mono); display: block; }
+.rgroups { display: grid; grid-template-columns: repeat(auto-fit, minmax(min(560px, 100%), 1fr)); gap: 12px; }
+.rbox { background: var(--surface); border: 1px solid var(--line); border-radius: var(--r); padding: 12px; overflow-x: auto; }
+.rtable { width: 100%; border-collapse: collapse; font-size: 12.5px; }
+.rtable th { text-align: left; color: var(--muted); font-weight: 600; font-size: 11px; letter-spacing: .05em; text-transform: uppercase; padding: 6px; border-bottom: 1px solid var(--line); white-space: nowrap; }
+.rtable td { padding: 6px; border-bottom: 1px solid var(--line); white-space: nowrap; vertical-align: top; }
+.rtable td.n, .rtable th.n { text-align: right; font-family: var(--f-mono); font-variant-numeric: tabular-nums; }
+.rtable tr.sigrow { cursor: pointer; } .rtable tr.sigrow:hover td { background: var(--surface-2); }
+.rtable tr.detail td { background: var(--surface-2); white-space: normal; font-size: 12px; color: var(--ink-2); }
+.oc { display: inline-block; font: 700 10.5px/1 var(--f-body); letter-spacing: .04em; text-transform: uppercase; padding: 4px 6px; border-radius: 4px; background: var(--block-soft); color: var(--ink-2); }
+.oc.win { background: var(--long-soft); color: var(--long); } .oc.loss { background: var(--short-soft); color: var(--short); } .oc.open { background: var(--info-soft); color: var(--info); }
+.rnote { color: var(--muted); font-size: 12px; }
+.rnote summary { cursor: pointer; }
 .asklog { display: grid; gap: 10px; margin-bottom: 10px; max-height: 65vh; overflow: auto; }
 .askq { justify-self: end; max-width: 92%; background: var(--accent-soft); border-radius: var(--r-sm); padding: 8px 10px; font-size: 13px; white-space: pre-wrap; }
 .askq .muted { font-weight: 600; margin-right: 4px; }
@@ -233,6 +266,7 @@ dialog .sub-h { font: 700 11.5px/1 var(--f-body); letter-spacing: .08em; text-tr
   <div class="status" id="status"><span><span class="dot" id="dot"></span><span id="statusText">Starting…</span></span><span id="nextScan"></span><span id="dataUsed" class="mono"></span></div>
   <button class="btn primary" id="scanBtn" type="button">Scan now</button>
   <button class="btn" id="alertBtn" type="button" aria-pressed="false" title="Notify me when a new setup becomes active">Alerts off</button>
+  <button class="btn ghost" id="resultsBtn" type="button" aria-pressed="false" title="How every signal the scanner sent actually played out">Results</button>
   <button class="btn ghost" id="journalBtn" type="button">Journal</button>
   <button class="btn ghost" id="settingsBtn" type="button">Settings</button>
 </header>
@@ -270,6 +304,8 @@ dialog .sub-h { font: 700 11.5px/1 var(--f-body); letter-spacing: .08em; text-tr
   </div>
   <aside class="guide" id="guide" hidden aria-label="Coin guide"></aside>
 </div>
+
+<section class="results" id="resultsView" hidden aria-label="Signal results"></section>
 
 <dialog id="settingsDlg"><form method="dialog" id="settingsForm">
   <h2>Settings</h2>
@@ -1987,6 +2023,216 @@ dialog .sub-h { font: 700 11.5px/1 var(--f-body); letter-spacing: .08em; text-tr
   function journalCSV() { const q = (v) => `"${String(v == null ? '' : v).replace(/"/g, '""')}"`; return [JCOLS.map(q).join(',')].concat(journal.map((r) => JCOLS.map((k) => q(r[k])).join(','))).join('\r\n'); }
   function renderJournal() { const el = $('journalList'); el.innerHTML = journal.length ? `<table class="biastable"><thead><tr><th>Date</th><th>Coin</th><th>Setup</th><th>Avg</th><th>SL</th><th>R:R</th><th></th></tr></thead><tbody>${journal.map((r, i) => `<tr><td class="mono">${esc(r.Date)}</td><td>${esc(r.Ticker)}</td><td>${esc(r['Setup category'])}</td><td class="mono">${esc(r['Average entry'])}</td><td class="mono">${esc(r.SL)}</td><td class="mono">${esc(r['Planned R:R (avg)'])}</td><td><button class="btn" type="button" data-del="${i}">Remove</button></td></tr>`).join('')}</tbody></table>` : '<p class="muted">No trades yet. Use "Add to journal" on a plan card.</p>'; el.querySelectorAll('[data-del]').forEach((b) => b.onclick = () => { journal.splice(+b.dataset.del, 1); LS.set('journal', journal); renderJournal(); }); }
 
+  // ---------------- Results: how every signal played out (data from the GitHub replay, see tools/replay.js) ----------------
+  const RES_BASE = /\.github\.io$/.test(location.hostname) ? 'data/' : 'https://wee-bey.github.io/krillin-scanner/data/';
+  const RES = { index: null, signals: [], loading: false, err: '', f: { period: 'day', day: '', grade: '', setup: '', tf: '', dir: 'all', alerted: false }, shown: 60, openId: null };
+  const pad2 = (n) => String(n).padStart(2, '0');
+  const localDay = (ms) => { const d = new Date(ms); return `${d.getFullYear()}-${pad2(d.getMonth() + 1)}-${pad2(d.getDate())}`; };
+  const dayShift = (day, k) => { const d = new Date(day + 'T12:00:00'); d.setDate(d.getDate() + k); return localDay(d.getTime()); };
+  const fmtR = (x, d = 2) => isNum(x) ? (x >= 0 ? '+' : '−') + Math.abs(x).toFixed(d) + 'R' : '–';
+  const fmtP0 = (x) => isNum(x) ? Math.round(x * 100) + '%' : '–';
+  const fmtDur = (ms) => { if (!isNum(ms) || ms < 0) return '–'; const h = ms / 3600e3; if (h < 1) return Math.round(ms / 60e3) + ' min'; return h < 48 ? h.toFixed(h < 10 ? 1 : 0) + ' h' : (h / 24).toFixed(1) + ' d'; };
+  const fmtPF = (x) => x === Infinity ? '∞' : isNum(x) ? x.toFixed(2) : '–';
+  const fmtWhen = (ms) => new Date(ms).toLocaleString([], { month: 'short', day: 'numeric', hour: '2-digit', minute: '2-digit' });
+  async function resLoad(force) {
+    if (RES.loading) return; RES.loading = true; RES.err = ''; renderResults();
+    const q = force ? '?t=' + Date.now() : '';
+    try {
+      const get = async (f) => { const r = await fetch(RES_BASE + f + q, { cache: 'no-cache', credentials: 'omit', referrerPolicy: 'no-referrer' }); if (!r.ok) throw new Error('HTTP ' + r.status); const txt = await r.text(); bytes += txt.length; return JSON.parse(txt); };
+      const idx = await get('index.json'); const all = [];
+      for (const m of idx.months || []) { const d = await get(`signals-${m}.json`); all.push(...(d.signals || [])); }
+      RES.index = idx; RES.signals = all.sort((a, b) => a.t - b.t);
+      if (!RES.f.day && all.length) RES.f.day = localDay(all[all.length - 1].t);
+      if (!$('resultsView').hidden) setResHash();
+    } catch (e) { RES.err = `No results to show yet (${e.message || e}). The replay runs on GitHub four times a day; its first run backfills the last 30 days.`; }
+    finally { RES.loading = false; renderResults(); updateUsage(); }
+  }
+  function resFiltered() {
+    const f = RES.f, all = RES.signals; if (!all.length) return [];
+    const cov = RES.index && RES.index.coverage && RES.index.coverage.last; const endT = cov ? Date.parse(cov + 'T00:00:00Z') + 864e5 : all[all.length - 1].t;
+    const inPeriod = (s) => f.period === 'day' ? localDay(s.t) === f.day : f.period === 'all' ? true : s.t > endT - (f.period === '7d' ? 7 : 30) * 864e5;
+    return all.filter((s) => inPeriod(s) && (!f.grade || s.grade === f.grade) && (!f.setup || s.setup === f.setup) && (!f.tf || s.tf === f.tf) && (f.dir === 'all' || s.dir === f.dir) && (!f.alerted || s.alertedAt));
+  }
+  function resStats(list) {
+    const ev = (s) => s.ev || {}; const med = (a) => { const b = a.filter(isNum).sort((x, y) => x - y); if (!b.length) return NaN; const m = b.length >> 1; return b.length % 2 ? b[m] : (b[m - 1] + b[m]) / 2; };
+    const filled = list.filter((s) => ev(s).fill > 0), closed = list.filter((s) => ev(s).st === 'closed'), openL = list.filter((s) => ev(s).st === 'open');
+    const Rs = closed.map((s) => ev(s).R).filter(isNum); const sum = Rs.reduce((a, b) => a + b, 0);
+    const gp = Rs.filter((r) => r > 0).reduce((a, b) => a + b, 0), gl = -Rs.filter((r) => r < 0).reduce((a, b) => a + b, 0);
+    const wins = Rs.filter((r) => r > 0.05).length, losses = Rs.filter((r) => r < -0.05).length;
+    const byExit = closed.slice().sort((a, b) => ev(a).tExit - ev(b).tExit); let cum = 0, peak = 0, dd = 0, run = 0, worst = 0; const curve = [];
+    for (const s of byExit) { const r = ev(s).R || 0; cum += r; peak = Math.max(peak, cum); dd = Math.max(dd, peak - cum); if (r < -0.05) { run++; worst = Math.max(worst, run); } else if (r > 0.05) run = 0; curve.push({ t: ev(s).tExit, v: cum, s }); }
+    const dirs = list.filter((s) => ev(s).dirHit); const cnt = (st) => list.filter((s) => ev(s).st === st).length;
+    const tpRate = (k) => filled.length ? filled.filter((s) => (ev(s).tp || [])[k]).length / filled.length : NaN;
+    return {
+      n: list.length, filled: filled.length, closed: closed.length, open: openL.length, pending: cnt('pending'), missed: cnt('missed'), invalidated: cnt('invalidated'), expired: cnt('expired'),
+      wins, losses, be: closed.length - wins - losses, winRate: closed.length ? wins / closed.length : NaN,
+      avgR: closed.length ? sum / closed.length : NaN, medR: med(Rs), totR: sum, perSignal: list.length ? sum / list.length : NaN,
+      pf: gl > 0 ? gp / gl : gp > 0 ? Infinity : NaN, dd, streak: worst, curve,
+      tp1: tpRate(0), tp2: tpRate(1), tp3: tpRate(2), stopRate: filled.length ? filled.filter((s) => ev(s).stopHit).length / filled.length : NaN,
+      dirRate: dirs.length ? dirs.filter((s) => ev(s).dirHit === 'tp1').length / dirs.length : NaN, dirN: dirs.length,
+      mfe: med(filled.map((s) => ev(s).mfe)), mae: med(filled.map((s) => ev(s).mae)),
+      tFill: med(filled.map((s) => ev(s).tFill - s.t)), tHold: med(closed.filter((s) => ev(s).tFill).map((s) => ev(s).tExit - ev(s).tFill)),
+      beWin: closed.length ? closed.reduce((a, s) => a + (s.beWin || 0), 0) / closed.length : NaN, planR: closed.length ? closed.reduce((a, s) => a + (s.avgTP || 0), 0) / closed.length : NaN,
+      winR: wins ? Rs.filter((r) => r > 0.05).reduce((a, b) => a + b, 0) / wins : NaN, lossR: losses ? Rs.filter((r) => r < -0.05).reduce((a, b) => a + b, 0) / losses : NaN,
+      openUR: openL.reduce((a, s) => a + (ev(s).uR || 0), 0), amb: list.reduce((a, s) => a + (ev(s).amb || 0), 0),
+    };
+  }
+  function outcomeOf(s) {
+    const e = s.ev || {};
+    if (e.st === 'closed') { const r = e.R || 0; const last = e.exits && e.exits.length ? e.exits[e.exits.length - 1][3] : e.reason; const hit = (e.tp || []).lastIndexOf(true); const why = (last === 'stop' || last === 'time') && hit >= 0 ? `TP${hit + 1}, then ${last === 'stop' ? 'stop' : 'time exit'}` : ({ tp1: 'TP1', tp2: 'TP2', tp3: 'TP3', stop: 'stop', time: 'time exit' }[last] || 'closed'); return { cls: r > 0.05 ? 'win' : r < -0.05 ? 'loss' : '', txt: (r > 0.05 ? 'win · ' : r < -0.05 ? 'loss · ' : 'break-even · ') + why }; }
+    return { open: { cls: 'open', txt: 'open' }, pending: { cls: '', txt: 'waiting for fill' }, missed: { cls: '', txt: 'missed move' }, invalidated: { cls: '', txt: 'stopped before fill' }, expired: { cls: '', txt: 'not filled' }, nodata: { cls: '', txt: 'no data' } }[e.st] || { cls: '', txt: 'not evaluated yet' };
+  }
+  function resGroup(title, list, keyFn, order) {
+    const m = new Map(); for (const s of list) { const k = keyFn(s); if (k == null || k === '') continue; if (!m.has(k)) m.set(k, []); m.get(k).push(s); }
+    let keys = [...m.keys()]; keys = order ? order.filter((k) => m.has(k)).concat(keys.filter((k) => !order.includes(k))) : keys.sort((a, b) => m.get(b).length - m.get(a).length);
+    if (!keys.length) return '';
+    const rows = keys.map((k) => { const st = resStats(m.get(k)); return `<tr><td>${esc(k)}</td><td class="n">${st.n}</td><td class="n">${fmtP0(st.n ? st.filled / st.n : NaN)}</td><td class="n">${st.closed}</td><td class="n">${fmtP0(st.winRate)}</td><td class="n">${fmtR(st.avgR)}</td><td class="n">${st.closed ? fmtR(st.totR, 1) : '–'}</td><td class="n">${fmtPF(st.pf)}</td><td class="n">${fmtP0(st.dirRate)}</td></tr>`; }).join('');
+    return `<div class="rbox"><h3 class="panel-title">${esc(title)}</h3><table class="rtable"><thead><tr><th></th><th class="n">Signals</th><th class="n">Filled</th><th class="n">Closed</th><th class="n">Win</th><th class="n">Avg R</th><th class="n">Total</th><th class="n">PF</th><th class="n" title="TP1 reached before the stop, from the signal time">TP1 first</th></tr></thead><tbody>${rows}</tbody></table></div>`;
+  }
+  function renderResults() {
+    const el = $('resultsView'); if (!el || el.hidden) return;
+    const idx = RES.index, f = RES.f; const all = RES.signals; const list = resFiltered(); const st = resStats(list);
+    const cov = idx && idx.coverage; const days = [...new Set(all.map((s) => localDay(s.t)))].sort();
+    const meta = RES.loading ? 'Loading…' : idx ? `Replay through ${esc(cov.last || '–')} (UTC days) · ${idx.counts.signals.toLocaleString()} signals since ${esc(cov.first || '–')} · updated ${esc(fmtWhen(Date.parse(idx.updated)))}` : '';
+    const setups = [...new Set(all.map((s) => s.setup))].sort();
+    const sel = (id, cur, opts) => `<select id="${id}">${opts.map(([v, t]) => `<option value="${esc(v)}"${v === cur ? ' selected' : ''}>${esc(t)}</option>`).join('')}</select>`;
+    const periodSeg = `<div class="seg" id="rPeriod" role="group" aria-label="Period">${[['day', 'Day'], ['7d', '7 days'], ['30d', '30 days'], ['all', 'All']].map(([v, t]) => `<button type="button" data-p="${v}" aria-pressed="${f.period === v}">${t}</button>`).join('')}</div>`;
+    const dayNav = f.period === 'day' ? `<span class="daynav"><button class="btn" type="button" id="rPrev" aria-label="Previous day">‹</button><input type="date" id="rDay" value="${esc(f.day)}" min="${esc(days[0] || '')}" max="${esc(days[days.length - 1] || '')}" aria-label="Day"><button class="btn" type="button" id="rNext" aria-label="Next day">›</button></span>` : '';
+    const filters = `<div class="rfilters">${periodSeg}${dayNav}
+      ${sel('rGrade', f.grade, [['', 'All grades'], ['A+', 'A+'], ['A', 'A'], ['B', 'B'], ['C', 'C']])}
+      ${sel('rSetup', f.setup, [['', 'All setups']].concat(setups.map((x) => [x, x])))}
+      ${sel('rTf', f.tf, [['', 'All TFs'], ['15m', '15m'], ['1h', '1h'], ['4h', '4h'], ['12h', '12h'], ['1d', 'Daily']])}
+      ${sel('rDir', f.dir, [['all', 'Longs + shorts'], ['long', 'Longs'], ['short', 'Shorts']])}
+      <label class="chk"><input type="checkbox" id="rAlerted"${f.alerted ? ' checked' : ''}> Alerted only (A, A+)</label></div>`;
+    const riskUsd = (+settings.account || 10000) * (+settings.riskPct || 0.5) / 100;
+    const kpi = (h, v, s, sm) => `<div class="kpi"><h3>${h}</h3><div class="v${sm ? ' sm' : ''}">${v}</div>${s ? `<div class="s">${s}</div>` : ''}</div>`;
+    const kpis = `<div class="kpis">
+      ${kpi('Signals', st.n, `${st.filled} filled (${fmtP0(st.n ? st.filled / st.n : NaN)}) · ${st.missed} missed moves`)}
+      ${kpi('Closed trades', st.closed, `${st.open} open${st.open ? ` (${fmtR(st.openUR, 1)} unrealised)` : ''} · ${st.pending} waiting for a fill`)}
+      ${kpi('Win rate', fmtP0(st.winRate), `${st.wins} W / ${st.losses} L / ${st.be} BE · break-even at ${fmtP0(st.beWin)}`)}
+      ${kpi('Expectancy', fmtR(st.avgR), `per closed trade · median ${fmtR(st.medR)} · ${fmtR(st.perSignal)} per signal`)}
+      ${kpi('Total', st.closed ? fmtR(st.totR, 1) : '–', st.closed ? `≈ ${st.totR < 0 ? '−' : ''}$${Math.abs(Math.round(st.totR * riskUsd)).toLocaleString()} at $${Math.round(riskUsd)} risk per trade` : 'no closed trades yet')}
+      ${kpi('Profit factor', fmtPF(st.pf), `avg win ${fmtR(st.winR)} · avg loss ${fmtR(st.lossR)}`)}
+      ${kpi('Max drawdown', st.closed ? (st.dd > 0 ? '−' : '') + st.dd.toFixed(1) + 'R' : '–', `longest losing streak ${st.streak}`)}
+      ${kpi('Targets hit', `${fmtP0(st.tp1)} / ${fmtP0(st.tp2)} / ${fmtP0(st.tp3)}`, `TP1 / TP2 / TP3 of filled trades · stop ${fmtP0(st.stopRate)}`, true)}
+      ${kpi('TP1 before stop', fmtP0(st.dirRate), `direction right first, of ${st.dirN} decided signals`)}
+      ${kpi('Excursions', `${isNum(st.mfe) ? st.mfe.toFixed(1) : '–'} / ${isNum(st.mae) ? st.mae.toFixed(1) : '–'}R`, 'median best / worst move while in the trade', true)}
+      ${kpi('Timing', fmtDur(st.tFill), `median time to first fill · held ${fmtDur(st.tHold)}`)}
+      ${kpi('Plan vs reality', fmtR(st.planR), `planned average R:R · winners made ${fmtR(st.winR)}`)}
+    </div>`;
+    const charts = `<div class="rcharts"><div class="rchart"><h3 class="panel-title">Equity curve (closed trades, R)</h3><canvas id="rEq" height="220" aria-label="Cumulative R by exit time"></canvas><div class="rtip" id="rEqTip" hidden></div></div>
+      <div class="rchart"><h3 class="panel-title">R per day (by exit day)</h3><canvas id="rDaily" height="220" aria-label="R per day"></canvas><div class="rtip" id="rDailyTip" hidden></div></div></div>`;
+    const wd = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
+    const groups = `<div class="rgroups">
+      ${resGroup('By grade', list, (s) => s.grade, ['A+', 'A', 'B', 'C'])}
+      ${resGroup('By setup', list, (s) => `${s.setup} ${s.name.replace(/^(\S+ )?/, '').slice(0, 26)}`.trim())}
+      ${resGroup('By timeframe', list, (s) => K.TF_LABEL[s.tf] || s.tf, ['15m', '1h', '4h', '12h', 'Daily'])}
+      ${resGroup('By direction', list, (s) => s.dir, ['long', 'short'])}
+      ${resGroup('By BTC daily bias', list, (s) => s.ctx && s.ctx.btc1d, ['bullish', 'neutral', 'range', 'bearish'])}
+      ${resGroup('By BTC at HTF resistance', list, (s) => s.ctx ? (s.ctx.btcAtRes ? 'yes' : 'no') : null, ['no', 'yes'])}
+      ${resGroup('By weekday (your time)', list, (s) => wd[new Date(s.t).getDay()], ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'])}
+      ${resGroup('By time of day (your time)', list, (s) => { const h = new Date(s.t).getHours(); const b = Math.floor(h / 4) * 4; return `${pad2(b)}:00-${pad2(b + 4)}:00`; }, ['00:00-04:00', '04:00-08:00', '08:00-12:00', '12:00-16:00', '16:00-20:00', '20:00-24:00'])}
+      ${resGroup('By coin', list, (s) => s.S)}
+    </div>`;
+    const rowsList = list.slice().reverse(); const shown = rowsList.slice(0, RES.shown);
+    const sigRows = shown.map((s) => {
+      const e = s.ev || {}; const oc = outcomeOf(s); const tv = `https://www.tradingview.com/chart/?symbol=${encodeURIComponent('BINANCE:' + s.sym + '.P')}`;
+      const rCell = e.st === 'closed' ? fmtR(e.R) : e.st === 'open' ? `${fmtR(e.uR)} <span class="muted">open</span>` : '–';
+      const head = `<tr class="sigrow" data-id="${esc(s.id)}"><td>${esc(fmtWhen(s.t))}</td><td><b>${esc(s.S)}</b> <a href="${tv}" target="_blank" rel="noopener noreferrer" title="Open on TradingView" onclick="event.stopPropagation()">↗</a></td><td title="${esc(s.name)}">${esc(s.setup)}</td><td>${esc(K.TF_LABEL[s.tf] || s.tf)}</td><td>${esc(s.dir)}</td><td><span class="tier ${gradeCls(s.grade)}">${esc(s.grade)}</span></td><td class="n">${fmtP(s.avg)}</td><td class="n">${fmtP(s.stop)}</td><td class="n">${s.tps && s.tps[0] ? fmtP(s.tps[0][0]) : '–'}</td><td class="n">${isNum(e.fill) ? Math.round(e.fill * 100) + '%' : '–'}</td><td><span class="oc ${oc.cls}">${esc(oc.txt)}</span></td><td class="n">${rCell}</td><td class="n">${isNum(e.mfe) && e.fill > 0 ? e.mfe.toFixed(1) + ' / ' + e.mae.toFixed(1) : '–'}</td><td class="n">${e.tFill && e.tExit ? fmtDur(e.tExit - e.tFill) : e.tFill ? fmtDur((e.upd || s.t) - e.tFill) : '–'}</td></tr>`;
+      if (RES.openId !== s.id) return head;
+      const tps = (s.tps || []).map((t, k) => `TP${k + 1} ${fmtP(t[0])} (${(+t[1]).toFixed(1)}R, ${esc(t[2])})`).join(' · ');
+      const fills = (e.fills || []).map((x) => `${fmtWhen(x[0])} @ ${fmtP(x[1])}`).join(' · ') || 'none';
+      const exits = (e.exits || []).map((x) => `${fmtWhen(x[0])} ${esc(x[3])} @ ${fmtP(x[1])} (${Math.round(x[2] * 100)}%)`).join(' · ') || 'none';
+      return head + `<tr class="detail"><td colspan="14"><b>${esc(s.name)}</b> · grade ${esc(s.grade)} ${s.score}/100 (potential ${s.pot})${s.alertedAt ? ' · alerted' : ''}<br>Why: ${esc(s.why)}<br>Plan at ${fmtP(s.px)}: bids ${s.bids.map((b, k) => `${fmtP(b)} (${Math.round(s.w[k] * 100)}%)`).join(', ')} · average ${fmtP(s.avg)} · stop ${fmtP(s.stop)} (${isNum(s.stopPct) ? s.stopPct.toFixed(2) : '–'}%) · ${tps} · planned average ${fmtR(s.avgTP)}${isNum(s.room) ? ` · room ${s.room.toFixed(1)}R to ${esc(s.roomLabel || '')}` : ''}<br>Fills: ${fills}<br>Exits: ${exits}${e.amb ? ` · ${e.amb} candle(s) touched two levels (worse case taken)` : ''}<br>${s.warnings && s.warnings.length ? 'Warnings: ' + esc(s.warnings.join('; ')) + '<br>' : ''}${s.missing && s.missing.length ? 'Missing for A+: ' + esc(s.missing.join('; ')) + '<br>' : ''}Context: BTC daily ${esc(s.ctx ? s.ctx.btc1d : '–')}, 4h ${esc(s.ctx ? s.ctx.btc4h : '–')}${s.ctx && s.ctx.btcAtRes ? ', BTC at HTF resistance' : ''} · RS percentile ${s.ctx && isNum(s.ctx.rsPct) ? s.ctx.rsPct : '–'} · volume rank #${s.ctx ? s.ctx.rank : '–'}</td></tr>`;
+    }).join('');
+    const table = `<div class="rbox"><h3 class="panel-title">Signals (${list.length}, newest first · tap a row for the plan and fills)</h3><table class="rtable"><thead><tr><th>Sent</th><th>Coin</th><th>Setup</th><th>TF</th><th>Dir</th><th>Grade</th><th class="n">Plan avg</th><th class="n">Stop</th><th class="n">TP1</th><th class="n">Filled</th><th>Outcome</th><th class="n">R</th><th class="n" title="Best / worst move while in the trade, in R">MFE / MAE</th><th class="n">Held</th></tr></thead><tbody>${sigRows || '<tr><td colspan="14" class="muted">No signals match these filters.</td></tr>'}</tbody></table>${rowsList.length > shown.length ? `<div style="margin-top:8px"><button class="btn" type="button" id="rMore">Show ${Math.min(60, rowsList.length - shown.length)} more</button></div>` : ''}</div>`;
+    const how = idx && idx.rules ? `<details class="rnote"><summary>How the signals are tested</summary><p>Universe: ${esc(idx.rules.universe)}. Scans: ${esc(idx.rules.scans)}. Every setup that turns active with no blocks and a valid plan counts as a signal, at every grade; "alerted" marks the A and A+ ones your alerts would send. Re-sends: ${esc(idx.rules.resend)}. Each signal is paper-traded on 15m candles with its own plan: the 4 bids fill as price trades through them (bids at or through the market fill at once), unfilled bids are cancelled at TP1, at the stop or after ${idx.rules.entryWindowCandles} candles of the setup's timeframe; management: ${esc(idx.rules.management)}; open trades exit at market after ${idx.rules.timeStopCandles} candles. Same candle: ${esc(idx.rules.sameCandle)}. Fees ${idx.rules.settings.feePct}% per side plus ${idx.rules.settings.slipPct}% slippage. R is measured on the plan's risk ($${Math.round(idx.rules.settings.account * idx.rules.settings.riskPct / 100)} on a $${idx.rules.settings.account.toLocaleString()} account). Signals from recent days keep updating until their trades close. Data: Binance's public futures archive, published a few hours after each UTC day ends, so the latest day is usually yesterday.</p></details>` : '';
+    const body = RES.err ? `<div class="rbox"><p class="muted" style="margin:0">${esc(RES.err)}</p></div>` : !all.length && !RES.loading ? '<div class="rbox"><p class="muted" style="margin:0">No signals yet.</p></div>' : `${kpis}${charts}${groups}${table}`;
+    el.innerHTML = `<div class="rhead"><div><h2>Signal results</h2><div class="rmeta">${meta}</div></div><div style="display:flex;gap:8px"><button class="btn" type="button" id="rLink" title="Copy a link that opens this view (the day is part of the link)">Copy link</button><button class="btn" type="button" id="rRefresh"${RES.loading ? ' disabled' : ''}>Refresh</button><button class="btn" type="button" id="rBack">Back to scanner</button></div></div>${how}${all.length ? filters : ''}${body}`;
+    bindResults();
+    if (all.length && !RES.err) { drawEquity(st.curve, list.length ? list[0].t : NaN); drawDaily(list); }
+  }
+  function bindResults() {
+    const set = (k, v) => { RES.f[k] = v; RES.shown = 60; RES.openId = null; setResHash(); renderResults(); };
+    const on = (id, ev, fn) => { const e = $(id); if (e) e[ev] = fn; };
+    on('rRefresh', 'onclick', () => resLoad(true)); on('rBack', 'onclick', () => showResults(false)); on('rLink', 'onclick', () => copyText(location.href));
+    const seg = $('rPeriod'); if (seg) seg.onclick = (e) => { const b = e.target.closest('button'); if (b) set('period', b.dataset.p); };
+    on('rDay', 'onchange', (e) => set('day', e.target.value)); on('rPrev', 'onclick', () => set('day', dayShift(RES.f.day, -1))); on('rNext', 'onclick', () => set('day', dayShift(RES.f.day, 1)));
+    on('rGrade', 'onchange', (e) => set('grade', e.target.value)); on('rSetup', 'onchange', (e) => set('setup', e.target.value)); on('rTf', 'onchange', (e) => set('tf', e.target.value)); on('rDir', 'onchange', (e) => set('dir', e.target.value));
+    on('rAlerted', 'onchange', (e) => set('alerted', e.target.checked)); on('rMore', 'onclick', () => { RES.shown += 60; renderResults(); });
+    const tb = document.querySelector('#resultsView .rtable tbody'); document.querySelectorAll('#resultsView tr.sigrow').forEach((tr) => tr.onclick = () => { RES.openId = RES.openId === tr.dataset.id ? null : tr.dataset.id; renderResults(); const again = document.querySelector(`#resultsView tr.sigrow[data-id="${CSS.escape(tr.dataset.id)}"]`); if (again) again.scrollIntoView({ block: 'nearest' }); });
+    void tb;
+  }
+  function chartCtx(id) {
+    const cv = $(id); if (!cv) return null; const dpr = window.devicePixelRatio || 1; const W = cv.clientWidth || 360, H = 220;
+    cv.width = W * dpr; cv.height = H * dpr; const g = cv.getContext('2d'); g.setTransform(dpr, 0, 0, dpr, 0, 0); g.clearRect(0, 0, W, H);
+    const css = getComputedStyle(document.documentElement); const col = (v) => css.getPropertyValue(v).trim();
+    return { cv, g, W, H, col, padL: 44, padR: 10, padT: 10, padB: 22 };
+  }
+  function yAxis(c, lo, hi) {
+    const { g, W, H, col, padL, padR, padT, padB } = c;
+    const raw = (hi - lo) / 4 || 1; const mag = Math.pow(10, Math.floor(Math.log10(raw))); const step = [1, 2, 2.5, 5, 10].map((k) => k * mag).find((v) => v >= raw * 0.999) || 10 * mag;
+    const nlo = Math.floor(lo / step + 1e-9) * step, nhi = Math.ceil(hi / step - 1e-9) * step; const dec = step >= 1 ? 0 : Math.abs(step * 10 - Math.round(step * 10)) < 1e-9 ? 1 : 2;
+    const y = (v) => padT + (H - padT - padB) * (1 - (v - nlo) / (nhi - nlo || 1));
+    g.font = '11px ' + col('--f-mono'); g.lineWidth = 1;
+    for (let v = nlo, k = 0; v <= nhi + step / 2 && k < 20; v += step, k++) {
+      const vv = Math.abs(v) < step / 1e6 ? 0 : v; const yy = Math.round(y(vv)) + 0.5;
+      g.strokeStyle = vv === 0 ? col('--line-2') : col('--grid'); g.beginPath(); g.moveTo(padL, yy); g.lineTo(W - padR, yy); g.stroke();
+      g.fillStyle = col('--muted'); g.fillText(vv === 0 ? '0' : (vv > 0 ? '+' : '−') + Math.abs(vv).toFixed(dec), 4, yy + 4);
+    }
+    return y;
+  }
+  function drawEquity(curve, tStart) {
+    const c = chartCtx('rEq'); if (!c) return; const { cv, g, W, H, col, padL, padR, padB } = c; const tip = $('rEqTip');
+    if (!curve.length) { g.fillStyle = col('--muted'); g.font = '13px ' + col('--f-body'); g.fillText('No closed trades in this period yet.', padL, H / 2); cv.onpointermove = null; return; }
+    const pts = [{ t: Math.min(isNum(tStart) ? tStart : Infinity, curve[0].t - 1), v: 0, s: null }].concat(curve); const t0 = pts[0].t, t1 = Math.max(pts[pts.length - 1].t, t0 + 1);
+    let lo = Math.min(0, ...pts.map((p) => p.v)), hi = Math.max(0, ...pts.map((p) => p.v)); const pad = Math.max(0.5, (hi - lo) * 0.08); lo -= pad; hi += pad;
+    const y = yAxis(c, lo, hi); const x = (t) => padL + (W - padL - padR) * (t - t0) / (t1 - t0);
+    g.fillStyle = col('--muted'); g.font = '11px ' + col('--f-mono'); const short = t1 - t0 < 36 * 3600e3; let prevLab = '', prevEnd = -1;
+    for (const t of [t0, (t0 + t1) / 2, t1]) { const s = short ? new Date(t).toLocaleString([], { month: 'short', day: 'numeric', hour: '2-digit', minute: '2-digit' }) : new Date(t).toLocaleDateString([], { month: 'short', day: 'numeric' }); if (s === prevLab) continue; const w = g.measureText(s).width; const lx = Math.min(W - padR - w, Math.max(padL, x(t) - w / 2)); if (lx < prevEnd + 8) continue; g.fillText(s, lx, H - 6); prevLab = s; prevEnd = lx + w; }
+    g.strokeStyle = col('--accent'); g.lineWidth = 2; g.lineJoin = 'round'; g.beginPath(); pts.forEach((p, k) => { const xx = x(p.t), yy = y(p.v); if (!k) g.moveTo(xx, yy); else { g.lineTo(xx, y(pts[k - 1].v)); g.lineTo(xx, yy); } }); g.lineTo(x(t1), y(pts[pts.length - 1].v)); g.stroke();
+    const base = g.getImageData(0, 0, cv.width, cv.height);
+    cv.onpointerleave = () => { tip.hidden = true; g.putImageData(base, 0, 0); };
+    cv.onpointermove = (ev) => {
+      const r = cv.getBoundingClientRect(); const mx = ev.clientX - r.left; let best = pts[1], bd = Infinity; for (const p of pts.slice(1)) { const d = Math.abs(x(p.t) - mx); if (d < bd) { bd = d; best = p; } }
+      g.putImageData(base, 0, 0); const xx = x(best.t), yy = y(best.v);
+      g.strokeStyle = col('--line-2'); g.lineWidth = 1; g.beginPath(); g.moveTo(Math.round(xx) + 0.5, c.padT); g.lineTo(Math.round(xx) + 0.5, H - padB); g.stroke();
+      g.fillStyle = col('--accent'); g.strokeStyle = col('--surface'); g.lineWidth = 2; g.beginPath(); g.arc(xx, yy, 4.5, 0, 2 * Math.PI); g.fill(); g.stroke();
+      const s = best.s; tip.hidden = false; tip.textContent = '';
+      const b = document.createElement('b'); b.textContent = fmtR(best.v, 1) + ' total'; tip.appendChild(b);
+      tip.appendChild(document.createTextNode(`${fmtWhen(best.t)} · ${s.S} ${s.setup} ${fmtR(s.ev.R)}`));
+      const tw = tip.offsetWidth; tip.style.left = Math.min(r.width - tw - 4, Math.max(4, xx + 10)) + 'px'; tip.style.top = Math.max(4, yy - 44) + 'px';
+    };
+  }
+  function drawDaily(list) {
+    const c = chartCtx('rDaily'); if (!c) return; const { cv, g, W, H, col, padL, padR, padB } = c; const tip = $('rDailyTip');
+    const m = new Map(); for (const s of list) { const e = s.ev || {}; if (e.st !== 'closed' || !isNum(e.R)) continue; const d = localDay(e.tExit); const o = m.get(d) || { d, r: 0, n: 0 }; o.r += e.R; o.n++; m.set(d, o); }
+    const got = [...m.values()].sort((a, b) => a.d < b.d ? -1 : 1); const bars = []; if (got.length) { for (let d = got[0].d, k = 0; d <= got[got.length - 1].d && k < 400; d = dayShift(d, 1), k++) bars.push(m.get(d) || { d, r: 0, n: 0 }); }
+    if (!bars.length) { g.fillStyle = col('--muted'); g.font = '13px ' + col('--f-body'); g.fillText('No closed trades in this period yet.', padL, H / 2); cv.onpointermove = null; return; }
+    let lo = Math.min(0, ...bars.map((b) => b.r)), hi = Math.max(0, ...bars.map((b) => b.r)); const pad = Math.max(0.5, (hi - lo) * 0.08); lo -= pad; hi += pad;
+    const y = yAxis(c, lo, hi); const slot = (W - padL - padR) / bars.length; const bw = Math.max(2, Math.min(28, slot - 2));
+    const rect = (b) => { const xx = padL + slot * bars.indexOf(b) + (slot - bw) / 2; const y0 = y(0), y1 = y(b.r); return { x: xx, top: Math.min(y0, y1), h: Math.max(1, Math.abs(y1 - y0)), up: b.r >= 0 }; };
+    const paint = (hl) => { for (const b of bars) { if (!b.n) continue; const q = rect(b); g.fillStyle = col(q.up ? '--gain' : '--loss'); g.globalAlpha = hl && hl !== b ? 0.55 : 1; const rr = Math.min(4, bw / 2, q.h); g.beginPath(); if (q.up) { g.moveTo(q.x, q.top + q.h); g.lineTo(q.x, q.top + rr); g.quadraticCurveTo(q.x, q.top, q.x + rr, q.top); g.lineTo(q.x + bw - rr, q.top); g.quadraticCurveTo(q.x + bw, q.top, q.x + bw, q.top + rr); g.lineTo(q.x + bw, q.top + q.h); } else { g.moveTo(q.x, q.top); g.lineTo(q.x, q.top + q.h - rr); g.quadraticCurveTo(q.x, q.top + q.h, q.x + rr, q.top + q.h); g.lineTo(q.x + bw - rr, q.top + q.h); g.quadraticCurveTo(q.x + bw, q.top + q.h, q.x + bw, q.top + q.h - rr); g.lineTo(q.x + bw, q.top); } g.closePath(); g.fill(); } g.globalAlpha = 1; };
+    g.fillStyle = col('--muted'); g.font = '11px ' + col('--f-mono'); const lab = (b) => new Date(b.d + 'T12:00:00').toLocaleDateString([], { month: 'short', day: 'numeric' });
+    for (const b of [...new Set([bars[0], bars[bars.length - 1]])]) { const q = rect(b); const s = lab(b); const w = g.measureText(s).width; g.fillText(s, Math.min(W - padR - w, Math.max(padL, q.x + bw / 2 - w / 2)), H - 6); }
+    paint(null);
+    const redraw = (hl) => { g.clearRect(0, 0, W, H); yAxis(c, lo, hi); g.fillStyle = col('--muted'); g.font = '11px ' + col('--f-mono'); for (const bb of [...new Set([bars[0], bars[bars.length - 1]])]) { const q = rect(bb); const s = lab(bb); const w = g.measureText(s).width; g.fillText(s, Math.min(W - padR - w, Math.max(padL, q.x + bw / 2 - w / 2)), H - 6); } paint(hl); };
+    cv.onpointerleave = () => { tip.hidden = true; redraw(null); };
+    cv.onpointermove = (ev) => {
+      const r = cv.getBoundingClientRect(); const k = Math.floor((ev.clientX - r.left - padL) / slot); const b = bars[Math.max(0, Math.min(bars.length - 1, k))];
+      redraw(b); const q = rect(b);
+      tip.hidden = false; tip.textContent = ''; const bb = document.createElement('b'); bb.textContent = b.n ? fmtR(b.r, 2) : '–'; tip.appendChild(bb); tip.appendChild(document.createTextNode(b.n ? `${lab(b)} · ${b.n} closed trade${b.n > 1 ? 's' : ''}` : `${lab(b)} · no closed trades`));
+      const tw = tip.offsetWidth; tip.style.left = Math.min(r.width - tw - 4, Math.max(4, q.x + bw + 6)) + 'px'; tip.style.top = Math.max(4, q.top - 10) + 'px';
+    };
+  }
+  const resHash = () => RES.f.period === 'day' && RES.f.day ? '#results/' + RES.f.day : '#results';
+  function setResHash() { try { history.replaceState(null, '', resHash()); } catch (e) { /* file: URLs */ } }
+  function showResults(on) {
+    $('resultsView').hidden = !on; $('market').hidden = on; $('feed').hidden = on; $('layout').hidden = on; $('resultsBtn').setAttribute('aria-pressed', on);
+    try { history.replaceState(null, '', on ? resHash() : location.pathname + location.search); } catch (e) { /* file: URLs */ }
+    if (on) { window.scrollTo(0, 0); if (!RES.index && !RES.loading) resLoad(false); else renderResults(); }
+  }
+
   // ---------------- small utils ----------------
   function fmtP(p) { if (!isNum(p)) return '–'; const a = Math.abs(p); const d = a >= 1000 ? 1 : a >= 100 ? 2 : a >= 1 ? 3 : a >= 0.01 ? 4 : a >= 0.0001 ? 6 : 8; return p.toLocaleString('en-US', { minimumFractionDigits: d, maximumFractionDigits: d }); }
   function fmtQty(q) { if (!isNum(q)) return '–'; const a = Math.abs(q); return q.toLocaleString('en-US', { maximumFractionDigits: a >= 100 ? 0 : a >= 1 ? 2 : 4 }); }
@@ -2016,10 +2262,13 @@ dialog .sub-h { font: 700 11.5px/1 var(--f-body); letter-spacing: .08em; text-tr
   $('settingsForm').onsubmit = (e) => { if (e.submitter && e.submitter.value === 'cancel') return; const m = SETTINGS_MAP; for (const [id, k] of Object.entries(m)) { const v = $(id).value; settings[k] = STRING_SETTINGS.includes(k) ? v : +v; } aiKey = $('sAiKey').value.trim(); if (aiKey && $('sAiRemember').value === 'yes') LS.set('aiKey', aiKey); else LS.del('aiKey'); LS.set('settings', settings); applyTheme(); for (const c of state.coins) if (c.data) analyzeOne(c, state.btcCtx); renderTable(); if (state.sel) renderGuide(state.sel); scheduleNext(); toast('Settings saved.'); };
   $('clearCache').onclick = async () => { await idbClear(); memCache.clear(); toast('Cached candles cleared. The next scan downloads full history again.'); };
   $('journalBtn').onclick = () => { renderJournal(); $('journalDlg').showModal(); };
+  $('resultsBtn').onclick = () => showResults($('resultsView').hidden);
+  const openFromHash = () => { const m = location.hash.match(/^#results(?:\/(\d{4}-\d{2}-\d{2}))?$/); if (!m) return; if (m[1]) { RES.f.day = m[1]; RES.f.period = 'day'; } showResults(true); };
+  setTimeout(openFromHash, 0); window.addEventListener('hashchange', openFromHash);
   $('journalCopy').onclick = () => copyText(journalCSV());
   $('journalExport').onclick = () => { const blob = new Blob([journalCSV()], { type: 'text/csv' }); const a = document.createElement('a'); a.href = URL.createObjectURL(blob); a.download = `krillin-journal-${new Date().toISOString().slice(0, 10)}.csv`; document.body.appendChild(a); a.click(); setTimeout(() => { URL.revokeObjectURL(a.href); a.remove(); }, 1000); };
   window.addEventListener('focus', () => { document.title = 'Krillin Scanner'; });
-  window.addEventListener('resize', () => { if (state.sel) { const c = state.bySym.get(state.sel); if (c && c.T) drawChart(c, state.chartTf); } });
+  window.addEventListener('resize', () => { if (!$('resultsView').hidden) renderResults(); if (state.sel) { const c = state.bySym.get(state.sel); if (c && c.T) drawChart(c, state.chartTf); } });
   if (window.matchMedia) window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change', () => { if (state.sel) { const c = state.bySym.get(state.sel); if (c && c.T) drawChart(c, state.chartTf); } });
 
   // ---------------- boot ----------------

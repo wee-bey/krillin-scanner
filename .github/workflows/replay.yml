@@ -1,0 +1,58 @@
+name: Signal replay
+
+# Replays the Krillin Scanner's 15-minute scans for each finished day on Binance USDT-M candles (public archive),
+# paper-trades every signal on its plan, and commits the results to data/ for the scanner's Results tab.
+on:
+  schedule:
+    - cron: '17 */6 * * *'   # 4 times a day; each run replays whatever days the archive has published since the last run
+  workflow_dispatch:
+    inputs:
+      backfill:
+        description: 'Days to backfill on the very first run'
+        default: '30'
+
+permissions:
+  contents: write
+
+concurrency:
+  group: signal-replay
+  cancel-in-progress: false
+
+jobs:
+  replay:
+    runs-on: ubuntu-latest
+    timeout-minutes: 330
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+
+      - name: Restore the candle cache
+        uses: actions/cache/restore@v4
+        with:
+          path: .cache
+          key: candles-${{ github.run_id }}
+          restore-keys: candles-
+
+      - name: Replay the scans and evaluate the signals
+        timeout-minutes: 300
+        run: node tools/replay.js --backfill "${{ github.event.inputs.backfill || '30' }}" --max-days 31
+
+      - name: Save the candle cache
+        if: always()
+        uses: actions/cache/save@v4
+        with:
+          path: .cache
+          key: candles-${{ github.run_id }}
+
+      - name: Commit the results
+        if: always()
+        run: |
+          git config user.name "krillin-replay"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add data
+          if git diff --cached --quiet; then echo "no changes"; exit 0; fi
+          git commit -m "Signal replay $(date -u '+%Y-%m-%d %H:%M') UTC"
+          for i in 1 2 3; do git pull --rebase --autostash && git push && break; sleep 5; done
