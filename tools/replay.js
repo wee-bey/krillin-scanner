@@ -282,7 +282,8 @@ async function main() {
   log(`archive through ${lastDay}; replaying ${todo.length ? todo.join(', ') : 'nothing new'}`);
   const sigFile = (m) => path.join(OUT, `signals-${m}.json`);
   const months = new Map(); const loadMonth = (m) => { if (!months.has(m)) months.set(m, readJSON(sigFile(m), { signals: [] })); return months.get(m); };
-  for (const m of (readJSON(path.join(OUT, 'index.json'), { months: [] }).months || [])) loadMonth(m);
+  // A failed run may checkpoint monthly files before publishing index.json.
+  for (const f of fs.existsSync(OUT) ? fs.readdirSync(OUT) : []) { const m = f.match(/^signals-(\d{4}-\d{2})\.json$/); if (m) loadMonth(m[1]); }
   const allSignals = () => [].concat(...[...months.values()].map((x) => x.signals));
   const lastByKey = new Map(); for (const x of allSignals().sort((a, b) => a.t - b.t)) lastByKey.set(x.key, x);
   for (const day of todo) {

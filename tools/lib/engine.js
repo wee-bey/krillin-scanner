@@ -732,7 +732,7 @@
     for (const tf of ['4h', '1d']) {
       const A = T[tf]; if (!A || A.insufficient || !A.range || !A.range.isRange || !['range', 'chop'].includes(A.regime)) continue; const r = A.range; const lbl = TF_LABEL[tf];
       if (r.pos <= 0.2) out.push(mkSetup({ id: 'D1', family: 'Range', name: `${lbl} range low`, tf, dir: 'long', entry: [r.lo - 0.15 * r.width, r.lo + 0.05 * r.width], entryText: 'Layer bids from the range low into the deviation zone (15-20% of the width below)', stop: r.lo - 0.2 * r.width - 0.2 * A.ATR, stopText: 'Beyond the deviation zone (range low − 20% of the width)', tp1: { price: r.mid, label: 'Range mid' }, why: [`${lbl} range ${r.widthPct.toFixed(0)}% wide; price in the bottom ${Math.round(r.pos * 100)}%`], status: r.pos <= 0.08 ? 'active' : 'forming' }));
-      if (r.pos >= 0.8) { const S = mkSetup({ id: 'D1', family: 'Range', name: `${lbl} range high`, tf, dir: 'short', entry: [r.hi - 0.05 * r.width, r.hi + 0.15 * r.width], entryText: 'Layer asks from the range high into the deviation zone (15-20% above)', stop: r.hi + 0.2 * r.width + 0.2 * A.ATR, stopText: 'Beyond the deviation zone (range high + 20% of the width)', tp1: { price: r.mid, label: 'Range mid' }, why: [`${lbl} range ${r.widthPct.toFixed(0)}% wide; price in the top ${Math.round((1 - r.pos) * 100)}%`], status: r.pos >= 0.92 ? 'active' : 'forming' }); if (T['4h'] && T['4h'].trend.dir === 'up' && T['4h'].trend.valid) S.gates.push('No range-high shorts while the 4h trend is ascending'); out.push(S); }
+      if (r.pos >= 0.8) { const S = mkSetup({ id: 'D1', family: 'Range', name: `${lbl} range high`, tf, dir: 'short', entry: [r.hi - 0.05 * r.width, r.hi + 0.15 * r.width], entryText: 'Layer asks from the range high into the deviation zone (15-20% above)', stop: r.hi + 0.2 * r.width + 0.2 * A.ATR, stopText: 'Beyond the deviation zone (range high + 20% of the width)', tp1: { price: r.mid, label: 'Range mid' }, why: [`${lbl} range ${r.widthPct.toFixed(0)}% wide; price in the top ${Math.round((1 - r.pos) * 100)}%`], status: r.pos >= 0.92 ? 'active' : 'forming' }); if (T['4h'] && !T['4h'].insufficient && T['4h'].trend.dir === 'up' && T['4h'].trend.valid) S.gates.push('No range-high shorts while the 4h trend is ascending'); out.push(S); }
     }
     // --- [ADD-ON] trend-line (diagonal) setups: D4 breakout-retest long, D5 breakdown-retest short, W2 compression under a trend line ---
     const diagOn = !ctx || ctx.diag !== false;
@@ -822,7 +822,7 @@
       if (D && !D.insufficient) { const lo7 = Math.min(...D.l.slice(-7)); const g = (price - lo7) / lo7 * 100; if (g >= P.profitTakePct) S.warnings.push(`+${g.toFixed(0)}% in 7 days: profit-taking zone, size down`); }
     } else {
       // shorts: don't short strength
-      const H = T['1h'], H4 = T['4h']; if (S.id !== 'D1' && H && H4 && H.trend.dir === 'up' && H.trend.valid && H4.trend.dir === 'up' && H4.trend.valid) S.gates.push('Don\'t short strength: 1h and 4h trends both up');
+      const H = T['1h'], H4 = T['4h']; if (S.id !== 'D1' && H && !H.insufficient && H4 && !H4.insufficient && H.trend.dir === 'up' && H.trend.valid && H4.trend.dir === 'up' && H4.trend.valid) S.gates.push('Don\'t short strength: 1h and 4h trends both up');
       if (T['1d'] && tfBias(T['1d']).label === 'bullish' && S.id !== 'D1') S.warnings.push('Daily bias is bullish: treat as a hedge / TP aggressively');
     }
   }

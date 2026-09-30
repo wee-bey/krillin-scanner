@@ -41,6 +41,9 @@ jobs:
           key: candles-${{ github.run_id }}
           restore-keys: candles-
 
+      - name: Check replay regressions
+        run: node tools/test-replay.js
+
       - name: Replay the scans and evaluate the signals
         timeout-minutes: 300
         run: node tools/replay.js --backfill "${{ github.event.inputs.backfill || '30' }}" --max-days 31
