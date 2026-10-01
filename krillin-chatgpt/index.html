@@ -1,0 +1,147 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+  <meta name="referrer" content="no-referrer">
+  <meta name="theme-color" content="#0E1016">
+  <title>Krillin Chatgpt</title>
+  <link rel="icon" href="../icon-192.png" type="image/png">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Archivo:wdth,wght@100..125,500..800&family=JetBrains+Mono:wght@400;500;600&family=Public+Sans:wght@400;500;600;700&display=swap">
+  <link rel="stylesheet" href="./styles.css">
+  <script src="../tools/lib/engine.js" defer></script>
+  <script src="./core.js" defer></script>
+  <script src="./market.js" defer></script>
+  <script src="./app.js" defer></script>
+</head>
+<body>
+  <a class="skip-link" href="#signals">Skip to signals</a>
+  <header class="top">
+    <div class="brand">
+      <span class="brand-lines" aria-hidden="true"><i></i><i></i><i></i></span>
+      <h1>Krillin Chatgpt</h1>
+    </div>
+    <a class="original-link" href="../">Original scanner</a>
+  </header>
+
+  <main>
+    <section class="scan-bar" aria-label="Scanner controls">
+      <div class="scan-actions">
+        <button class="btn primary" id="scan-btn" type="button">Scan now</button>
+        <label class="check-label"><input id="auto-scan" type="checkbox"> Scan every 15 minutes</label>
+      </div>
+      <div class="scan-state">
+        <span class="status-dot" aria-hidden="true"></span>
+        <span id="scan-status" role="status" aria-live="polite">Ready to scan</span>
+        <span id="last-scan" class="muted">No scan yet</span>
+      </div>
+      <progress id="scan-progress" max="100" value="0" aria-label="Scan progress" hidden></progress>
+      <p id="scan-error" class="error-message" role="alert" hidden></p>
+    </section>
+
+    <p class="scope-note">Binance USDT-M public data, using closed candles. Scanning runs while this page is open. Observations stay in this browser.</p>
+
+    <section class="workbench" id="signals" aria-label="Signal review">
+      <div class="feed-panel">
+        <div class="section-heading">
+          <h2>Trade ideas</h2>
+          <span class="muted">One idea per overlapping plan</span>
+        </div>
+        <nav class="feed-tabs" aria-label="Signal feeds">
+          <button id="feed-qualified" type="button" data-feed="qualified" aria-pressed="true" aria-controls="idea-list">Qualified ideas <span id="count-qualified" class="count">0</span></button>
+          <button id="feed-research" type="button" data-feed="research" aria-pressed="false" aria-controls="idea-list">Research <span id="count-research" class="count">0</span></button>
+          <button id="feed-rejected" type="button" data-feed="rejected" aria-pressed="false" aria-controls="idea-list">Rejected <span id="count-rejected" class="count">0</span></button>
+        </nav>
+        <p id="feed-description" class="feed-description">Valid B4, C3, and C6 4h/12h plans enter this provisional shortlist.</p>
+        <ol id="idea-list" class="idea-list" aria-label="Trade ideas"></ol>
+        <div id="idea-empty" class="empty-state">
+          <h3>Start with a fresh scan</h3>
+          <p>Scan now to review current ideas. Every detected signal is retained, including research and rejected plans.</p>
+        </div>
+      </div>
+
+      <aside class="detail-panel" aria-labelledby="detail-heading">
+        <div class="section-heading"><h2 id="detail-heading">Idea details</h2></div>
+        <div id="idea-detail">
+          <div id="detail-empty" class="empty-state detail-empty">
+            <h3>Choose an idea</h3>
+            <p>Review its original observation, supporting setups, entry plan, cost-adjusted targets, and qualification reasons.</p>
+          </div>
+        </div>
+      </aside>
+    </section>
+
+    <section class="evidence-section" aria-labelledby="evidence-heading">
+      <div class="section-heading">
+        <h2 id="evidence-heading">What the evidence says</h2>
+        <a href="../#results">Explore original results</a>
+      </div>
+      <p class="section-note">Historical results explain the shortlist. Forward observations test these frozen rules. Neither uses signal grades as confidence.</p>
+      <div class="evidence-grid">
+        <section class="evidence-block" aria-labelledby="historical-heading">
+          <h3 id="historical-heading">Historical exploration</h3>
+          <p id="historical-source" class="source-note">Loading the historical source…</p>
+          <p id="historical-status" class="muted"></p>
+          <div class="tablewrap" tabindex="0" role="region" aria-label="Historical evidence table">
+            <table class="evidence-table">
+              <caption class="sr-only">Historical setup and timeframe results</caption>
+              <thead><tr><th scope="col">Setup</th><th scope="col">Timeframe</th><th scope="col" class="n">Closed</th><th scope="col" class="n">Open</th><th scope="col" class="n">Mean R</th><th scope="col" class="n">PF</th><th scope="col" class="n">Recent R</th></tr></thead>
+              <tbody id="historical-evidence-body"><tr><td colspan="7" class="table-empty">Historical evidence will appear here.</td></tr></tbody>
+            </table>
+          </div>
+          <p class="table-note">R is profit or loss relative to planned risk. PF is gross profit divided by gross loss. Recent R is the latest observed period's mean.</p>
+        </section>
+        <section class="evidence-block" aria-labelledby="forward-heading">
+          <h3 id="forward-heading">Forward observed sample</h3>
+          <p id="forward-source" class="source-note">This browser's observations under the current frozen rules.</p>
+          <p id="forward-status" class="muted">No forward results yet.</p>
+          <div class="tablewrap" tabindex="0" role="region" aria-label="Forward evidence table">
+            <table class="evidence-table">
+              <caption class="sr-only">Forward observed setup and timeframe results</caption>
+              <thead><tr><th scope="col">Setup</th><th scope="col">Timeframe</th><th scope="col" class="n">Closed</th><th scope="col" class="n">Open</th><th scope="col" class="n">Mean R</th><th scope="col" class="n">PF</th><th scope="col" class="n">Recent R</th></tr></thead>
+              <tbody id="forward-evidence-body"><tr><td colspan="7" class="table-empty">Forward observations need time to mature.</td></tr></tbody>
+            </table>
+          </div>
+          <p class="table-note">Open trades remain visible. Longer timeframe plans can take several weeks to resolve. These are paper outcomes, not account returns.</p>
+        </section>
+      </div>
+    </section>
+
+    <section class="validation-section" aria-labelledby="validation-heading">
+      <div class="section-heading"><h2 id="validation-heading">Forward validation</h2><span id="validation-status" class="muted">Waiting for observations</span></div>
+      <dl class="validation-meta">
+        <div><dt>Rule version</dt><dd id="rule-version">Loading…</dd></div>
+        <div><dt>Rules frozen</dt><dd id="rules-frozen-at">—</dd></div>
+        <div><dt>Current cohort began</dt><dd id="validation-start">—</dd></div>
+      </dl>
+      <div class="validation-comparison">
+        <div><h3>Accepted signals</h3><p><strong id="accepted-count" class="num">0</strong><span>observed</span></p><p id="accepted-result" class="result-note">No closed results yet.</p></div>
+        <div><h3>Rejected signals</h3><p><strong id="rejected-count" class="num">0</strong><span>retained for comparison</span></p><p id="rejected-result" class="result-note">No closed results yet.</p></div>
+      </div>
+      <p class="section-note">Keep the rule version fixed while new data accumulates. Changing the scan universe starts a separate cohort.</p>
+    </section>
+
+    <details class="settings">
+      <summary>Scanner settings</summary>
+      <form id="settings-form">
+        <div class="setting-fields">
+          <label for="account-size">Reference account ($)<input id="account-size" type="number" value="5000" min="1" step="1" required></label>
+          <label for="risk-percent">Risk per complete plan (%)<input id="risk-percent" type="number" value="2" min="0.01" max="100" step="0.01" required></label>
+          <label for="universe-size">Scan universe<select id="universe-size"><option value="25">Top 25 markets</option><option value="50">Top 50 markets</option><option value="100" selected>Top 100 markets</option></select></label>
+        </div>
+        <p class="section-note">Markets are ranked by the previous completed day's quote volume. Risk applies to the whole entry ladder. This reference sizing does not cap total exposure across ideas.</p>
+        <div class="settings-actions"><button id="save-settings" class="btn" type="submit">Save settings</button><span id="settings-status" role="status" class="muted"></span></div>
+      </form>
+    </details>
+
+    <section class="log-section" aria-labelledby="log-heading">
+      <div class="section-heading"><h2 id="log-heading">Observation log</h2><button id="export-log" class="btn" type="button">Export log</button></div>
+      <p class="section-note">Original observations and later changes are separate events. Export preserves the decisions behind accepted and rejected signals.</p>
+      <ol id="event-log" class="event-log"><li class="log-empty">No observations yet. Run a scan to begin.</li></ol>
+    </section>
+  </main>
+  <footer>Signals are research observations. This scanner never places orders.</footer>
+</body>
+</html>
