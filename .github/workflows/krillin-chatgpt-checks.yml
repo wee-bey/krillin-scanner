@@ -1,0 +1,34 @@
+name: Krillin Chatgpt checks
+
+on:
+  pull_request:
+    paths:
+      - 'krillin-chatgpt/**'
+      - 'tools/lib/engine.js'
+      - '.github/workflows/krillin-chatgpt-checks.yml'
+  push:
+    branches: [main]
+    paths:
+      - 'krillin-chatgpt/**'
+      - 'tools/lib/engine.js'
+      - '.github/workflows/krillin-chatgpt-checks.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  checks:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Check the new scanner and original replay
+        run: |
+          node --check krillin-chatgpt/app.js
+          node krillin-chatgpt/test-core.js
+          node krillin-chatgpt/test-market.js
+          node krillin-chatgpt/test-app.js
+          node tools/test-replay.js

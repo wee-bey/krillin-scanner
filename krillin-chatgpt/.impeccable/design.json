@@ -1,0 +1,27 @@
+{
+  "schemaVersion": 2,
+  "generatedAt": "2026-10-01T03:53:01.000Z",
+  "title": "Design System: Krillin Chatgpt",
+  "extensions": {
+    "motion": [
+      {
+        "name": "progress-update",
+        "value": "width 180ms ease-out",
+        "purpose": "Native scan-progress fill updates; reduced-motion preferences disable transitions."
+      }
+    ],
+    "breakpoints": [
+      { "name": "workspace-stack", "value": "1050px" },
+      { "name": "compact-controls", "value": "600px" }
+    ]
+  },
+  "components": [
+    {
+      "name": "Evidence table",
+      "kind": "custom",
+      "description": "Bounded, keyboard-focusable evidence table with sticky column headings and access to every row.",
+      "html": "<div class=\"ds-evidence-scroll\" tabindex=\"0\" role=\"region\" aria-label=\"Evidence table\"><table><thead><tr><th scope=\"col\">Setup</th><th scope=\"col\">Timeframe</th><th scope=\"col\">Mean R</th></tr></thead><tbody></tbody></table></div>",
+      "css": ".ds-evidence-scroll { max-height: 420px; overflow: auto; border: 1px solid var(--line); border-radius: 6px; background: var(--surface); }.ds-evidence-scroll:focus-visible { outline: 2px solid var(--accent); outline-offset: 3px; }.ds-evidence-scroll table { width: 100%; border-collapse: collapse; font-size: 12px; }.ds-evidence-scroll th { position: sticky; top: 0; z-index: 1; padding: 9px 10px; text-align: left; font-size: 11px; background: var(--surface-2); color: var(--muted); border-bottom: 1px solid var(--line); }"
+    }
+  ]
+}
