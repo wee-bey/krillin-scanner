@@ -1,3 +1,2 @@
-[13:09:20] archive through 2026-09-30; replaying 2026-09-30
-[13:10:46] 2026-09-30: 100 coins, 217 new signals, 86 s
-[13:10:48] done in 88 s · 1616 downloads · 5421 signals (5196 resolved)
+[22:39:32] archive through 2026-09-30; replaying nothing new
+[22:39:32] done in 1 s · 1 downloads · 5421 signals (5196 resolved)
