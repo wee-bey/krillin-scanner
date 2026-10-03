@@ -1,3 +1,2 @@
-[11:36:52] archive through 2026-10-02; replaying 2026-10-02
-[11:38:04] 2026-10-02: 100 coins, 236 new signals, 73 s
-[11:38:07] done in 76 s · 1664 downloads · 5915 signals (5680 resolved)
+[16:15:31] archive through 2026-10-02; replaying nothing new
+[16:15:31] done in 1 s · 1 downloads · 5915 signals (5680 resolved)
