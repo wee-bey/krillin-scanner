@@ -1,0 +1,54 @@
+[1s] latest archived day 2026-10-03 · from 2021-06 · top 150
+[2s] symbols in the archive (USDT perps, filtered): 885
+[7s] 1d 50/885 · 1700 requests
+[11s] 1d 100/885 · 3166 requests
+[15s] 1d 150/885 · 4810 requests
+[18s] 1d 200/885 · 5991 requests
+[22s] 1d 250/885 · 7272 requests
+[26s] 1d 300/885 · 8856 requests
+[29s] 1d 350/885 · 10112 requests
+[32s] 1d 400/885 · 11461 requests
+[36s] 1d 450/885 · 12908 requests
+[40s] 1d 500/885 · 14471 requests
+[43s] 1d 550/885 · 15560 requests
+[46s] 1d 600/885 · 17036 requests
+[49s] 1d 650/885 · 18319 requests
+[53s] 1d 700/885 · 19593 requests
+[56s] 1d 750/885 · 20943 requests
+[59s] 1d 800/885 · 22243 requests
+[62s] 1d 850/885 · 23549 requests
+[74s] wrote d1.csv.gz: 627569 rows, 13.9 MB
+[74s] symbols ever in the daily top 150: 762
+[79s] 4h 50/762 · 26149 requests
+[83s] 4h 100/762 · 27800 requests
+[87s] 4h 150/762 · 29338 requests
+[90s] 4h 200/762 · 30604 requests
+[95s] 4h 250/762 · 32494 requests
+[99s] 4h 300/762 · 34031 requests
+[103s] 4h 350/762 · 35496 requests
+[107s] 4h 400/762 · 37292 requests
+[111s] 4h 450/762 · 38624 requests
+[115s] 4h 500/762 · 40237 requests
+[119s] 4h 550/762 · 41578 requests
+[122s] 4h 600/762 · 43149 requests
+[127s] 4h 650/762 · 44762 requests
+[130s] 4h 700/762 · 46235 requests
+[134s] 4h 750/762 · 47729 requests
+[186s] wrote h4.csv.gz: 3702796 rows, 76.9 MB
+[190s] funding 50/762 · 49380 requests
+[193s] funding 100/762 · 50835 requests
+[196s] funding 150/762 · 52132 requests
+[198s] funding 200/762 · 53176 requests
+[203s] funding 250/762 · 54761 requests
+[206s] funding 300/762 · 56276 requests
+[209s] funding 350/762 · 57403 requests
+[213s] funding 400/762 · 58992 requests
+[216s] funding 450/762 · 60250 requests
+[219s] funding 500/762 · 61523 requests
+[222s] funding 550/762 · 62681 requests
+[224s] funding 600/762 · 63964 requests
+[228s] funding 650/762 · 65306 requests
+[230s] funding 700/762 · 66570 requests
+[234s] funding 750/762 · 67912 requests
+[250s] wrote funding.csv.gz: 2587391 rows, 14.1 MB
+[250s] done · 68075 requests · 0 failures
