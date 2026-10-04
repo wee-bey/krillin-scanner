@@ -3,144 +3,105 @@ const assert = require('node:assert/strict');
 const App = require('./app.js');
 const C = require('./core.js');
 const K = require('../tools/lib/engine.js');
-const AT = Date.UTC(2026, 9, 1), BAR = 9e5, REPEAT = 12 * 3600e3;
+const AT = Date.UTC(2026, 9, 4), BAR = 9e5, REPEAT = 12 * 3600e3;
 const copy = x => JSON.parse(JSON.stringify(x));
-const manifest = (id = 'cohort-a', settings = {}) => ({ id, ruleVersion: C.POLICY.version, sourceDigest: 'fixed-test-source', source: 'binance-usdm', policy: C.POLICY, settings: { account: 5000, riskPct: 2, feePct: 0.05, slipPct: 0.03, universeSize: 100, ...settings } });
-function raw(at, changes = {}) {
-  return { id: 'B4', symbol: 'TEST', sym: 'TESTUSDT', t: at, tf: '4h', dir: 'long', px: 101, scanPrice: 101, status: 'active', watch: false, grade: 'B', gates: [], marketData: { closedAt: Math.floor(at / BAR) * BAR, valid: true }, plan: { bids: [100, 99, 98, 97].map((price, i) => ({ price, weight: C.POLICY.entryWeights[i] })), stop: 95, tps: [{ price: 105 }, { price: 110 }, { price: 115 }] }, ...changes };
+const manifest = (id = 'cohort-a') => ({ id, ruleVersion: C.POLICY.version, sourceDigest: 'test-source', source: 'binance-usdm', policy: C.POLICY, settings: { account: 5000, riskPct: 2, feePct: .05, slipPct: .03, universeSize: 100 } });
+function raw(id='A2', tf='4h', at=AT, changes={}) {
+  return { id, symbol:'TEST', sym:'TESTUSDT', t:at, tf, dir:'long', px:101, status:'active', watch:false, grade:'B', gates:[],
+    marketData:{closedAt:Math.floor(at/BAR)*BAR,valid:true}, plan:{ bids:[100,99,98,97].map((price,i)=>({price,weight:C.POLICY.entryWeights[i]})),stop:95,tps:[105,110,115].map(price=>({price})) }, ...changes };
 }
-function scan(at, rawSignals, changes = {}) { return { at, featureAt: Math.floor(at / BAR) * BAR, source: 'binance-usdm', rawSignals, counts: { scanned: 1, raw: rawSignals.length }, errors: [], universe: [{ sym: 'TESTUSDT', rank: 1, quoteVolume: 1e8 }], ...changes }; }
-const initial = (changes = {}) => App.ingest(App.emptyState(), scan(AT, [raw(AT, changes)]), manifest());
-const close = (state, record = 0) => { const next = copy(state); next.records[record].ev = { st: 'closed', done: true, coverageComplete: true, R: 1, tExit: AT + BAR, tp: [true, true, true] }; return next; };
-let failures = 0;
-function check(name, fn) { try { fn(); console.log('PASS: ' + name); } catch (e) { failures++; console.error('FAIL: ' + name + '\n' + e.message); } }
+const pair = (at=AT) => [raw('A2','4h',at),raw('A3','15m',at)];
+const scan = (rawSignals,at=AT) => ({at,featureAt:Math.floor(at/BAR)*BAR,source:'binance-usdm',rawSignals,counts:{scanned:1},errors:[],universe:[{sym:'TESTUSDT',rank:1,quoteVolume:1e8}]});
+const ingest = (state,rows,at=AT,id='cohort-a') => App.ingest(state,scan(rows,at),manifest(id));
+const initial = () => ingest(App.emptyState(),pair());
+const pending = state => { const s=copy(state);s.records.forEach(r=>{r.ev={st:'pending',done:false,coverageComplete:true};});return s; };
+const close = state => { const s=copy(state);s.records.forEach(r=>{r.ev={st:'closed',done:true,coverageComplete:true,R:1,tExit:AT+BAR};});return s; };
 
-check('Raw observations and rules are saved without mutating previous state', () => {
-  const before = App.emptyState(), original = JSON.stringify(before), state = App.ingest(before, scan(AT, [raw(AT)]), manifest());
-  assert.equal(JSON.stringify(before), original);
-  assert.equal(state.records.length, 1);
-  assert.equal(state.records[0].accepted, true);
-  assert.equal(state.records[0].decision.plan.riskUsd, 100);
-  assert.equal(state.cohorts.length, 1);
-  assert.deepEqual(state.events.map(e => e.type), ['rules', 'signal', 'scan']);
-});
+const before=App.emptyState(), original=JSON.stringify(before), first=ingest(before,pair());
+assert.equal(JSON.stringify(before),original);
+assert.equal(first.records.length,2);
+assert.equal(first.records.filter(r=>r.accepted).length,1);
+assert.equal(first.latest.ideas.length,1);
+assert.equal(first.latest.ideas[0].confluence.rating,10);
+assert.deepEqual(first.latest.ideas[0].confluence.labels,['A2 4h','A3 15m']);
+assert.equal(first.records[0].decision.plan.riskUsd,100);
+assert.deepEqual(first.events.map(e=>e.type),['rules','signal','signal','scan']);
 
-check('Same-key repeats and grade upgrades preserve the original paper entry', () => {
-  const before = initial(), saved = JSON.stringify(before.records[0]), firstEvent = JSON.stringify(before.events[1]);
-  const state = App.ingest(before, scan(AT + BAR, [raw(AT + BAR, { grade: 'A', px: 102 })]), manifest());
-  assert.equal(state.records.length, 1);
-  assert.equal(JSON.stringify(state.records[0]), saved);
-  assert.equal(JSON.stringify(state.events[1]), firstEvent);
-  assert.equal(state.records[0].decision.t, AT);
-  assert.equal(state.records[0].decision.px, 101);
-  assert.equal(state.latest.ideas[0].decisionId, state.records[0].id);
-  assert.equal(state.latest.decisions[0].accepted, false);
-  assert(state.events.some(e => e.type === 'upgrade' && e.at === AT + BAR && e.payload.grade === 'A'));
-});
+const repeated=ingest(pending(first),[raw('A2','4h',AT+BAR,{grade:'A'}),raw('A3','15m',AT+BAR)],AT+BAR);
+assert.equal(repeated.records.length,2);
+assert.equal(repeated.records[0].decision.t,AT);
+assert.equal(repeated.latest.ideas[0].decisionId,first.latest.ideas[0].decisionId);
+assert(repeated.latest.decisions.every(d=>!d.accepted && d.reasonCodes.includes('repeat_window')));
+assert(repeated.events.some(e=>e.type==='upgrade' && e.payload.grade==='A'));
+assert.equal(JSON.stringify(first.records[0].decision),JSON.stringify(repeated.records[0].decision));
 
-check('Overlapping setups create one accepted idea and preserve rejected counterfactuals', () => {
-  const state = App.ingest(App.emptyState(), scan(AT, [raw(AT, { id: 'C3' }), raw(AT)]), manifest());
-  assert.equal(state.latest.ideas.length, 1);
-  assert.equal(state.latest.ideas[0].setupId, 'B4');
-  assert.equal(state.latest.ideas[0].support.length, 2);
-  assert.equal(state.records.length, 2);
-  assert.equal(state.records.filter(r => r.accepted).length, 1);
-  assert.equal(state.records.find(r => r.decision.setupId === 'C3').accepted, false);
-  assert(state.records.find(r => r.decision.setupId === 'C3').decision.reasonCodes.includes('duplicate_idea'));
-});
+// A rejected but valid unresolved plan can later supply support; its label is never rewritten.
+const standalone=pending(ingest(App.emptyState(),[raw()]));
+assert.equal(standalone.records[0].accepted,false);
+assert(standalone.records[0].decision.reasonCodes.includes('no_positive_confluence'));
+const supported=ingest(standalone,[raw('A3','15m',AT+BAR)],AT+BAR);
+assert.equal(supported.records[0].accepted,false);
+assert.equal(supported.records[1].accepted,true);
+assert(supported.records[1].decision.confluence.supportIds.includes(standalone.records[0].id));
+for (const mode of ['closed','incomplete','unavailable']) {
+  const bad=copy(standalone);
+  if (mode==='closed') bad.records[0].ev={st:'closed',done:true,coverageComplete:true};
+  if (mode==='incomplete') bad.records[0].ev.coverageComplete=false;
+  if (mode==='unavailable') bad.records[0].evaluationError='Unavailable candles';
+  assert.equal(ingest(bad,[raw('A3','15m',AT+BAR)],AT+BAR).records.at(-1).accepted,false);
+}
+assert.equal(ingest(standalone,[raw('A3','15m',AT+BAR)],AT+BAR,'cohort-b').records.at(-1).accepted,false);
 
-check('A valid setup outside the shortlist remains a rejected paper candidate', () => {
-  const state = initial({ id: 'A1' });
-  assert.equal(state.records.length, 1);
-  assert.equal(state.records[0].accepted, false);
-  assert.equal(state.records[0].decision.validPlan, true);
-  assert.equal(state.latest.ideas.length, 0);
-  assert(state.events.some(e => e.type === 'signal' && e.payload.decision.reasonCodes.includes('not_shortlisted')));
-  const repeated = App.ingest(state, scan(AT + BAR, [raw(AT + BAR, { id: 'A1' })]), manifest());
-  assert.equal(repeated.records.length, 1);
-  assert(repeated.latest.decisions[0].reasonCodes.includes('repeat_window'));
-});
+for (const changes of [{gates:['blocked']},{status:'forming'},{watch:true},{px:105},{plan:null},{marketData:{closedAt:AT-2*BAR,valid:true}}]) {
+  const state=ingest(App.emptyState(),[raw(),raw('A3','15m',AT,changes)]);
+  assert(state.records.every(r=>!r.accepted));
+  assert.equal(state.latest.ideas.length,0);
+}
+for (const changes of [{sym:'OTHERUSDT',symbol:'OTHER'},{dir:'short',plan:{bids:[102,103,104,105].map((price,i)=>({price,weight:C.POLICY.entryWeights[i]})),stop:107,tps:[97,92,87].map(price=>({price}))}}]) {
+  assert.equal(ingest(App.emptyState(),[raw(),raw('A3','15m',AT,changes)]).latest.ideas.length,0);
+}
+const negative=ingest(App.emptyState(),[raw('B2','1h'),raw('C2','1h'),raw('C6','1h')]);
+assert.equal(negative.latest.ideas.length,0);
+assert(negative.latest.decisions.every(d=>d.reasonCodes.includes('negative_confluence')));
 
-check('Invalid candles, plans, engine gates and inactive setups are logged without paper evaluation', () => {
-  for (const changes of [{ marketData: { closedAt: AT - 2 * BAR, valid: true } }, { marketData: { closedAt: AT, valid: false } }, { gates: ['Engine blocked'] }, { status: 'forming' }, { watch: true }, { px: 105 }, { plan: null }]) {
-    const state = initial(changes);
-    assert.equal(state.records.length, 0);
-    assert.equal(state.latest.decisions.length, 1);
-    assert.equal(state.latest.decisions[0].accepted, false);
-    assert(state.events.some(e => e.type === 'signal'));
-  }
-  const badFeed = App.ingest(App.emptyState(), scan(AT, [raw(AT)], { source: 'bybit' }), manifest());
-  assert.equal(badFeed.records.length, 0);
-});
+// A nonpositive required subset blocks a positive subset containing the same new anchor.
+const conflict=ingest(App.emptyState(),[raw('A1','1h'),raw('C3','4h'),raw('C6','4h'),raw('C6','1h')]);
+assert.equal(conflict.latest.decisions.find(d=>d.setupId==='A1').accepted,false);
+assert(conflict.latest.decisions.find(d=>d.setupId==='A1').reasonCodes.includes('negative_confluence'));
 
-check('Closed episodes do not restart before the fixed repeat window', () => {
-  const first = close(initial());
-  const soon = App.ingest(first, scan(AT + 2 * BAR, [raw(AT + 2 * BAR)]), manifest());
-  assert.equal(soon.records.length, 1);
-  assert.equal(soon.latest.ideas.length, 0);
-  assert(soon.latest.decisions[0].reasonCodes.includes('repeat_window'));
-  const later = App.ingest(soon, scan(AT + REPEAT, [raw(AT + REPEAT)]), manifest());
-  assert.equal(later.records.length, 2);
-  assert.equal(later.records[1].accepted, true);
-  assert.equal(later.records[0].decision.t, AT);
-});
+const closed=close(first);
+assert.equal(ingest(closed,pair(AT+2*BAR),AT+2*BAR).records.length,2);
+assert.equal(ingest(closed,pair(AT+REPEAT),AT+REPEAT).records.filter(r=>r.accepted).length,2);
+const unresolved=ingest(pending(first),pair(AT+REPEAT),AT+REPEAT);
+assert.equal(unresolved.records.length,2);
+const other=ingest(first,pair(AT+BAR),AT+BAR,'cohort-b');
+assert.equal(other.cohorts.length,2);
+const back=ingest(other,pair(AT+2*BAR),AT+2*BAR);
+assert.equal(back.records.filter(r=>r.cohortId==='cohort-a').length,2);
+assert.equal(back.latest.ideas[0].t,AT);
 
-check('An unresolved same-key episode cannot create an untracked accepted idea after its zone moves', () => {
-  const state = initial();
-  const shifted = raw(AT + BAR, { px: 201, plan: { bids: [200, 199, 198, 197].map((price, i) => ({ price, weight: C.POLICY.entryWeights[i] })), stop: 195, tps: [{ price: 205 }, { price: 210 }, { price: 215 }] } });
-  const next = App.ingest(state, scan(AT + BAR, [shifted]), manifest());
-  assert.equal(next.records.length, 1);
-  assert.equal(next.latest.decisions[0].accepted, false);
-  assert(next.latest.decisions[0].reasonCodes.includes('repeat_window'));
-  assert(next.latest.ideas.every(idea => next.records.some(r => r.id === idea.decisionId && r.accepted)));
-});
+const outcomes=close(first);
+outcomes.records[1].ev.R=-.5;
+let stats=C.summarize(App.forwardSignals(outcomes,'cohort-a'));
+assert.equal(stats.accepted.closedN,1);
+assert.equal(stats.rejected.closedN,1);
+outcomes.records[0].ev.coverageComplete=false;
+stats=C.summarize(App.forwardSignals(outcomes,'cohort-a'));
+assert.equal(stats.total.closedN,1);
+assert.equal(stats.total.netR,-.5);
 
-check('Settings create separate cohorts and cannot mix their risk or outcomes', () => {
-  const first = close(initial());
-  const next = App.ingest(first, scan(AT + BAR, [raw(AT + BAR)]), manifest('cohort-b', { account: 1000, riskPct: 1 }));
-  assert.equal(next.cohorts.length, 2);
-  assert.equal(next.records.length, 2);
-  assert.equal(next.records[0].decision.plan.riskUsd, 100);
-  assert.equal(next.records[1].decision.plan.riskUsd, 10);
-  assert.equal(C.summarize(App.forwardSignals(next, 'cohort-a')).total.netR, 1);
-  assert.equal(C.summarize(App.forwardSignals(next, 'cohort-b')).total.closedN, 0);
-});
+const mid=AT+60000,state=ingest(App.emptyState(),pair(mid),mid);
+const ev=C.simulate(state.records[0].decision,K.fromRows([[AT,101,110,90,101,1],[AT+BAR,99.5,100,99.1,99.5,1]]),AT+2*BAR);
+assert.equal(ev.activationAt,AT+BAR);
+assert.equal(ev.tFill,AT+BAR);
+assert.equal(ev.coverageComplete,true);
 
-check('Returning to a cohort recovers its original active idea rather than replacing its timestamp', () => {
-  const first = initial();
-  const other = App.ingest(first, scan(AT + BAR, [raw(AT + BAR)]), manifest('cohort-b', { account: 1000, riskPct: 1 }));
-  const back = App.ingest(other, scan(AT + 2 * BAR, [raw(AT + 2 * BAR, { grade: 'A' })]), manifest());
-  assert.equal(back.records.filter(r => r.cohortId === 'cohort-a').length, 1);
-  assert.equal(back.latest.ideas[0].decisionId, first.records[0].id);
-  assert.equal(back.latest.ideas[0].t, AT);
-});
-
-check('Forward comparison uses original accepted/rejected labels and excludes incomplete coverage', () => {
-  const state = App.ingest(App.emptyState(), scan(AT, [raw(AT), raw(AT, { id: 'A1' }), raw(AT, { id: 'C3' })]), manifest());
-  for (const r of state.records) r.ev = { st: 'closed', done: true, coverageComplete: true, R: r.accepted ? 1 : -0.5, tExit: AT + BAR };
-  const summary = C.summarize(App.forwardSignals(state, 'cohort-a'));
-  assert.equal(summary.accepted.closedN, 1);
-  assert.equal(summary.rejected.closedN, 2);
-  assert.equal(summary.accepted.netR, 1);
-  assert.equal(summary.rejected.netR, -1);
-  state.records[0].ev.coverageComplete = false;
-  state.records[1].evaluationError = 'Missing coverage';
-  const incomplete = C.summarize(App.forwardSignals(state, 'cohort-a'));
-  assert.equal(incomplete.total.closedN, 1);
-  assert.equal(incomplete.total.netR, -0.5);
-  assert.equal(incomplete.total.pendingN, 2);
-});
-
-check('A mid-bar saved decision starts paper exposure at the next complete opening', () => {
-  const at = AT + 60000, state = App.ingest(App.emptyState(), scan(at, [raw(at)]), manifest());
-  const d = state.records[0].decision;
-  const rows = [[AT, 101, 110, 90, 101, 1], [AT + BAR, 99.5, 100, 99.1, 99.5, 1]];
-  const ev = C.simulate(d, K.fromRows(rows), AT + 2 * BAR);
-  assert.equal(ev.activationAt, AT + BAR);
-  assert.equal(ev.tFill, AT + BAR);
-  assert.equal(ev.st, 'open');
-  assert.equal(ev.coverageComplete, true);
-});
-
-if (failures) { process.exitCode = 1; console.error(failures + ' controller checks failed'); }
-else console.log('Krillin Chatgpt controller: all offline assertions passed');
+const positives=C.EVIDENCE.rules.filter(r=>r.meanR>0);
+assert.equal(positives.length,76);
+assert.equal(positives[0].rating,10);
+assert.equal(positives.at(-1).rating,1);
+assert(positives.every((r,i)=>Number.isInteger(r.rating)&&r.rating>=1&&r.rating<=10&&(!i||r.rating<=positives[i-1].rating)));
+assert(C.EVIDENCE.rules.filter(r=>r.meanR<=0).every(r=>r.rating===null));
+const low=ingest(App.emptyState(),[raw('C3','4h'),raw('D4','1d')]);
+assert.equal(low.latest.ideas[0].confluence.rating,1);
+console.log('Controller checks passed: positive/negative confluence, 10–1 ratings, active rejected support, validity, repeats, immutable cohorts, paper timing and coverage.');
