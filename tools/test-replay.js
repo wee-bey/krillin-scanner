@@ -66,4 +66,26 @@ try {
   assert.ok(path.basename(tmp).startsWith('krillin-replay-test-'));
   fs.rmSync(tmp, { recursive: true, force: true });
 }
+// BTC regime trades (setup RG): open on the first close and on flips, protective stop, no re-entry until the next flip
+{
+  const { regimeSignals } = require('./replay.js');
+  const day = 864e5, t0 = Date.UTC(2026, 0, 1); const D = { t: [], o: [], h: [], l: [], c: [] };
+  const add = (o, h, l, c) => { D.t.push(t0 + D.t.length * day); D.o.push(o); D.h.push(h); D.l.push(l); D.c.push(c); };
+  for (let i = 0; i < 105; i++) { const c = 100 + 0.1 * i; add(c - 0.05, c + 0.5, c - 0.5, c); } // steady rise: above the MA100, ATR14 = 1
+  add(110.4, 110.6, 99.9, 100);   // 105: wick through the long's stop, closes below the MA100 → stop, then a short at the close
+  add(100, 104, 99, 101);         // 106: short holds
+  add(101, 112.5, 100.5, 112);    // 107: short stopped, closes above → long at the close
+  add(112, 112.5, 90, 111);       // 108: long stopped, still above the MA100 → no re-entry
+  add(111.5, 112.5, 111, 112);    // 109: still above → still no trade
+  add(112, 112, 99.5, 100);       // 110: flip → short
+  add(100, 112.2, 99.8, 112);     // 111: flip back → short closed at the close, long opened
+  const rg = regimeSignals(D, D, D.t[104] + day - 1, D.t[111] + day); // daily candles stand in for 15m ones
+  assert.deepEqual(rg.map((s) => [s.dir, (s.t - t0) / day - 1, s.ev.reason]), [['long', 104, 'stop'], ['short', 105, 'stop'], ['long', 107, 'stop'], ['short', 110, 'flip'], ['long', 111, null]]);
+  assert.equal(rg[0].stop, 107.4);
+  assert.ok(Math.abs(rg[0].ev.R + 1.047) < 0.01, 'a full stop loses 1R plus costs: ' + rg[0].ev.R);
+  assert.equal(rg[1].ev.exits[0][1], rg[1].stop, 'the short exits at its stop');
+  assert.ok(Math.abs(rg[3].ev.R + 0.785) < 0.01, 'the flip exit is at the close: ' + rg[3].ev.R);
+  assert.ok(rg[4].ev.st === 'open' && !rg[4].ev.done && Number.isFinite(rg[4].ev.uR));
+  assert.ok(rg.every((s) => s.setup === 'RG' && s.tf === '1d' && s.sym === 'BTCUSDT' && s.tps.length === 0));
+}
 console.log('Replay regression checks passed');

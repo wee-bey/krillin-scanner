@@ -272,6 +272,64 @@ function simulate(sig, S15, untilMs) {
   };
 }
 
+// ───────────────────────── BTC regime trades (setup RG; outside Krillin, see HANDOFF §5f) ─────────────────────────
+// BTC's daily close above its daily MA100 = long, below = short. One position at a time: opened at the daily close
+// (00:00 UTC) on a flip, and at the first close of the tracker's history; closed at the close of the next flip, or
+// at a protective stop 3 × daily ATR(14) from the entry (checked on 15m candles; the stop never moves; after a stop,
+// the next trade waits for the next flip). Market fills at the close, fees + slippage as for every signal.
+// R = PnL ÷ the $50 risk to that stop, like every other signal. The whole series is rebuilt from the candles on each
+// run (deterministic, cheap), so it always covers the tracker's full history.
+const REGIME = { id: 'RG', ma: 100, atrN: 14, atrK: 3 };
+function regimeSignals(D, S15, fromMs, untilMs) {
+  const n = D.t.length, c = D.c, out = [];
+  const feeSide = (SETTINGS.feePct + SETTINGS.slipPct / 2) / 100; const riskUsd = SETTINGS.account * SETTINGS.riskPct / 100;
+  const sma = new Array(n).fill(NaN), atr = new Array(n).fill(NaN), state = new Array(n).fill(0); let sum = 0;
+  for (let i = 0; i < n; i++) {
+    sum += c[i]; if (i >= REGIME.ma) sum -= c[i - REGIME.ma];
+    if (i >= REGIME.ma - 1) { sma[i] = sum / REGIME.ma; state[i] = c[i] > sma[i] ? 1 : c[i] < sma[i] ? -1 : 0; }
+    if (i >= REGIME.atrN) { let s = 0; for (let j = i - REGIME.atrN + 1; j <= i; j++) s += Math.max(D.h[j] - D.l[j], Math.abs(D.h[j] - c[j - 1]), Math.abs(D.l[j] - c[j - 1])); atr[i] = s / REGIME.atrN; }
+  }
+  let cur = null, started = false, j = 0;
+  const close = (px, t, why) => {
+    const e = cur.ev; const q = cur._units; e.fees += q * px * feeSide; const pnl = cur._sgn * q * (px - cur.avg);
+    Object.assign(e, { st: 'closed', reason: why, tExit: t, R: round((pnl - e.fees) / riskUsd, 4), uR: null, stopHit: why === 'stop', exits: [[t, round(px), 1, why]], upd: t, done: true });
+    cur = null;
+  };
+  for (let i = 1; i < n; i++) {
+    const T = D.t[i] + DAY; if (T > untilMs) break; if (T <= fromMs) continue;
+    // during day i: the stop, and the excursions, on 15m candles
+    if (cur) {
+      while (j < S15.t.length && S15.t[j] < Math.max(D.t[i], cur.t)) j++;
+      for (; j < S15.t.length && S15.t[j] + 9e5 <= T; j++) {
+        const o = S15.o[j], h = S15.h[j], l = S15.l[j], long = cur._sgn > 0; const Rd = Math.abs(cur.avg - cur.stop);
+        cur.ev.mfe = round(Math.max(cur.ev.mfe, cur._sgn * ((long ? h : l) - cur.avg) / Rd), 3); cur.ev.mae = round(Math.max(cur.ev.mae, cur._sgn * (cur.avg - (long ? l : h)) / Rd), 3);
+        cur.ev.upd = S15.t[j] + 9e5; cur._last = S15.c[j];
+        if (long ? l <= cur.stop : h >= cur.stop) { close(long ? Math.min(cur.stop, o) : Math.max(cur.stop, o), S15.t[j], 'stop'); break; }
+      }
+    }
+    const s = state[i]; if (!s || !Number.isFinite(atr[i])) continue;
+    if (cur && s !== cur._sgn) close(c[i], T, 'flip');
+    const flip = state[i - 1] !== s;
+    if (!cur && (!started || flip)) {
+      const dir = s > 0 ? 'long' : 'short', px = c[i], stop = px - s * REGIME.atrK * atr[i], units = riskUsd / Math.abs(px - stop);
+      const why = `BTC daily close ${round(px)} ${s > 0 ? 'above' : 'below'} its daily MA100 (${round(sma[i])}) · ${started ? 'the regime flipped at this close' : 'the regime already in force when the tracker started'} · exit at the close of the next flip or at the stop (3 × daily ATR14 = ${round(REGIME.atrK * atr[i])})`;
+      cur = {
+        id: `BTC|RG|1d|${dir}|${T}`, key: `BTC|RG|1d|${dir}`, t: T, day: ymd(T - 1), S: 'BTC', sym: 'BTCUSDT', mult: 1, setup: REGIME.id, name: `BTC daily MA100 regime (${dir})`, fam: 'Regime (outside Krillin)', tf: '1d', dir,
+        grade: 'R', score: '–', pot: '–', alertedAt: null, px: round(px), bids: [round(px)], w: [1], avg: round(px), stop: round(stop), stopPct: round(REGIME.atrK * atr[i] / px * 100, 4),
+        tps: [], avgTP: null, room: null, roomLabel: 'none: exit on the regime flip', size: round(units * px, 6), beWin: null, why, entryText: 'Market at the daily close (00:00 UTC)', warnings: [], conf: 0, missing: [],
+        ctx: { btc1d: null, btc4h: null, btcAtRes: false, btcReg4h: null, btcReg1d: null, rsPct: null, rank: 1, ma100: round(sma[i]), atr14: round(atr[i]) },
+        ev: { st: 'open', reason: null, fill: 1, avgFill: round(px), tFill: T, tExit: null, R: null, uR: null, mfe: 0, mae: 0, tp: [], stopHit: false, amb: 0, dirHit: null, dirAmb: false, fills: [[T, round(px)]], exits: [], upd: T, done: false, fees: units * px * feeSide },
+        _sgn: s, _units: units, _last: px,
+      };
+      out.push(cur);
+    }
+    started = true;
+  }
+  if (cur) { const e = cur.ev; const q = cur._units; e.uR = round((cur._sgn * q * (cur._last - cur.avg) - e.fees - q * cur._last * feeSide) / riskUsd, 4); }
+  for (const x of out) { x.ev.fees = undefined; delete x.ev.fees; delete x._sgn; delete x._units; delete x._last; }
+  return out;
+}
+
 // ───────────────────────── market condition of the day (BTC as of the previous daily close) ─────────────────────────
 function marketOf(s, btc, ctx, d0) {
   const D = s && s['1d']; const i = D ? upto(D, '1d', d0) : -1; if (i < 0) return null;
@@ -318,7 +376,7 @@ async function main() {
   const allSignals = () => [].concat(...[...months.values()].map((x) => x.signals));
   const market = readJSON(path.join(OUT, 'market.json'), { days: {} });
   async function evaluate(until) {
-    const open = allSignals().filter((s) => !(s.ev && s.ev.done) && s.t < until);
+    const open = allSignals().filter((s) => s.setup !== REGIME.id && !(s.ev && s.ev.done) && s.t < until); // RG trades are rebuilt by regimeSignals()
     const bySym = new Map(); for (const s of open) { if (!bySym.has(s.sym)) bySym.set(s.sym, []); bySym.get(s.sym).push(s); }
     await pool([...bySym.keys()], 6, async (sym) => {
       const sigs = bySym.get(sym); const from = Math.min(...sigs.map((s) => s.t)) - DAY;
@@ -379,12 +437,25 @@ async function main() {
   let until = dayStart(lastDay) + DAY;
   if (OFFLINE) { const r = readJSON(path.join(OFFLINE, 'BTCUSDT_15m.json'), []); until = r[r.length - 1][0] + 9e5; } // offline tests: evaluate to the end of the saved candles
   await evaluate(until);
+  // BTC regime trades over the tracker's whole history, rebuilt from the candles on every run
+  if (state.days.length) {
+    const first = dayStart(state.days[0]);
+    const D1 = await loadSeries('BTCUSDT', '1d', first - (REGIME.ma + REGIME.atrN + 10) * DAY, until, lastDay);
+    const R15 = await loadSeries('BTCUSDT', '15m', first - DAY, until, lastDay);
+    for (const [, v] of months) v.signals = v.signals.filter((s) => s.setup !== REGIME.id);
+    if (D1.length > REGIME.ma + REGIME.atrN && R15.length) {
+      const rg = regimeSignals(toCols(D1), toCols(R15), first, until);
+      for (const s of rg) loadMonth(ym(s.t)).signals.push(s);
+      const open = rg.filter((s) => !s.ev.done);
+      log(`BTC regime (daily MA100): ${rg.length} trades since ${state.days[0]}, ${rg.length - open.length} closed (${round(rg.filter((s) => s.ev.done).reduce((a, s) => a + s.ev.R, 0), 3)}R)${open.length ? `, open ${open[0].dir} from ${ymd(open[0].t)} (${open[0].ev.uR}R)` : ''}`);
+    } else log('BTC regime: not enough BTC history yet');
+  }
   for (const [m, v] of months) { v.signals.sort((a, b) => a.t - b.t); writeJSON(sigFile(m), v); }
   const all = allSignals();
   const index = {
     version: VERSION, updated: new Date().toISOString(), coverage: { first: state.days[0] || null, last: state.days[state.days.length - 1] || null, archiveThrough: lastDay, evaluatedThrough: new Date(until).toISOString() },
     months: [...months.keys()].sort(), counts: { signals: all.length, resolved: all.filter((s) => s.ev && s.ev.done).length },
-    rules: { universe: `top ${UNIVERSE_N} Binance USDT-M perpetuals by the previous day's quote volume (stablecoins, wrapped tokens, index and metal contracts excluded)`, scans: 'every 15 minutes on closed candles, like the dashboard', settings: SETTINGS, entryWindowCandles: ENTRY_WINDOW, timeStopCandles: TIME_STOP, management: 'sell 1/(k+1) at TP1 (k = TP1 in R), then 4/7 of the rest at TP2 and the rest at TP3; the stop never moves', sameCandle: 'stop assumed first; a fill and a target in the same candle takes no profit that candle', resend: '12 h, and never while an earlier paper trade on the same setup is unresolved' },
+    rules: { universe: `top ${UNIVERSE_N} Binance USDT-M perpetuals by the previous day's quote volume (stablecoins, wrapped tokens, index and metal contracts excluded)`, scans: 'every 15 minutes on closed candles, like the dashboard', settings: SETTINGS, entryWindowCandles: ENTRY_WINDOW, timeStopCandles: TIME_STOP, management: 'sell 1/(k+1) at TP1 (k = TP1 in R), then 4/7 of the rest at TP2 and the rest at TP3; the stop never moves', sameCandle: 'stop assumed first; a fill and a target in the same candle takes no profit that candle', resend: '12 h, and never while an earlier paper trade on the same setup is unresolved', regime: 'setup RG (outside Krillin): BTC daily close above its daily MA100 = long, below = short; market at the 00:00 UTC close on each flip, exit at the next flip or a fixed stop 3 × daily ATR(14) from entry; R vs the same $50 risk' },
   };
   writeJSON(path.join(OUT, 'lite.json'), liteOf(all.slice().sort((a, b) => a.t - b.t)));
   writeJSON(path.join(OUT, 'index.json'), index);
@@ -393,4 +464,5 @@ async function main() {
   log(`done in ${((Date.now() - t0) / 1000).toFixed(0)} s · ${netCount} downloads · ${all.length} signals (${index.counts.resolved} resolved)`);
   fs.writeFileSync(path.join(OUT, 'last_run.txt'), runLog.join('\n') + '\n');
 }
-main().catch((e) => { log('FAILED: ' + (e && e.stack || e)); try { fs.mkdirSync(OUT, { recursive: true }); fs.writeFileSync(path.join(OUT, 'last_run.txt'), runLog.join('\n') + '\n'); } catch (e2) { /* ignore */ } process.exit(1); });
+if (require.main === module) main().catch((e) => { log('FAILED: ' + (e && e.stack || e)); try { fs.mkdirSync(OUT, { recursive: true }); fs.writeFileSync(path.join(OUT, 'last_run.txt'), runLog.join('\n') + '\n'); } catch (e2) { /* ignore */ } process.exit(1); });
+module.exports = { regimeSignals, REGIME }; // for tools/test-replay.js
