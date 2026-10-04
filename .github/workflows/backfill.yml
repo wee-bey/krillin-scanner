@@ -1,0 +1,88 @@
+name: Signal backfill
+
+# One-off long history for the Results tab (HANDOFF §5b step 1): replays the scanner day by day from `from`
+# into backfill/ (the live data/ is untouched), with the same code as the daily replay. Each run does up to
+# `days_per_run` days, commits, then queues the next run until it reaches the latest archived day.
+# When it has caught up, backfill/ is checked and swapped into data/ by hand (see HANDOFF.md).
+on:
+  workflow_dispatch:
+    inputs:
+      from:
+        description: 'First day to replay (YYYY-MM-DD)'
+        default: '2025-09-01'
+      days_per_run:
+        description: 'Days per run (about 1 min each)'
+        default: '90'
+      chain:
+        description: 'Queue the next run until caught up (true/false)'
+        default: 'true'
+
+permissions:
+  contents: write
+  actions: write
+
+concurrency:
+  group: signal-backfill
+  cancel-in-progress: false
+
+jobs:
+  backfill:
+    runs-on: ubuntu-latest
+    timeout-minutes: 350
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+
+      - name: Restore the candle cache
+        uses: actions/cache/restore@v4
+        with:
+          path: .cache
+          key: bf-candles-${{ github.run_id }}
+          restore-keys: bf-candles-
+
+      - name: Check replay regressions
+        run: node tools/test-replay.js
+
+      - name: Days done before this run
+        id: before
+        run: echo "n=$(node -p "try{require('./backfill/state.json').days.length}catch(e){0}")" >> "$GITHUB_OUTPUT"
+
+      - name: Replay the next block of days
+        timeout-minutes: 315
+        env:
+          NODE_OPTIONS: --max-old-space-size=6144
+        run: node tools/replay.js --out backfill --from "${{ inputs.from }}" --max-days "${{ inputs.days_per_run }}"
+
+      - name: Save the candle cache
+        if: always()
+        uses: actions/cache/save@v4
+        with:
+          path: .cache
+          key: bf-candles-${{ github.run_id }}
+
+      - name: Commit the results
+        if: always()
+        run: |
+          git config user.name "krillin-replay"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add backfill
+          if git diff --cached --quiet; then echo "no changes"; exit 0; fi
+          git commit -m "Signal backfill $(date -u '+%Y-%m-%d %H:%M') UTC"
+          for i in 1 2 3; do git pull --rebase --autostash && git push && break; sleep 5; done
+
+      - name: Queue the next run
+        # also after a timeout, as long as this run made progress (each day is checkpointed)
+        if: always() && inputs.chain == 'true'
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          after=$(node -p "try{require('./backfill/state.json').days.length}catch(e){0}")
+          last=$(node -p "try{require('./backfill/state.json').days.slice(-1)[0]||''}catch(e){''}")
+          arch=$(node -p "try{require('./backfill/index.json').coverage.archiveThrough||''}catch(e){''}")
+          echo "days before ${{ steps.before.outputs.n }}, after $after; last $last; archive $arch"
+          if [ "$after" -le "${{ steps.before.outputs.n }}" ]; then echo "no progress: not queuing another run"; exit 0; fi
+          if [ -n "$arch" ] && [ ! "$last" \< "$arch" ]; then echo "caught up with the archive"; exit 0; fi
+          gh workflow run backfill.yml --ref main -f from="${{ inputs.from }}" -f days_per_run="${{ inputs.days_per_run }}" -f chain=true

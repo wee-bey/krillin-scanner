@@ -100,26 +100,29 @@ function parseKlines(text) {
 }
 
 // ───────────────────────── candle archive with a local cache ─────────────────────────
-const monthMem = new Map();
+const monthMem = new Map(); let memRows = 0;
+const memSet = (key, rows) => { if (!monthMem.has(key)) memRows += rows.length; monthMem.set(key, rows); };
+const MEM_ROWS_MAX = 6e6; // ~6M candle rows (~1 GB); the long backfill would otherwise hold every month it ever read
+function trimMem() { if (memRows > MEM_ROWS_MAX) { monthMem.clear(); memRows = 0; } } // called between days only; the disk cache keeps everything
 function monthFile(sym, tf, m) { return path.join(CACHE, 'k', tf, sym, m + '.json'); }
 async function getMonth(sym, tf, m, lastDay) { // rows of one month, up to lastDay (YYYY-MM-DD) for an unfinished month
   const key = `${sym}|${tf}|${m}`; if (monthMem.has(key)) return monthMem.get(key);
   const f = monthFile(sym, tf, m); let c = readJSON(f, null);
   const nowMonth = lastDay.slice(0, 7); const monthEnd = ymd(Date.UTC(+m.slice(0, 4), +m.slice(5, 7), 0));
   const needTo = monthEnd < lastDay ? monthEnd : lastDay;
-  if (c && (c.complete || c.absent || c.to >= needTo)) { monthMem.set(key, c.rows || []); return c.rows || []; }
+  if (c && (c.complete || c.absent || c.to >= needTo)) { memSet(key, c.rows || []); return c.rows || []; }
   if (!c) c = { rows: [], to: null };
   if (m < nowMonth && !c.to) { // a finished month: the monthly file (published in the first days of the next month)
     const buf = await fetchBuf(`${ARCHIVE}/monthly/klines/${sym}/${tf}/${sym}-${tf}-${m}.zip`);
-    if (buf) { c = { rows: parseKlines(unzipFirst(buf).toString('utf8')), complete: true }; writeJSON(f, c); monthMem.set(key, c.rows); return c.rows; }
+    if (buf) { c = { rows: parseKlines(unzipFirst(buf).toString('utf8')), complete: true }; writeJSON(f, c); memSet(key, c.rows); return c.rows; }
     const prevMonth = ym(Date.UTC(+nowMonth.slice(0, 4), +nowMonth.slice(5, 7) - 2, 1));
-    if (m < prevMonth) { c = { rows: [], absent: true }; writeJSON(f, c); monthMem.set(key, []); return []; } // before the listing
+    if (m < prevMonth) { c = { rows: [], absent: true }; writeJSON(f, c); memSet(key, []); return []; } // before the listing
   }
   // unfinished (or not yet published) month: daily files
   const days = []; for (let d = c.to ? dayStart(c.to) + DAY : dayStart(m + '-01'); ymd(d) <= needTo; d += DAY) days.push(ymd(d));
   const got = await pool(days, 6, async (d) => { const buf = await fetchBuf(`${ARCHIVE}/daily/klines/${sym}/${tf}/${sym}-${tf}-${d}.zip`); return buf ? parseKlines(unzipFirst(buf).toString('utf8')) : null; });
   for (const r of got) if (r) c.rows.push(...r);
-  c.rows.sort((a, b) => a[0] - b[0]); c.to = needTo; writeJSON(f, c); monthMem.set(key, c.rows); return c.rows;
+  c.rows.sort((a, b) => a[0] - b[0]); c.to = needTo; writeJSON(f, c); memSet(key, c.rows); return c.rows;
 }
 function monthsBetween(fromMs, toMs) { const out = []; let y = new Date(fromMs).getUTCFullYear(), mo = new Date(fromMs).getUTCMonth(); const end = ym(toMs); for (;;) { const s = `${y}-${String(mo + 1).padStart(2, '0')}`; out.push(s); if (s >= end) break; mo++; if (mo > 11) { mo = 0; y++; } } return out; }
 async function loadSeries(sym, tf, fromMs, toMs, lastDay) {
@@ -156,11 +159,14 @@ async function listSymbols() {
   const list = out.filter((s) => /^[A-Z0-9]+USDT$/.test(s)).filter((s) => { const b = baseOf(s).base.toLowerCase(); return !STABLES.has(b) && !WRAPPED.has(b) && !NON_CRYPTO.has(b); });
   writeJSON(path.join(CACHE, 'symbols.json'), { t: Date.now(), list }); return list;
 }
-async function universeFor(day) { // ranked by the quote volume of the day before
+async function universeFor(day, lastDay) { // ranked by the quote volume of the day before
   const f = path.join(CACHE, 'universe', day + '.json'); const c = readJSON(f, null); if (c) return c;
   const prev = ymd(dayStart(day) - DAY); const syms = await listSymbols();
   const vols = await pool(syms, 12, async (s) => {
     if (OFFLINE) { const rows = readJSON(path.join(OFFLINE, `${s}_1d.json`), []); const r = rows.find((x) => ymd(x[0]) === prev); return r ? [s, r[5]] : null; }
+    if (prev.slice(0, 7) < lastDay.slice(0, 7)) { // a finished month: one cached monthly 1d file per symbol (the backfill reads hundreds of days)
+      const rows = await getMonth(s, '1d', prev.slice(0, 7), lastDay); const r = rows.find((x) => ymd(x[0]) === prev); return r && r[5] ? [s, r[5]] : null;
+    }
     const d = readJSON(path.join(CACHE, 'd1', s, prev + '.json'), undefined); if (d !== undefined) return d ? [s, d] : null;
     const buf = await fetchBuf(`${ARCHIVE}/daily/klines/${s}/1d/${s}-1d-${prev}.zip`); const rows = buf ? parseKlines(unzipFirst(buf).toString('utf8')) : [];
     const qv = rows.length ? rows[0][5] : 0; writeJSON(path.join(CACHE, 'd1', s, prev + '.json'), qv || 0); return qv ? [s, qv] : null;
@@ -266,6 +272,16 @@ function simulate(sig, S15, untilMs) {
   };
 }
 
+// ───────────────────────── market condition of the day (BTC as of the previous daily close) ─────────────────────────
+function marketOf(s, btc, ctx, d0) {
+  const D = s && s['1d']; const i = D ? upto(D, '1d', d0) : -1; if (i < 0) return null;
+  const c = D.c, chg = (k) => i >= k ? round((c[i] / c[i - k] - 1) * 100, 4) : null;
+  const rets = []; for (let j = Math.max(1, i - 19); j <= i; j++) rets.push(c[j] / c[j - 1] - 1);
+  const mean = rets.reduce((a, b) => a + b, 0) / rets.length; const vol20 = Math.sqrt(rets.reduce((a, b) => a + (b - mean) ** 2, 0) / rets.length) * 100;
+  const T = btc && btc.T; const reg = (tf) => T && T[tf] && !T[tf].insufficient ? T[tf].regime : null;
+  return { px: round(c[i]), chg7: chg(7), chg30: chg(30), chg90: chg(90), vol20: round(vol20, 4), reg1d: reg('1d'), reg4h: reg('4h'), bias1d: ctx ? ctx.bias['1d'].label : null, bias4h: ctx ? ctx.bias['4h'].label : null, bias1w: ctx && ctx.bias['1w'] ? ctx.bias['1w'].label : null };
+}
+
 // ───────────────────────── main ─────────────────────────
 async function main() {
   const t0 = Date.now();
@@ -285,10 +301,20 @@ async function main() {
   // A failed run may checkpoint monthly files before publishing index.json.
   for (const f of fs.existsSync(OUT) ? fs.readdirSync(OUT) : []) { const m = f.match(/^signals-(\d{4}-\d{2})\.json$/); if (m) loadMonth(m[1]); }
   const allSignals = () => [].concat(...[...months.values()].map((x) => x.signals));
+  const market = readJSON(path.join(OUT, 'market.json'), { days: {} });
+  async function evaluate(until) {
+    const open = allSignals().filter((s) => !(s.ev && s.ev.done) && s.t < until);
+    const bySym = new Map(); for (const s of open) { if (!bySym.has(s.sym)) bySym.set(s.sym, []); bySym.get(s.sym).push(s); }
+    await pool([...bySym.keys()], 6, async (sym) => {
+      const sigs = bySym.get(sym); const from = Math.min(...sigs.map((s) => s.t)) - DAY;
+      const rows = await loadSeries(sym, '15m', from, until, lastDay); if (!rows.length) { for (const s of sigs) s.ev = { st: 'nodata', done: false }; return; } const S15 = toCols(rows);
+      for (const s of sigs) s.ev = simulate(s, S15, until);
+    });
+  }
   const lastByKey = new Map(); for (const x of allSignals().sort((a, b) => a.t - b.t)) lastByKey.set(x.key, x);
   for (const day of todo) {
     const d0 = dayStart(day), d1 = d0 + DAY; const td = Date.now();
-    const coins = await universeFor(day);
+    trimMem(); const coins = await universeFor(day, lastDay);
     // candles: enough history for 1000 closed candles on every timeframe at the day's first scan
     const series = new Map();
     await pool(coins, 6, async (u) => {
@@ -300,6 +326,8 @@ async function main() {
     for (let t = d0 + SCAN_MS; t <= d1; t += SCAN_MS) {
       const { list, ctx, btc } = scanAt(t, coins, series);
       const btcReg4h = btc && btc.T && btc.T['4h'] && !btc.T['4h'].insufficient ? btc.T['4h'].regime : null;
+      const btcReg1d = btc && btc.T && btc.T['1d'] && !btc.T['1d'].insufficient ? btc.T['1d'].regime : null;
+      if (t === d0 + SCAN_MS) market.days[day] = marketOf(series.get('BTCUSDT'), btc, ctx, d0);
       for (const c of list) for (const S of c.setups) {
         if (S.gates.length || S.status !== 'active' || !S.plan || S.plan.invalid || S.watch) continue;
         const gr = S.grade.grade; const alertOk = ['A+', 'A'].includes(gr);
@@ -316,28 +344,26 @@ async function main() {
           bids: P.bids.map((b) => round(b.price)), w: P.bids.map((b) => b.weight), avg: round(P.avg), stop: round(P.stop), stopPct: round(P.stopPct, 4),
           tps: P.tps.map((x) => [round(x.price), round(x.r, 3), x.label]), avgTP: round(P.avgTP, 3), room: Number.isFinite(P.room) ? round(P.room, 3) : null, roomLabel: P.roomLabel,
           size: round(P.size, 6), beWin: round(P.beWinRate, 3), why: S.why.join(' · ').slice(0, 300), entryText: S.entryText || '', warnings: S.warnings.slice(0, 6), conf: S.confluence.length,
-          missing: (S.grade.missing || []).slice(0, 3), ctx: { btc1d: ctx ? ctx.bias['1d'].label : 'n/a', btc4h: ctx ? ctx.bias['4h'].label : 'n/a', btcAtRes: ctx ? !!ctx.atResistance : false, btcReg4h, rsPct: Number.isFinite(c.rsPct) ? Math.round(c.rsPct) : null, rank: c.rank },
+          missing: (S.grade.missing || []).slice(0, 3), ctx: { btc1d: ctx ? ctx.bias['1d'].label : 'n/a', btc4h: ctx ? ctx.bias['4h'].label : 'n/a', btcAtRes: ctx ? !!ctx.atResistance : false, btcReg4h, btcReg1d, rsPct: Number.isFinite(c.rsPct) ? Math.round(c.rsPct) : null, rank: c.rank },
         };
         loadMonth(ym(t)).signals.push(sig); lastByKey.set(S.key, sig); n++;
       }
       for (const k of Object.keys(state.seenAll)) if (t - state.seenAll[k] > 2 * SEEN_MS) delete state.seenAll[k];
       for (const k of Object.keys(state.seenAlert)) if (t - state.seenAlert[k] > 2 * SEEN_MS) delete state.seenAlert[k];
     }
+    // evaluate the open trades up to the end of this day, as the daily run would have (the next day's
+    // "no new signal while the earlier one is unresolved" rule reads these results)
+    await evaluate(d1);
     state.days.push(day); state.days = [...new Set(state.days)].sort();
     log(`${day}: ${coins.length} coins, ${n} new signals, ${((Date.now() - td) / 1000).toFixed(0)} s`);
     writeJSON(path.join(OUT, 'state.json'), state); // checkpoint after each day
+    writeJSON(path.join(OUT, 'market.json'), market);
     for (const [m, v] of months) writeJSON(sigFile(m), v);
   }
   // evaluate every unresolved signal up to the end of the latest archived day
   let until = dayStart(lastDay) + DAY;
   if (OFFLINE) { const r = readJSON(path.join(OFFLINE, 'BTCUSDT_15m.json'), []); until = r[r.length - 1][0] + 9e5; } // offline tests: evaluate to the end of the saved candles
-  const open = allSignals().filter((s) => !(s.ev && s.ev.done));
-  const bySym = new Map(); for (const s of open) { if (!bySym.has(s.sym)) bySym.set(s.sym, []); bySym.get(s.sym).push(s); }
-  await pool([...bySym.keys()], 6, async (sym) => {
-    const sigs = bySym.get(sym); const from = Math.min(...sigs.map((s) => s.t)) - DAY;
-    const rows = await loadSeries(sym, '15m', from, until, lastDay); if (!rows.length) { for (const s of sigs) s.ev = { st: 'nodata', done: false }; return; } const S15 = toCols(rows);
-    for (const s of sigs) s.ev = simulate(s, S15, until);
-  });
+  await evaluate(until);
   for (const [m, v] of months) { v.signals.sort((a, b) => a.t - b.t); writeJSON(sigFile(m), v); }
   const all = allSignals();
   const index = {
@@ -347,6 +373,7 @@ async function main() {
   };
   writeJSON(path.join(OUT, 'index.json'), index);
   writeJSON(path.join(OUT, 'state.json'), state);
+  writeJSON(path.join(OUT, 'market.json'), market);
   log(`done in ${((Date.now() - t0) / 1000).toFixed(0)} s · ${netCount} downloads · ${all.length} signals (${index.counts.resolved} resolved)`);
   fs.writeFileSync(path.join(OUT, 'last_run.txt'), runLog.join('\n') + '\n');
 }
