@@ -1,0 +1,39 @@
+name: Research - long price history
+
+# Research only. Runs on research/** branches, never on main: downloads daily candles for every USDT-M perpetual
+# (delisted ones included), plus 4h candles and funding for every coin ever in the daily top 150, from Binance's
+# public archive, and commits research/hist/ to that branch for offline strategy research.
+on:
+  push:
+    branches: ['research/**']
+    paths:
+      - 'research/fetch-history.js'
+      - '.github/workflows/research-history.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+concurrency:
+  group: research-history
+  cancel-in-progress: true
+
+jobs:
+  history:
+    runs-on: ubuntu-latest
+    timeout-minutes: 120
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Download the history
+        run: node --max-old-space-size=6000 research/fetch-history.js
+      - name: Commit the files to this branch
+        if: always()
+        run: |
+          git config user.name "krillin-research"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add -f research/hist
+          git commit -m "Research: price history $(date -u '+%Y-%m-%d %H:%M') UTC" || exit 0
+          git push
