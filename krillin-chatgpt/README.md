@@ -10,6 +10,16 @@ The page shows grouped qualified ideas, valid research plans outside the shortli
 
 No API key is requested, no orders are placed, and no messages are sent. Binance public data must be reachable from your browser and region. Regional restrictions, rate limits, stale quotes, missing BTC context, and invalid candles stop qualification; there is no silent Bybit, spot, or CoinGecko substitution.
 
+## Trade setup chart
+
+Selecting an idea opens a TradingView Lightweight Charts candlestick view below its details. It shows each immutable planned entry and size allocation, entry-zone boundaries, planned average, SL, every TP with full-fill allocation and R, the decision quote, and modeled average fill when available. New observations also retain mapped reference levels within the setup's price range. Moving reference levels are labeled as observation snapshots. Older observations retain their original plan but may lack this additional reference snapshot. Invalid plans show raw/watch zones, available setup-reference levels, and the quote; they never receive invented entry, SL or TP orders.
+
+Choose the setup timeframe or another timeframe. **At observation** loads only candles closed at the original data cutoff; **Latest closed** fetches newer candles while keeping the original plan fixed. These are fetched snapshots, refreshed when selecting an idea or changing the controls, not a streaming price feed. Times are UTC. Drag to pan, scroll/pinch to zoom, and **Reset view** fits the plan. Exact levels remain available as text for keyboard and screen-reader use and when chart loading fails. The external TradingView link opens the exact Binance perpetual contract; custom plan overlays remain on this page.
+
+Indicator curves reuse the original engine, including Krillin's EMA200 definition (SMMA99). Derived 12h/3d/weekly candles use its UTC aggregation with incomplete edge buckets removed. Source data and regional availability remain Binance USDT-M. Chart reference metadata and the controller change start a new source-digest cohort under the existing rules; prior browser logs remain intact.
+
+TradingView Lightweight Charts 5.0.9 is vendored under `vendor/` with its Apache-2.0 license and attribution notice. No package installation, external chart CDN request, API key, or build step is needed. [Library documentation](https://tradingview.github.io/lightweight-charts/docs/5.0) and [TradingView](https://www.tradingview.com/).
+
 ## The six improvements
 
 1. **Truthful timing.** Indicator inputs use a single closed-candle cutoff. Decisions use actual exchange observation time and a fresh executable bid/ask. A later grade or decision change is a separate event; an original entry or classification is never rewritten.
@@ -41,6 +51,7 @@ No package installation or build step is needed. With Node.js installed:
 node krillin-chatgpt/test-core.js
 node krillin-chatgpt/test-market.js
 node krillin-chatgpt/test-app.js
+node krillin-chatgpt/test-chart.js
 node tools/test-replay.js
 ```
 

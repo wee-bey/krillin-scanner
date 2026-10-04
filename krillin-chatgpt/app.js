@@ -108,6 +108,7 @@
     }
     currentManifest = manifest();
     const client = root.KM.createClient({ fetch: root.fetch.bind(root) });
+    let clearChart = () => {};
     function error(message) { $('scan-error').hidden = !message; $('scan-error').textContent = message || ''; }
     function progress(p) { $('scan-status').textContent = p.message; $('scan-progress').hidden = false; $('scan-progress').max = p.total || 1; $('scan-progress').value = p.done || 0; }
     function recordFor(id) { return state.records.find(x => x.id === id); }
@@ -124,6 +125,7 @@
     }
     function getDecision(item) { return state.latest.decisions.find(x => x.id === item.decisionId) || (recordFor(item.decisionId) || {}).decision || item; }
     function showDetail(item) {
+      clearChart();
       const d = getDecision(item), p = d.plan, r = recordFor(item.decisionId), ev = r && r.ev;
       const headings = '<header class="detail-header"><h3>' + escape(d.symbol) + ' <span class="' + escape(d.dir) + '">' + escape(d.dir) + '</span></h3><p>' + escape(d.sym) + ' · ' + escape(d.setupId) + ' · ' + escape(d.tf) + ' · observed ' + escape(time(d.t)) + '</p></header>';
       const supports = [...new Set((item.support || []).map(x => x.setupId + ' · ' + x.tf))].join(', ');
@@ -133,6 +135,7 @@
         (d.reasons.length ? '<div class="detail-section"><h4>Decision reasons</h4><ul>' + d.reasons.map(x => '<li>' + escape(x) + '</li>').join('') + '</ul></div>' : '<p>Passes the provisional shortlist and validity checks. This is a research candidate.</p>') +
         (p ? '<div class="detail-section"><h4>Complete plan</h4><dl class="plan-grid"><div><dt>Planned stop risk, including modeled costs</dt><dd>$' + fmt(p.riskUsd, 2) + '</dd></div><div><dt>Stop</dt><dd>' + price(p.stop) + '</dd></div><div><dt>Net R if the full target ladder completes</dt><dd>' + signed(p.weightedNetR) + 'R</dd></div><div><dt>Full-fill TP1 then stop estimate</dt><dd>' + signed(p.tp1ThenStopR) + 'R</dd></div></dl><p>Entries: ' + p.bids.map(b => price(b.price) + ' (' + fmt(b.weight * 100, 0) + '%)').join(' · ') + '</p><p>Targets: ' + p.tps.map((tp, i) => 'TP' + (i + 1) + ' ' + price(tp.price) + ' (' + fmt(tp.weight * 100, 1) + '%)').join(' · ') + '</p><p>Quotes and full-fill estimates are planning assumptions. Actual partial fills change target fractions and remaining risk. Gaps may exceed the planned stop risk.</p></div>' : '') +
         '<div class="detail-section"><h4>Observed paper outcome</h4><p>' + (ev ? escape(ev.st) + ' · ' + (ev.st === 'closed' ? signed(ev.R) + 'R' : 'closed outcome not available') + ' · evaluated through ' + escape(time(ev.upd)) : 'No closed outcome yet.') + '</p>' + (r && r.evaluationError ? '<p>' + escape(r.evaluationError) + '</p>' : '') + '<p>Paper orders activate at the next 15-minute opening. Stops precede targets inside an ambiguous candle. Independent paper plans share no capital; their R totals are not account returns. Funding and order-book execution are not modeled.</p></div>';
+      clearChart = root.KCChart.mount(d, ev, client);
     }
     function renderFeed() {
       const latest = state.latest && state.latest.cohortId === currentManifest.id ? state.latest : null;
@@ -148,9 +151,9 @@
         const d = getDecision(item), li = document.createElement('li'), button = document.createElement('button');
         button.className = 'idea-row'; button.type = 'button'; button.setAttribute('aria-pressed', String(selected === item.id)); button.setAttribute('aria-controls', 'idea-detail'); button.dataset.ideaId = item.id;
         button.innerHTML = '<span class="idea-head"><strong>' + escape(d.symbol) + '</strong><span class="chip ' + escape(d.dir) + '">' + escape(d.dir) + '</span><span>' + escape(d.setupId) + ' · ' + escape(d.tf) + '</span></span><span class="idea-sub">' + escape(time(d.t)) + (item.support && item.support.length > 1 ? ' · ' + [...new Set(item.support.map(s => s.setupId + '|' + s.tf))].length + ' supporting setups' : '') + '</span><span class="idea-meta">' + escape(item.rejected ? d.reasons[0] : feed === 'qualified' ? 'Provisional research candidate' : 'Outside shortlist') + '</span>';
-        button.addEventListener('click', () => { selected = item.id; renderFeed(); showDetail(item); const current = [...$('idea-list').querySelectorAll('button')].find(b => b.dataset.ideaId === item.id); if (current) current.focus({ preventScroll: true }); }); li.append(button); $('idea-list').append(li);
+        button.addEventListener('click', () => { selected = item.id; renderFeed(); const current = [...$('idea-list').querySelectorAll('button')].find(b => b.dataset.ideaId === item.id); if (current) current.focus({ preventScroll: true }); }); li.append(button); $('idea-list').append(li);
       });
-      const chosen = items.find(x => x.id === selected); if (chosen) showDetail(chosen); else { selected = null; $('idea-detail').innerHTML = '<p id="detail-empty">Select an idea to inspect its plan, reasons, and evidence.</p>'; }
+      const chosen = items.find(x => x.id === selected); if (chosen) showDetail(chosen); else { clearChart(); selected = null; $('idea-detail').innerHTML = '<p id="detail-empty">Select an idea to inspect its plan, reasons, and evidence.</p>'; }
     }
     function evidenceRows(signals) {
       const groups = C.summarize(signals).groups;

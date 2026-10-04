@@ -31,4 +31,5 @@ jobs:
           node krillin-chatgpt/test-core.js
           node krillin-chatgpt/test-market.js
           node krillin-chatgpt/test-app.js
+          node krillin-chatgpt/test-chart.js
           node tools/test-replay.js
