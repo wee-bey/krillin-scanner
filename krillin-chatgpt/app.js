@@ -241,11 +241,12 @@
     try {
       const response = await fetch('../data/index.json', { cache: 'no-cache', credentials: 'omit' }); if (!response.ok) throw new Error('Historical index is unavailable'); historyIndex = await response.json();
       if (!Array.isArray(historyIndex.months) || historyIndex.months.some(m => !/^\d{4}-\d{2}$/.test(m))) throw new Error('Historical index has an invalid month list');
-      for (const month of historyIndex.months) {
+      const months = historyIndex.months.slice(-2); // signals don't need history; the evidence table only shows the last two months (the full replay is a year+)
+      for (const month of months) {
         const r = await fetch('../data/signals-' + month + '.json', { credentials: 'omit' }); if (!r.ok) throw new Error('Historical month ' + month + ' is unavailable');
         const data = await r.json(); if (!Array.isArray(data.signals)) throw new Error('Historical month has an invalid format'); history.push(...data.signals);
       }
-      $('historical-source').textContent = 'Original replay: ' + historyIndex.coverage.first + ' through ' + historyIndex.coverage.last + ' UTC · ' + history.length + ' raw signals. Exploratory; selected after inspecting these outcomes.';
+      $('historical-source').textContent = 'Original replay, last ' + months.length + ' month' + (months.length === 1 ? '' : 's') + ' (' + months[0] + ' on; the full history is in the main scanner\'s Results tab) through ' + historyIndex.coverage.last + ' UTC · ' + history.length + ' raw signals. Exploratory; selected after inspecting these outcomes.';
       $('historical-status').textContent = 'All original setups are shown. Recent mean uses the latest eight signal days. Unresolved trades can bias recent comparisons.';
       renderEvidence();
     } catch (e) { $('historical-source').textContent = 'Historical source unavailable'; $('historical-status').textContent = e.message + '. Live scanning and forward observations remain separate.'; }
