@@ -3,10 +3,11 @@
 (function (root) {
   'use strict';
   const K = typeof module !== 'undefined' && module.exports ? require('../tools/lib/engine.js') : root.KE;
+  const EVIDENCE = typeof module !== 'undefined' && module.exports ? require('./confluence-data.js') : root.KCConfluence;
   const finite = Number.isFinite;
   const snapshot = value => JSON.parse(JSON.stringify(value));
   function freeze(value) { if (value && typeof value === 'object' && !Object.isFrozen(value)) { Object.values(value).forEach(freeze); Object.freeze(value); } return value; }
-  const POLICY = freeze({ version: 'kc-2026-10-01-v1', source: 'binance-usdm', paperActivation: 'next-15m-open', account: 5000, riskPct: 2, feePct: 0.05, slipPct: 0.03, entryWindowCandles: 20, timeStopCandles: 100, maxAgeMs: 15 * 60e3, entryWeights: [0.1, 0.2, 0.3, 0.4], shortlist: ['B4', 'C3', 'C6:12h', 'C6:4h'] });
+  const POLICY = freeze({ version: 'kc-2026-10-04-confluence-v2', source: 'binance-usdm', paperActivation: 'next-15m-open', account: 5000, riskPct: 2, feePct: 0.05, slipPct: 0.03, entryWindowCandles: 20, timeStopCandles: 100, maxAgeMs: 15 * 60e3, entryWeights: [0.1, 0.2, 0.3, 0.4], confluenceSnapshot: EVIDENCE.snapshot });
 
   // Forming bars never reach the original engine. Gaps remain explicit for the caller.
   function closedRows(input, tf, at) {
@@ -91,7 +92,6 @@
     const dataValid = reasons.length === 0;
     if (raw.status !== 'active' || raw.watch) reject('inactive', 'Setup is not active');
     if (Array.isArray(raw.gates) && raw.gates.length) raw.gates.forEach(x => reject('engine_gate', 'Engine gate: ' + x));
-    if (!['B4', 'C3'].includes(setupId) && !(setupId === 'C6' && ['4h', '12h'].includes(raw.tf))) reject('not_shortlisted', 'Outside the provisional shortlist');
     const price = context.price;
     const normalized = normalizePlan(raw.plan, raw.dir, price, context.settings);
     normalized.issues.forEach(x => reject('invalid_plan', x));
@@ -99,7 +99,34 @@
     return freeze(snapshot({ id, t: at, symbol, sym: raw.sym || symbol, setupId, tf: raw.tf, dir: raw.dir, px: price, version: POLICY.version, accepted: reasons.length === 0, reasons, reasonCodes, raw, plan: normalized.plan, validPlan: !!normalized.plan, dataValid, context: { source: context.source, closedAt: context.closedAt, decisionAt: at } }));
   }
 
-  function priority(d) { return d.setupId === 'B4' ? 0 : d.setupId === 'C3' ? 1 : d.setupId === 'C6' && d.tf === '12h' ? 2 : d.setupId === 'C6' ? 3 : 4; }
+  // Qualification above validates candidates; this batch stage applies the frozen historical filter.
+  function rateConfluence(input, records, at) {
+    const usable = d => d.validPlan && d.dataValid && d.raw.status === 'active' && !d.raw.watch && !(d.raw.gates || []).length;
+    const prior = (records || []).filter(r => usable(r.decision) && r.decision.t <= at && r.ev && r.ev.coverageComplete === true && !r.ev.done && !r.evaluationError).map(r => r.decision);
+    const available = input.filter(d => usable(d) && !d.reasonCodes.includes('repeat_window')).concat(prior);
+    return freeze(input.map(original => {
+      const d = snapshot(original);
+      if (!d.accepted) return d;
+      const own = d.setupId + ' ' + d.tf;
+      const peers = available.filter(p => p.sym === d.sym && p.dir === d.dir && p.t <= at);
+      const labels = [...new Set(peers.map(p => p.setupId + ' ' + p.tf))].sort();
+      const matches = EVIDENCE.rules.filter(r => r.labels.includes(own) && r.labels.every(x => labels.includes(x)));
+      const negative = matches.find(r => r.meanR <= 0);
+      const best = matches.find(r => r.meanR > 0);
+      d.activeConfluence = labels;
+      if (negative || !best) {
+        d.accepted = false;
+        d.reasonCodes.push(negative ? 'negative_confluence' : 'no_positive_confluence');
+        d.reasons.push(negative ? 'Excluded nonpositive historical combination: ' + negative.labels.join(' + ') : 'No positive historical combination meets the sample screen');
+      } else {
+        d.confluence = snapshot(best);
+        d.confluence.snapshot = EVIDENCE.snapshot;
+        d.confluence.supportIds = peers.filter(p => p.id !== d.id && best.labels.includes(p.setupId + ' ' + p.tf)).map(p => p.id);
+      }
+      return d;
+    }));
+  }
+  function priority(d) { return d.confluence ? -d.confluence.meanR : 0; }
   function zone(d) { return d.zone || (d.plan ? [Math.min(...d.plan.bids.map(b => b.price)), Math.max(...d.plan.bids.map(b => b.price))] : null); }
   function overlaps(a, b) { const x = zone(a), y = zone(b); return a.symbol === b.symbol && a.dir === b.dir && x && y && x[0] <= y[1] && y[0] <= x[1]; }
   function deduplicate(input, activeIdeas) {
@@ -110,7 +137,7 @@
     for (const d of accepted) {
       let idea = ideas.find(x => overlaps(d, x));
       if (idea) { d.accepted = false; d.reasons.push('Overlapping trade idea already represented'); (d.reasonCodes || (d.reasonCodes = [])).push('duplicate_idea'); d.duplicateOf = idea.id; }
-      else { idea = { id: d.id, t: d.t, symbol: d.symbol, sym: d.sym, dir: d.dir, setupId: d.setupId, tf: d.tf, zone: zone(d), plan: d.plan, decisionId: d.id, support: [] }; ideas.push(idea); }
+      else { idea = { id: d.id, t: d.t, symbol: d.symbol, sym: d.sym, dir: d.dir, setupId: d.setupId, tf: d.tf, zone: zone(d), plan: d.plan, decisionId: d.id, confluence: d.confluence, support: [] }; ideas.push(idea); }
       if (!idea.support) idea.support = [];
       if (!idea.support.some(x => x.decisionId === d.id)) idea.support.push({ decisionId: d.id, setupId: d.setupId, tf: d.tf, t: d.t });
       d.ideaId = idea.id;
@@ -200,6 +227,6 @@
     for (const x of signals) { const key = `${x.setupId || x.setup || (x.raw && x.raw.id) || 'unknown'}|${x.tf}`; if (!map.has(key)) map.set(key, []); map.get(key).push(x); }
     return { total: metrics(signals), accepted: metrics(signals.filter(x => x.accepted === true)), rejected: metrics(signals.filter(x => x.accepted === false)), groups: [...map].map(([key, items]) => ({ key, setupId: key.split('|')[0], tf: key.split('|')[1], ...metrics(items) })).sort((a, b) => b.n - a.n || a.key.localeCompare(b.key)) };
   }
-  const api = { POLICY, closedRows, normalizePlan, qualify, deduplicate, createEvent, appendEvents, simulate, summarize };
+  const api = { POLICY, EVIDENCE: freeze(EVIDENCE), closedRows, normalizePlan, qualify, rateConfluence, deduplicate, createEvent, appendEvents, simulate, summarize };
   if (typeof module !== 'undefined' && module.exports) module.exports = api; else root.KC = api;
 })(typeof window !== 'undefined' ? window : globalThis);

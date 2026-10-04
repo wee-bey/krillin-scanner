@@ -23,17 +23,16 @@
       const saved = state.latest && state.latest.cohortId === cohort.id && state.latest.ideas.find(i => i.decisionId === r.id);
       if (saved) return saved;
       const d = r.decision;
-      return { id: d.id, t: d.t, symbol: d.symbol, sym: d.sym, dir: d.dir, setupId: d.setupId, tf: d.tf, plan: d.plan, decisionId: d.id, zone: [Math.min(...d.plan.bids.map(b => b.price)), Math.max(...d.plan.bids.map(b => b.price))], support: [{ decisionId: d.id, setupId: d.setupId, tf: d.tf, t: d.t }] };
+      return { id: d.id, t: d.t, symbol: d.symbol, sym: d.sym, dir: d.dir, setupId: d.setupId, tf: d.tf, plan: d.plan, confluence: d.confluence, decisionId: d.id, zone: [Math.min(...d.plan.bids.map(b => b.price)), Math.max(...d.plan.bids.map(b => b.price))], support: [{ decisionId: d.id, setupId: d.setupId, tf: d.tf, t: d.t }] };
     });
     const base = scan.rawSignals.map(raw => C.qualify(raw, { at: scan.at, price: raw.px, source: scan.source, closedAt: raw.marketData.closedAt, valid: raw.marketData.valid, settings: manifest.settings }));
     const candidates = base.map(d => {
       const old = recent.get(episodeKey(d));
-      const zone = d.plan && [Math.min(...d.plan.bids.map(b => b.price)), Math.max(...d.plan.bids.map(b => b.price))];
-      const represented = zone && activeIdeas.some(i => i.symbol === d.symbol && i.dir === d.dir && zone[0] <= i.zone[1] && i.zone[0] <= zone[1]);
-      if (!old || d.t - old.decision.t >= repeatMs && old.ev && old.ev.done || represented) return d;
+      if (!old || d.t - old.decision.t >= repeatMs && old.ev && old.ev.done) return d;
       const copy = clone(d); copy.accepted = false; copy.reasons.push('Existing paper candidate or 12-hour repeat window'); copy.reasonCodes.push('repeat_window'); return copy;
     });
-    const grouped = C.deduplicate(candidates, activeIdeas);
+    const rated = C.rateConfluence(candidates, [...recent.values()], scan.at);
+    const grouped = C.deduplicate(rated, activeIdeas);
     const earlier = new Map((state.latest && state.latest.cohortId === cohort.id ? state.latest.decisions : []).map(d => [episodeKey(d), d]));
     for (const d of grouped.decisions) {
       events.push(C.createEvent('signal', scan.at, { cohortId: cohort.id, decision: d }));
@@ -99,7 +98,7 @@
         tx.onerror = () => reject(failure || tx.error || new Error('Could not save observations')); tx.onabort = () => reject(failure || tx.error || new Error('Observation save aborted'));
       });
     }
-    const sourceFiles = ['../tools/lib/engine.js', './core.js', './market.js', './app.js'];
+    const sourceFiles = ['../tools/lib/engine.js', './confluence-data.js', './core.js', './market.js', './app.js'];
     const sourceTexts = await Promise.all(sourceFiles.map(async path => { const r = await fetch(path, { cache: 'no-cache', credentials: 'omit' }); if (!r.ok) throw new Error('Could not identify the loaded scanner rules. Reload this page.'); return r.text(); }));
     const digest = [...new Uint8Array(await crypto.subtle.digest('SHA-256', new TextEncoder().encode(sourceTexts.join('\n'))))].map(x => x.toString(16).padStart(2, '0')).join('');
     function manifest() {
@@ -116,12 +115,12 @@
     function groupsForFeed() {
       const latest = state.latest && state.latest.cohortId === currentManifest.id ? state.latest : null;
       if (!latest) return [];
-      if (feed === 'qualified') return latest.ideas.filter(i => { const r = recordFor(i.decisionId); return !r || !(r.ev && r.ev.done); });
+      if (feed === 'qualified') return latest.ideas.filter(i => { const r = recordFor(i.decisionId); return !r || !(r.ev && r.ev.done); }).sort((a, b) => (b.confluence && b.confluence.meanR || 0) - (a.confluence && a.confluence.meanR || 0));
       if (feed === 'research') {
-        const decisions = latest.decisions.filter(d => isEvaluable(d) && d.reasonCodes.includes('not_shortlisted')).map(d => ({ ...clone(d), accepted: true }));
+        const decisions = latest.decisions.filter(d => isEvaluable(d) && d.reasonCodes.includes('no_positive_confluence')).map(d => ({ ...clone(d), accepted: true }));
         return C.deduplicate(decisions).ideas;
       }
-      return latest.decisions.filter(d => !d.accepted && !d.duplicateOf && !(isEvaluable(d) && d.reasonCodes.includes('not_shortlisted'))).map(d => ({ ...d, decisionId: d.id, support: [], rejected: true }));
+      return latest.decisions.filter(d => !d.accepted && !d.duplicateOf && !(isEvaluable(d) && d.reasonCodes.includes('no_positive_confluence'))).map(d => ({ ...d, decisionId: d.id, support: [], rejected: true }));
     }
     function getDecision(item) { return state.latest.decisions.find(x => x.id === item.decisionId) || (recordFor(item.decisionId) || {}).decision || item; }
     function showDetail(item) {
@@ -129,10 +128,12 @@
       const d = getDecision(item), p = d.plan, r = recordFor(item.decisionId), ev = r && r.ev;
       const headings = '<header class="detail-header"><h3>' + escape(d.symbol) + ' <span class="' + escape(d.dir) + '">' + escape(d.dir) + '</span></h3><p>' + escape(d.sym) + ' · ' + escape(d.setupId) + ' · ' + escape(d.tf) + ' · observed ' + escape(time(d.t)) + '</p></header>';
       const supports = [...new Set((item.support || []).map(x => x.setupId + ' · ' + x.tf))].join(', ');
-      $('idea-detail').innerHTML = headings + (supports ? '<p>Supporting observations: ' + escape(supports) + '. These are one trade idea.</p>' : '') +
+      const rank = d.confluence;
+      const evidence = rank ? '<div class="detail-section"><h4>Historical rating ' + rank.rating + '/10</h4><p>' + escape(rank.labels.join(' + ')) + '</p><p>Mean ' + signed(rank.meanR) + 'R · ' + rank.closed + ' closed plans · PF ' + fmt(rank.profitFactor, 2) + '</p><p>Relative historical rank, not confidence. Outcomes pool new plans from this combination. Supporting plans may have different entry zones. Evidence frozen 4 Oct 2026; the year-long backfill is incomplete.</p></div>' : '';
+      $('idea-detail').innerHTML = headings + evidence + (supports ? '<p>Supporting observations: ' + escape(supports) + '. These are one trade idea.</p>' : '') +
         '<p>Decision quote ' + price(d.px) + ' · closed-data time ' + escape(time(d.context && d.context.closedAt)) + '</p>' +
         '<p>Native candle history: ' + escape(Object.entries(d.raw.marketData && d.raw.marketData.history || {}).map(([tf, n]) => tf + ' ' + n).join(' · ') || 'counts unavailable') + '. Longer derived indicators may lack warm-up on younger listings.</p>' +
-        (d.reasons.length ? '<div class="detail-section"><h4>Decision reasons</h4><ul>' + d.reasons.map(x => '<li>' + escape(x) + '</li>').join('') + '</ul></div>' : '<p>Passes the provisional shortlist and validity checks. This is a research candidate.</p>') +
+        (d.reasons.length ? '<div class="detail-section"><h4>Decision reasons</h4><ul>' + d.reasons.map(x => '<li>' + escape(x) + '</li>').join('') + '</ul></div>' : '<p>Matches a positive historical confluence and passes validity checks. This is a research candidate.</p>') +
         (p ? '<div class="detail-section"><h4>Complete plan</h4><dl class="plan-grid"><div><dt>Planned stop risk, including modeled costs</dt><dd>$' + fmt(p.riskUsd, 2) + '</dd></div><div><dt>Stop</dt><dd>' + price(p.stop) + '</dd></div><div><dt>Net R if the full target ladder completes</dt><dd>' + signed(p.weightedNetR) + 'R</dd></div><div><dt>Full-fill TP1 then stop estimate</dt><dd>' + signed(p.tp1ThenStopR) + 'R</dd></div></dl><p>Entries: ' + p.bids.map(b => price(b.price) + ' (' + fmt(b.weight * 100, 0) + '%)').join(' · ') + '</p><p>Targets: ' + p.tps.map((tp, i) => 'TP' + (i + 1) + ' ' + price(tp.price) + ' (' + fmt(tp.weight * 100, 1) + '%)').join(' · ') + '</p><p>Quotes and full-fill estimates are planning assumptions. Actual partial fills change target fractions and remaining risk. Gaps may exceed the planned stop risk.</p></div>' : '') +
         '<div class="detail-section"><h4>Observed paper outcome</h4><p>' + (ev ? escape(ev.st) + ' · ' + (ev.st === 'closed' ? signed(ev.R) + 'R' : 'closed outcome not available') + ' · evaluated through ' + escape(time(ev.upd)) : 'No closed outcome yet.') + '</p>' + (r && r.evaluationError ? '<p>' + escape(r.evaluationError) + '</p>' : '') + '<p>Paper orders activate at the next 15-minute opening. Stops precede targets inside an ambiguous candle. Independent paper plans share no capital; their R totals are not account returns. Funding and order-book execution are not modeled.</p></div>';
       clearChart = root.KCChart.mount(d, ev, client);
@@ -145,12 +146,12 @@
       const items = groupsForFeed(); $('idea-list').replaceChildren(); $('idea-empty').hidden = items.length > 0;
       $('idea-empty').querySelector('h3').textContent = !latest ? 'Start with a fresh scan' : 'No ' + (feed === 'qualified' ? 'qualified ideas' : feed === 'research' ? 'research ideas' : 'rejected candidates') + ' in this scan';
       $('idea-empty').querySelector('p').textContent = !latest ? 'Scan now to review current ideas. Every detected signal is retained in the log.' : 'The scanner does not fill this feed with weaker substitutes. Review the other feeds or scan again after fresh candles close.';
-      $('feed-description').textContent = feed === 'qualified' ? 'Grouped shortlist ideas, including currently tracked paper plans. Supporting observations are not separate confirmations.' : feed === 'research' ? 'Valid plans outside the shortlist, grouped for research. No grade or past winning symbol promotes them.' : 'Candidates that fail validity, activity, or repeat checks. Every observation remains in the export.';
+      $('feed-description').textContent = feed === 'qualified' ? 'Positive confluence only, highest historical mean R first. Ratings 10–1 show relative rank. Sampled nonpositive combinations are excluded; original accepted plans stay tracked.' : feed === 'research' ? 'Valid plans with no qualifying positive combination. These are excluded from the rated feed; they have no historical rating.' : 'Nonpositive combinations and candidates that fail validity, activity, or repeat checks. Every observation remains in the export.';
       if (items.length > 120) $('feed-description').textContent += ' Showing the first 120; export contains every observation.';
       items.slice(0, 120).forEach(item => {
         const d = getDecision(item), li = document.createElement('li'), button = document.createElement('button');
         button.className = 'idea-row'; button.type = 'button'; button.setAttribute('aria-pressed', String(selected === item.id)); button.setAttribute('aria-controls', 'idea-detail'); button.dataset.ideaId = item.id;
-        button.innerHTML = '<span class="idea-head"><strong>' + escape(d.symbol) + '</strong><span class="chip ' + escape(d.dir) + '">' + escape(d.dir) + '</span><span>' + escape(d.setupId) + ' · ' + escape(d.tf) + '</span></span><span class="idea-sub">' + escape(time(d.t)) + (item.support && item.support.length > 1 ? ' · ' + [...new Set(item.support.map(s => s.setupId + '|' + s.tf))].length + ' supporting setups' : '') + '</span><span class="idea-meta">' + escape(item.rejected ? d.reasons[0] : feed === 'qualified' ? 'Provisional research candidate' : 'Outside shortlist') + '</span>';
+        button.innerHTML = '<span class="idea-head"><strong>' + escape(d.symbol) + '</strong><span class="chip ' + escape(d.dir) + '">' + escape(d.dir) + '</span><span>' + escape(d.setupId) + ' · ' + escape(d.tf) + '</span></span><span class="idea-sub">' + escape(time(d.t)) + (item.support && item.support.length > 1 ? ' · ' + [...new Set(item.support.map(s => s.setupId + '|' + s.tf))].length + ' supporting setups' : '') + '</span><span class="idea-meta">' + escape(item.rejected ? d.reasons[0] : feed === 'qualified' && d.confluence ? 'Rating ' + d.confluence.rating + '/10 · ' + signed(d.confluence.meanR) + 'R · ' + d.confluence.labels.join(' + ') : 'No qualifying positive confluence') + '</span>';
         button.addEventListener('click', () => { selected = item.id; renderFeed(); const current = [...$('idea-list').querySelectorAll('button')].find(b => b.dataset.ideaId === item.id); if (current) current.focus({ preventScroll: true }); }); li.append(button); $('idea-list').append(li);
       });
       const chosen = items.find(x => x.id === selected); if (chosen) showDetail(chosen); else { clearChart(); selected = null; $('idea-detail').innerHTML = '<p id="detail-empty">Select an idea to inspect its plan, reasons, and evidence.</p>'; }
@@ -207,16 +208,16 @@
       busy = true; $('scan-btn').disabled = true; $('save-settings').disabled = true; error(null);
       try {
         const data = await client.scan(settings, progress);
-        const next = ingest(state, data, currentManifest);
+        // Evaluate previous plans first so closed or missing-data plans cannot supply stale support.
+        const evaluated = await evaluate(clone(state), data.at);
+        const next = ingest(evaluated, data, currentManifest);
         next.records.filter(r => !r.ev).forEach(r => { r.ev = C.simulate(r.decision, { t: [], o: [], h: [], l: [], c: [] }, data.at); });
         state = next;
         try { await save(state); } catch (e) { storageFailed = true; $('auto-scan').checked = false; throw new Error('Could not save the observation log. Export it now before closing this page. ' + e.message); }
         $('scan-status').textContent = 'Scan saved · ' + data.counts.scanned + ' symbols analyzed · ' + data.errors.length + ' data issues';
         if (data.errors.length) error('Some symbols were excluded because their data could not be verified. Details are in the exported scan log.');
         render();
-        state = await evaluate(clone(state), data.at);
-        try { await save(state); } catch (e) { storageFailed = true; $('auto-scan').checked = false; throw new Error('Could not save updated paper outcomes. Export the current log before closing this page. ' + e.message); }
-        render(); $('scan-status').textContent = 'Scan saved · ' + data.counts.scanned + ' symbols analyzed · paper plans evaluated';
+        $('scan-status').textContent = 'Scan saved · ' + data.counts.scanned + ' symbols analyzed · paper plans evaluated';
       } catch (e) { error(e.message); $('scan-status').textContent = storageFailed ? 'Storage failed · export the current log' : 'Scan unavailable · retry when the data source is reachable'; if (storageFailed) render(); }
       finally { busy = false; $('scan-btn').disabled = storageFailed; $('save-settings').disabled = storageFailed; $('scan-progress').hidden = true; }
     }

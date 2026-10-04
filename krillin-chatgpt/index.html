@@ -12,11 +12,12 @@
   <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Archivo:wdth,wght@100..125,500..800&family=JetBrains+Mono:wght@400;500;600&family=Public+Sans:wght@400;500;600;700&display=swap">
   <link rel="stylesheet" href="./styles.css?v=54de0b98">
   <script src="../tools/lib/engine.js" defer></script>
-  <script src="./core.js" defer></script>
+  <script src="./confluence-data.js?v=positive-v2" defer></script>
+  <script src="./core.js?v=positive-v2" defer></script>
   <script src="./market.js" defer></script>
   <script src="./vendor/lightweight-charts-5.0.9.js" defer></script>
   <script src="./chart.js?v=layout-2" defer></script>
-  <script src="./app.js" defer></script>
+  <script src="./app.js?v=positive-v2" defer></script>
 </head>
 <body>
   <a class="skip-link" href="#signals">Skip to signals</a>
@@ -56,7 +57,7 @@
           <button id="feed-research" type="button" data-feed="research" aria-pressed="false" aria-controls="idea-list">Research <span id="count-research" class="count">0</span></button>
           <button id="feed-rejected" type="button" data-feed="rejected" aria-pressed="false" aria-controls="idea-list">Rejected <span id="count-rejected" class="count">0</span></button>
         </nav>
-        <p id="feed-description" class="feed-description">Valid B4, C3, and C6 4h/12h plans enter this provisional shortlist.</p>
+        <p id="feed-description" class="feed-description">Positive historical confluence only, sorted by mean R. Ratings run from 10 to 1; negative combinations are excluded.</p>
         <ol id="idea-list" class="idea-list" aria-label="Trade ideas"></ol>
         <div id="idea-empty" class="empty-state">
           <h3>Start with a fresh scan</h3>
@@ -95,7 +96,7 @@
         <h2 id="evidence-heading">What the evidence says</h2>
         <a href="../#results">Explore original results</a>
       </div>
-      <p class="section-note">Historical results explain the shortlist. Forward observations test these frozen rules. Neither uses signal grades as confidence.</p>
+      <p class="section-note">The confluence filter uses 76 positive combinations with at least 100 closed plans, 10 symbols and 20 signal dates. Evidence is frozen at 4 Oct 2026; the backfill is incomplete. Ratings show historical rank, not confidence. Forward observations remain separate.</p>
       <div class="evidence-grid">
         <section class="evidence-block" aria-labelledby="historical-heading">
           <h3 id="historical-heading">Historical exploration</h3>
