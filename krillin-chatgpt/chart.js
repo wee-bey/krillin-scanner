@@ -42,6 +42,7 @@
     const $ = id => document.getElementById(id), panel = $('idea-chart-panel'), host = $('idea-chart');
     let chart = null, disposed = false, request = 0;
     panel.hidden = false;
+    host.style.minHeight = '440px'; // Keep the chart visible even when an older stylesheet is cached.
     const levels = levelsFor(d, ev), tfSelect = $('idea-chart-tf'), view = $('idea-chart-view');
     const theme = window.matchMedia('(prefers-color-scheme: dark)');
     const color = name => getComputedStyle(panel).getPropertyValue(name).trim();
