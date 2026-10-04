@@ -2025,7 +2025,33 @@ dialog .sub-h { font: 700 11.5px/1 var(--f-body); letter-spacing: .08em; text-tr
 
   // ---------------- Results: how every signal played out (data from the GitHub replay, see tools/replay.js) ----------------
   const RES_BASE = /\.github\.io$/.test(location.hostname) ? 'data/' : 'https://wee-bey.github.io/krillin-scanner/data/';
-  const RES = { index: null, signals: [], loading: false, err: '', f: { period: 'day', day: '', grade: '', setup: '', tf: '', dir: 'all', alerted: false }, shown: 60, openId: null };
+  const RES = { index: null, signals: [], market: {}, full: new Map(), monthsLoading: new Set(), loading: false, err: '', f: { period: 'day', day: '', grade: '', setup: '', tf: '', dir: 'all', alerted: false, cond: 'chg30' }, shown: 60, openId: null };
+  // lite.json (one compact row per signal) keeps a year of results light on a phone; full records load per month when a row is opened
+  function fromLite(L) {
+    const ix = Object.fromEntries(L.cols.map((c, i) => [c, i])); const g = (r, c) => r[ix[c]];
+    return L.rows.map((r) => {
+      const S = g(r, 'S'), setup = g(r, 'setup'), tf = g(r, 'tf'), dir = g(r, 'dir') ? 'long' : 'short', t = g(r, 't'), key = `${S}|${setup}|${tf}|${dir}`; const tp = g(r, 'tp');
+      return { id: `${key}|${t}`, key, t, S, sym: g(r, 'sym') || S + 'USDT', setup, name: L.names[g(r, 'nm')] || setup, tf, dir, grade: g(r, 'grade'), alertedAt: g(r, 'alertedAt') || null,
+        avg: g(r, 'avg'), stop: g(r, 'stop'), tps: g(r, 'tp1') != null ? [[g(r, 'tp1')]] : [], avgTP: g(r, 'avgTP'), beWin: g(r, 'beWin'),
+        ctx: { btc1d: g(r, 'btc1d'), btcAtRes: !!g(r, 'btcAtRes'), btcReg1d: g(r, 'btcReg1d') },
+        ev: { st: g(r, 'st'), R: g(r, 'R'), uR: g(r, 'uR'), fill: g(r, 'fill'), mfe: g(r, 'mfe'), mae: g(r, 'mae'), tFill: g(r, 'tFill') || null, tExit: g(r, 'tExit') || null, upd: g(r, 'upd') || null, tp: [!!(tp & 1), !!(tp & 2), !!(tp & 4)], stopHit: !!g(r, 'stopHit'), dirHit: g(r, 'dirHit'), amb: g(r, 'amb'), reason: g(r, 'last'), done: !!g(r, 'done') }, lite: true };
+    });
+  }
+  const utcDay = (ms) => new Date(ms).toISOString().slice(0, 10);
+  // the market condition of a signal's day: BTC as of the previous daily close (data/market.json, written by the replay)
+  const mktOf = (s) => RES.market[utcDay(s.t - 1)] || null;
+  const COND = {
+    chg30: { label: 'BTC 30-day move', of: (s) => { const m = mktOf(s); return m && isNum(m.chg30) ? (m.chg30 >= 10 ? 'BTC up 10%+' : m.chg30 <= -10 ? 'BTC down 10%+' : 'BTC within ±10%') : null; }, order: ['BTC up 10%+', 'BTC within ±10%', 'BTC down 10%+'] },
+    reg1d: { label: 'BTC daily regime', of: (s) => (s.ctx && s.ctx.btcReg1d) || (mktOf(s) || {}).reg1d || null, order: ['trend_up', 'range', 'chop', 'trend_down', 'post_blowoff'] },
+    vol20: { label: 'BTC daily volatility (20 days)', of: (s) => { const m = mktOf(s); return m && isNum(m.vol20) ? (m.vol20 < 2 ? 'calm (<2%/day)' : m.vol20 < 3.5 ? 'normal (2-3.5%)' : 'wild (3.5%+)') : null; }, order: ['calm (<2%/day)', 'normal (2-3.5%)', 'wild (3.5%+)'] },
+    bias1w: { label: 'BTC weekly bias', of: (s) => (mktOf(s) || {}).bias1w || null, order: ['bullish', 'neutral', 'range', 'bearish'] },
+  };
+  async function resFull(s) { // swap a lite row for its full record (the month file is fetched once)
+    const m = utcDay(s.t).slice(0, 7); if (RES.full.has(s.id)) return; if (RES.monthsLoading.has(m)) return; RES.monthsLoading.add(m);
+    try { const r = await fetch(RES_BASE + `signals-${m}.json`, { cache: 'no-cache', credentials: 'omit', referrerPolicy: 'no-referrer' }); if (!r.ok) throw new Error('HTTP ' + r.status); const txt = await r.text(); bytes += txt.length; for (const x of JSON.parse(txt).signals || []) RES.full.set(x.id, x); }
+    catch (e) { toast('Could not load the details: ' + (e.message || e)); }
+    finally { RES.monthsLoading.delete(m); updateUsage(); renderResults(); }
+  }
   const pad2 = (n) => String(n).padStart(2, '0');
   const localDay = (ms) => { const d = new Date(ms); return `${d.getFullYear()}-${pad2(d.getMonth() + 1)}-${pad2(d.getDate())}`; };
   const dayShift = (day, k) => { const d = new Date(day + 'T12:00:00'); d.setDate(d.getDate() + k); return localDay(d.getTime()); };
@@ -2039,9 +2065,11 @@ dialog .sub-h { font: 700 11.5px/1 var(--f-body); letter-spacing: .08em; text-tr
     const q = force ? '?t=' + Date.now() : '';
     try {
       const get = async (f) => { const r = await fetch(RES_BASE + f + q, { cache: 'no-cache', credentials: 'omit', referrerPolicy: 'no-referrer' }); if (!r.ok) throw new Error('HTTP ' + r.status); const txt = await r.text(); bytes += txt.length; return JSON.parse(txt); };
-      const idx = await get('index.json'); const all = [];
-      for (const m of idx.months || []) { const d = await get(`signals-${m}.json`); all.push(...(d.signals || [])); }
-      RES.index = idx; RES.signals = all.sort((a, b) => a.t - b.t);
+      const idx = await get('index.json'); let all = [];
+      let lite = null; try { lite = await get('lite.json'); } catch (e) { lite = null; } // older replays: no lite.json yet
+      if (lite && lite.rows) all = fromLite(lite); else for (const m of idx.months || []) { const d = await get(`signals-${m}.json`); all.push(...(d.signals || [])); }
+      try { RES.market = (await get('market.json')).days || {}; } catch (e) { RES.market = {}; }
+      RES.full.clear(); RES.index = idx; RES.signals = all.sort((a, b) => a.t - b.t);
       if (!RES.f.day && all.length) RES.f.day = localDay(all[all.length - 1].t);
       if (!$('resultsView').hidden) setResHash();
     } catch (e) { RES.err = `No results to show yet (${e.message || e}). The replay runs on GitHub four times a day; its first run backfills the last 30 days.`; }
@@ -2050,7 +2078,7 @@ dialog .sub-h { font: 700 11.5px/1 var(--f-body); letter-spacing: .08em; text-tr
   function resFiltered() {
     const f = RES.f, all = RES.signals; if (!all.length) return [];
     const cov = RES.index && RES.index.coverage && RES.index.coverage.last; const endT = cov ? Date.parse(cov + 'T00:00:00Z') + 864e5 : all[all.length - 1].t;
-    const inPeriod = (s) => f.period === 'day' ? localDay(s.t) === f.day : f.period === 'all' ? true : s.t > endT - (f.period === '7d' ? 7 : 30) * 864e5;
+    const inPeriod = (s) => f.period === 'day' ? localDay(s.t) === f.day : f.period === 'all' ? true : s.t > endT - ({ '7d': 7, '30d': 30, '90d': 90 }[f.period] || 30) * 864e5;
     return all.filter((s) => inPeriod(s) && (!f.grade || s.grade === f.grade) && (!f.setup || s.setup === f.setup) && (!f.tf || s.tf === f.tf) && (f.dir === 'all' || s.dir === f.dir) && (!f.alerted || s.alertedAt));
   }
   function resStats(list) {
@@ -2089,6 +2117,16 @@ dialog .sub-h { font: 700 11.5px/1 var(--f-body); letter-spacing: .08em; text-tr
     const rows = keys.map((k) => { const st = resStats(m.get(k)); return `<tr><td>${esc(k)}</td><td class="n">${st.n}</td><td class="n">${fmtP0(st.n ? st.filled / st.n : NaN)}</td><td class="n">${st.closed}</td><td class="n">${fmtP0(st.winRate)}</td><td class="n">${fmtR(st.avgR)}</td><td class="n">${st.closed ? fmtR(st.totR, 1) : '–'}</td><td class="n">${fmtPF(st.pf)}</td><td class="n">${fmtP0(st.dirRate)}</td></tr>`; }).join('');
     return `<div class="rbox"><h3 class="panel-title">${esc(title)}</h3><table class="rtable"><thead><tr><th></th><th class="n">Signals</th><th class="n">Filled</th><th class="n">Closed</th><th class="n">Win</th><th class="n">Avg R</th><th class="n">Total</th><th class="n">PF</th><th class="n" title="TP1 reached before the stop, from the signal time">TP1 first</th></tr></thead><tbody>${rows}</tbody></table></div>`;
   }
+  function resMatrix(list) { // each setup's closed-trade results split by the chosen market condition (HANDOFF §5b step 2)
+    const C = COND[RES.f.cond] || COND.chg30; const cols = C.order.filter((k) => list.some((s) => C.of(s) === k)); if (!cols.length) return '';
+    const bySetup = new Map(); for (const s of list) { if (!bySetup.has(s.setup)) bySetup.set(s.setup, []); bySetup.get(s.setup).push(s); }
+    const setups = [...bySetup.keys()].sort();
+    const cell = (arr) => { const st = resStats(arr); if (!st.closed) return '<td class="n muted">–</td>'; const cls = st.closed >= 30 ? (st.avgR > 0.05 ? 'win' : st.avgR < -0.05 ? 'loss' : '') : 'muted'; return `<td class="n"><span class="oc ${cls}" title="${st.closed} closed · win ${fmtP0(st.winRate)} · PF ${fmtPF(st.pf)}">${fmtR(st.avgR)}</span> <span class="muted">${st.closed}</span></td>`; };
+    const rows = setups.map((k) => { const arr = bySetup.get(k); return `<tr><td>${esc(k)}</td>${cols.map((c) => cell(arr.filter((s) => C.of(s) === c))).join('')}${cell(arr)}</tr>`; }).join('');
+    const total = `<tr><td><b>All</b></td>${cols.map((c) => cell(list.filter((s) => C.of(s) === c))).join('')}${cell(list)}</tr>`;
+    const pick = `<select id="rCond" aria-label="Market condition">${Object.entries(COND).map(([v, x]) => `<option value="${v}"${v === RES.f.cond ? ' selected' : ''}>${esc(x.label)}</option>`).join('')}</select>`;
+    return `<div class="rbox"><h3 class="panel-title">Setups by market condition · ${pick}</h3><p class="muted" style="margin:0 0 6px">Average R per closed trade, then the number of closed trades. Coloured only from 30 trades; fewer is noise. Condition = BTC at the previous daily close.</p><table class="rtable"><thead><tr><th>Setup</th>${cols.map((c) => `<th class="n">${esc(c)}</th>`).join('')}<th class="n">All</th></tr></thead><tbody>${rows}${total}</tbody></table></div>`;
+  }
   function renderResults() {
     const el = $('resultsView'); if (!el || el.hidden) return;
     const idx = RES.index, f = RES.f; const all = RES.signals; const list = resFiltered(); const st = resStats(list);
@@ -2096,7 +2134,7 @@ dialog .sub-h { font: 700 11.5px/1 var(--f-body); letter-spacing: .08em; text-tr
     const meta = RES.loading ? 'Loading…' : idx ? `Replay through ${esc(cov.last || '–')} (UTC days) · ${idx.counts.signals.toLocaleString()} signals since ${esc(cov.first || '–')} · updated ${esc(fmtWhen(Date.parse(idx.updated)))}` : '';
     const setups = [...new Set(all.map((s) => s.setup))].sort();
     const sel = (id, cur, opts) => `<select id="${id}">${opts.map(([v, t]) => `<option value="${esc(v)}"${v === cur ? ' selected' : ''}>${esc(t)}</option>`).join('')}</select>`;
-    const periodSeg = `<div class="seg" id="rPeriod" role="group" aria-label="Period">${[['day', 'Day'], ['7d', '7 days'], ['30d', '30 days'], ['all', 'All']].map(([v, t]) => `<button type="button" data-p="${v}" aria-pressed="${f.period === v}">${t}</button>`).join('')}</div>`;
+    const periodSeg = `<div class="seg" id="rPeriod" role="group" aria-label="Period">${[['day', 'Day'], ['7d', '7 days'], ['30d', '30 days'], ['90d', '90 days'], ['all', 'All']].map(([v, t]) => `<button type="button" data-p="${v}" aria-pressed="${f.period === v}">${t}</button>`).join('')}</div>`;
     const dayNav = f.period === 'day' ? `<span class="daynav"><button class="btn" type="button" id="rPrev" aria-label="Previous day">‹</button><input type="date" id="rDay" value="${esc(f.day)}" min="${esc(days[0] || '')}" max="${esc(days[days.length - 1] || '')}" aria-label="Day"><button class="btn" type="button" id="rNext" aria-label="Next day">›</button></span>` : '';
     const filters = `<div class="rfilters">${periodSeg}${dayNav}
       ${sel('rGrade', f.grade, [['', 'All grades'], ['A+', 'A+'], ['A', 'A'], ['B', 'B'], ['C', 'C']])}
@@ -2130,16 +2168,21 @@ dialog .sub-h { font: 700 11.5px/1 var(--f-body); letter-spacing: .08em; text-tr
       ${resGroup('By direction', list, (s) => s.dir, ['long', 'short'])}
       ${resGroup('By BTC daily bias', list, (s) => s.ctx && s.ctx.btc1d, ['bullish', 'neutral', 'range', 'bearish'])}
       ${resGroup('By BTC at HTF resistance', list, (s) => s.ctx ? (s.ctx.btcAtRes ? 'yes' : 'no') : null, ['no', 'yes'])}
+      ${resGroup('By BTC daily regime', list, COND.reg1d.of, COND.reg1d.order)}
+      ${resGroup('By BTC 30-day move', list, COND.chg30.of, COND.chg30.order)}
+      ${resGroup('By BTC daily volatility (20 days)', list, COND.vol20.of, COND.vol20.order)}
       ${resGroup('By weekday (your time)', list, (s) => wd[new Date(s.t).getDay()], ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'])}
       ${resGroup('By time of day (your time)', list, (s) => { const h = new Date(s.t).getHours(); const b = Math.floor(h / 4) * 4; return `${pad2(b)}:00-${pad2(b + 4)}:00`; }, ['00:00-04:00', '04:00-08:00', '08:00-12:00', '12:00-16:00', '16:00-20:00', '20:00-24:00'])}
       ${resGroup('By coin', list, (s) => s.S)}
     </div>`;
+    const matrix = resMatrix(list);
     const rowsList = list.slice().reverse(); const shown = rowsList.slice(0, RES.shown);
     const sigRows = shown.map((s) => {
       const e = s.ev || {}; const oc = outcomeOf(s); const tv = `https://www.tradingview.com/chart/?symbol=${encodeURIComponent('BINANCE:' + s.sym + '.P')}`;
       const rCell = e.st === 'closed' ? fmtR(e.R) : e.st === 'open' ? `${fmtR(e.uR)} <span class="muted">open</span>` : '–';
       const head = `<tr class="sigrow" data-id="${esc(s.id)}"><td>${esc(fmtWhen(s.t))}</td><td><b>${esc(s.S)}</b> <a href="${tv}" target="_blank" rel="noopener noreferrer" title="Open on TradingView" onclick="event.stopPropagation()">↗</a></td><td title="${esc(s.name)}">${esc(s.setup)}</td><td>${esc(K.TF_LABEL[s.tf] || s.tf)}</td><td>${esc(s.dir)}</td><td><span class="tier ${gradeCls(s.grade)}">${esc(s.grade)}</span></td><td class="n">${fmtP(s.avg)}</td><td class="n">${fmtP(s.stop)}</td><td class="n">${s.tps && s.tps[0] ? fmtP(s.tps[0][0]) : '–'}</td><td class="n">${isNum(e.fill) ? Math.round(e.fill * 100) + '%' : '–'}</td><td><span class="oc ${oc.cls}">${esc(oc.txt)}</span></td><td class="n">${rCell}</td><td class="n">${isNum(e.mfe) && e.fill > 0 ? e.mfe.toFixed(1) + ' / ' + e.mae.toFixed(1) : '–'}</td><td class="n">${e.tFill && e.tExit ? fmtDur(e.tExit - e.tFill) : e.tFill ? fmtDur((e.upd || s.t) - e.tFill) : '–'}</td></tr>`;
       if (RES.openId !== s.id) return head;
+      if (s.lite) { const full = RES.full.get(s.id); if (!full) { resFull(s); return head + '<tr class="detail"><td colspan="14" class="muted">Loading the plan and fills…</td></tr>'; } s = full; }
       const tps = (s.tps || []).map((t, k) => `TP${k + 1} ${fmtP(t[0])} (${(+t[1]).toFixed(1)}R, ${esc(t[2])})`).join(' · ');
       const fills = (e.fills || []).map((x) => `${fmtWhen(x[0])} @ ${fmtP(x[1])}`).join(' · ') || 'none';
       const exits = (e.exits || []).map((x) => `${fmtWhen(x[0])} ${esc(x[3])} @ ${fmtP(x[1])} (${Math.round(x[2] * 100)}%)`).join(' · ') || 'none';
@@ -2147,7 +2190,7 @@ dialog .sub-h { font: 700 11.5px/1 var(--f-body); letter-spacing: .08em; text-tr
     }).join('');
     const table = `<div class="rbox"><h3 class="panel-title">Signals (${list.length}, newest first · tap a row for the plan and fills)</h3><table class="rtable"><thead><tr><th>Sent</th><th>Coin</th><th>Setup</th><th>TF</th><th>Dir</th><th>Grade</th><th class="n">Plan avg</th><th class="n">Stop</th><th class="n">TP1</th><th class="n">Filled</th><th>Outcome</th><th class="n">R</th><th class="n" title="Best / worst move while in the trade, in R">MFE / MAE</th><th class="n">Held</th></tr></thead><tbody>${sigRows || '<tr><td colspan="14" class="muted">No signals match these filters.</td></tr>'}</tbody></table>${rowsList.length > shown.length ? `<div style="margin-top:8px"><button class="btn" type="button" id="rMore">Show ${Math.min(60, rowsList.length - shown.length)} more</button></div>` : ''}</div>`;
     const how = idx && idx.rules ? `<details class="rnote"><summary>How the signals are tested</summary><p>Universe: ${esc(idx.rules.universe)}. Scans: ${esc(idx.rules.scans)}. Every setup that turns active with no blocks and a valid plan counts as a signal, at every grade; "alerted" marks the A and A+ ones your alerts would send. Re-sends: ${esc(idx.rules.resend)}. Each signal is paper-traded on 15m candles with its own plan: the 4 bids fill as price trades through them (bids at or through the market fill at once), unfilled bids are cancelled at TP1, at the stop or after ${idx.rules.entryWindowCandles} candles of the setup's timeframe; management: ${esc(idx.rules.management)}; open trades exit at market after ${idx.rules.timeStopCandles} candles. Same candle: ${esc(idx.rules.sameCandle)}. Fees ${idx.rules.settings.feePct}% per side plus ${idx.rules.settings.slipPct}% slippage. R is measured on the plan's risk ($${Math.round(idx.rules.settings.account * idx.rules.settings.riskPct / 100)} on a $${idx.rules.settings.account.toLocaleString()} account). Signals from recent days keep updating until their trades close. Data: Binance's public futures archive, published a few hours after each UTC day ends, so the latest day is usually yesterday.</p></details>` : '';
-    const body = RES.err ? `<div class="rbox"><p class="muted" style="margin:0">${esc(RES.err)}</p></div>` : !all.length && !RES.loading ? '<div class="rbox"><p class="muted" style="margin:0">No signals yet.</p></div>' : `${kpis}${charts}${groups}${table}`;
+    const body = RES.err ? `<div class="rbox"><p class="muted" style="margin:0">${esc(RES.err)}</p></div>` : !all.length && !RES.loading ? '<div class="rbox"><p class="muted" style="margin:0">No signals yet.</p></div>' : `${kpis}${charts}${matrix}${groups}${table}`;
     el.innerHTML = `<div class="rhead"><div><h2>Signal results</h2><div class="rmeta">${meta}</div></div><div style="display:flex;gap:8px"><button class="btn" type="button" id="rLink" title="Copy a link that opens this view (the day is part of the link)">Copy link</button><button class="btn" type="button" id="rRefresh"${RES.loading ? ' disabled' : ''}>Refresh</button><button class="btn" type="button" id="rBack">Back to scanner</button></div></div>${how}${all.length ? filters : ''}${body}`;
     bindResults();
     if (all.length && !RES.err) { drawEquity(st.curve, list.length ? list[0].t : NaN); drawDaily(list); }
@@ -2159,7 +2202,7 @@ dialog .sub-h { font: 700 11.5px/1 var(--f-body); letter-spacing: .08em; text-tr
     const seg = $('rPeriod'); if (seg) seg.onclick = (e) => { const b = e.target.closest('button'); if (b) set('period', b.dataset.p); };
     on('rDay', 'onchange', (e) => set('day', e.target.value)); on('rPrev', 'onclick', () => set('day', dayShift(RES.f.day, -1))); on('rNext', 'onclick', () => set('day', dayShift(RES.f.day, 1)));
     on('rGrade', 'onchange', (e) => set('grade', e.target.value)); on('rSetup', 'onchange', (e) => set('setup', e.target.value)); on('rTf', 'onchange', (e) => set('tf', e.target.value)); on('rDir', 'onchange', (e) => set('dir', e.target.value));
-    on('rAlerted', 'onchange', (e) => set('alerted', e.target.checked)); on('rMore', 'onclick', () => { RES.shown += 60; renderResults(); });
+    on('rAlerted', 'onchange', (e) => set('alerted', e.target.checked)); on('rCond', 'onchange', (e) => { RES.f.cond = e.target.value; renderResults(); }); on('rMore', 'onclick', () => { RES.shown += 60; renderResults(); });
     const tb = document.querySelector('#resultsView .rtable tbody'); document.querySelectorAll('#resultsView tr.sigrow').forEach((tr) => tr.onclick = () => { RES.openId = RES.openId === tr.dataset.id ? null : tr.dataset.id; renderResults(); const again = document.querySelector(`#resultsView tr.sigrow[data-id="${CSS.escape(tr.dataset.id)}"]`); if (again) again.scrollIntoView({ block: 'nearest' }); });
     void tb;
   }
@@ -2207,7 +2250,7 @@ dialog .sub-h { font: 700 11.5px/1 var(--f-body); letter-spacing: .08em; text-tr
   function drawDaily(list) {
     const c = chartCtx('rDaily'); if (!c) return; const { cv, g, W, H, col, padL, padR, padB } = c; const tip = $('rDailyTip');
     const m = new Map(); for (const s of list) { const e = s.ev || {}; if (e.st !== 'closed' || !isNum(e.R)) continue; const d = localDay(e.tExit); const o = m.get(d) || { d, r: 0, n: 0 }; o.r += e.R; o.n++; m.set(d, o); }
-    const got = [...m.values()].sort((a, b) => a.d < b.d ? -1 : 1); const bars = []; if (got.length) { for (let d = got[0].d, k = 0; d <= got[got.length - 1].d && k < 400; d = dayShift(d, 1), k++) bars.push(m.get(d) || { d, r: 0, n: 0 }); }
+    const got = [...m.values()].sort((a, b) => a.d < b.d ? -1 : 1); const bars = []; if (got.length) { for (let d = got[0].d, k = 0; d <= got[got.length - 1].d && k < 1500; d = dayShift(d, 1), k++) bars.push(m.get(d) || { d, r: 0, n: 0 }); }
     if (!bars.length) { g.fillStyle = col('--muted'); g.font = '13px ' + col('--f-body'); g.fillText('No closed trades in this period yet.', padL, H / 2); cv.onpointermove = null; return; }
     let lo = Math.min(0, ...bars.map((b) => b.r)), hi = Math.max(0, ...bars.map((b) => b.r)); const pad = Math.max(0.5, (hi - lo) * 0.08); lo -= pad; hi += pad;
     const y = yAxis(c, lo, hi); const slot = (W - padL - padR) / bars.length; const bw = Math.max(2, Math.min(28, slot - 2));

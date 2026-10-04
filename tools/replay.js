@@ -282,6 +282,21 @@ function marketOf(s, btc, ctx, d0) {
   return { px: round(c[i]), chg7: chg(7), chg30: chg(30), chg90: chg(90), vol20: round(vol20, 4), reg1d: reg('1d'), reg4h: reg('4h'), bias1d: ctx ? ctx.bias['1d'].label : null, bias4h: ctx ? ctx.bias['4h'].label : null, bias1w: ctx && ctx.bias['1w'] ? ctx.bias['1w'].label : null };
 }
 
+// ───────────────────────── lite.json: every signal with only what the Results tab's stats and table need ─────────────────────────
+// (a year of full records is ~100 MB; the full records stay in signals-YYYY-MM.json and load only when a row is opened)
+const LITE_COLS = ['t', 'S', 'sym', 'setup', 'nm', 'tf', 'dir', 'grade', 'alertedAt', 'avg', 'stop', 'tp1', 'avgTP', 'beWin', 'btc1d', 'btcAtRes', 'btcReg1d', 'st', 'R', 'uR', 'fill', 'mfe', 'mae', 'tFill', 'tExit', 'upd', 'tp', 'stopHit', 'dirHit', 'amb', 'last', 'done'];
+function liteOf(all) {
+  const names = [], nameIx = new Map(); const nm = (x) => { if (!nameIx.has(x)) { nameIx.set(x, names.length); names.push(x); } return nameIx.get(x); };
+  const r3 = (x) => Number.isFinite(x) ? Math.round(x * 1000) / 1000 : null;
+  const rows = all.map((s) => {
+    const e = s.ev || {}; const c = s.ctx || {};
+    return [s.t, s.S, s.sym === s.S + 'USDT' ? 0 : s.sym, s.setup, nm(s.name || ''), s.tf, s.dir === 'long' ? 1 : 0, s.grade, s.alertedAt || 0, s.avg, s.stop, s.tps && s.tps[0] ? s.tps[0][0] : null, s.avgTP, s.beWin,
+      c.btc1d || null, c.btcAtRes ? 1 : 0, c.btcReg1d || null, e.st || null, r3(e.R), r3(e.uR), r3(e.fill), r3(e.mfe), r3(e.mae), e.tFill || 0, e.tExit || 0, e.upd || 0,
+      (e.tp || []).reduce((a, h, k) => a | (h ? 1 << k : 0), 0), e.stopHit ? 1 : 0, e.dirHit || null, e.amb || 0, e.exits && e.exits.length ? e.exits[e.exits.length - 1][3] : (e.reason || null), e.done ? 1 : 0];
+  });
+  return { version: 1, cols: LITE_COLS, names, rows };
+}
+
 // ───────────────────────── main ─────────────────────────
 async function main() {
   const t0 = Date.now();
@@ -371,6 +386,7 @@ async function main() {
     months: [...months.keys()].sort(), counts: { signals: all.length, resolved: all.filter((s) => s.ev && s.ev.done).length },
     rules: { universe: `top ${UNIVERSE_N} Binance USDT-M perpetuals by the previous day's quote volume (stablecoins, wrapped tokens, index and metal contracts excluded)`, scans: 'every 15 minutes on closed candles, like the dashboard', settings: SETTINGS, entryWindowCandles: ENTRY_WINDOW, timeStopCandles: TIME_STOP, management: 'sell 1/(k+1) at TP1 (k = TP1 in R), then 4/7 of the rest at TP2 and the rest at TP3; the stop never moves', sameCandle: 'stop assumed first; a fill and a target in the same candle takes no profit that candle', resend: '12 h, and never while an earlier paper trade on the same setup is unresolved' },
   };
+  writeJSON(path.join(OUT, 'lite.json'), liteOf(all.slice().sort((a, b) => a.t - b.t)));
   writeJSON(path.join(OUT, 'index.json'), index);
   writeJSON(path.join(OUT, 'state.json'), state);
   writeJSON(path.join(OUT, 'market.json'), market);
