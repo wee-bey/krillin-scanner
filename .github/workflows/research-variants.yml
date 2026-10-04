@@ -1,0 +1,47 @@
+name: Research - entry, stop and target variants
+
+# Research only. Runs on the research branch, never on main: re-simulates every logged signal under
+# other entry, stop and target rules (research/variants.js) and commits research/out/ to that branch.
+on:
+  push:
+    branches: ['research/**']
+    paths:
+      - 'research/**'
+      - '.github/workflows/research-variants.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+concurrency:
+  group: research-variants
+  cancel-in-progress: true
+
+jobs:
+  variants:
+    runs-on: ubuntu-latest
+    timeout-minutes: 300
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Restore the candle cache (the backfill's, which holds the full year)
+        uses: actions/cache/restore@v4
+        with:
+          path: .cache
+          key: bf-candles-none
+          restore-keys: |
+            bf-candles-
+            candles-
+      - name: Check the simulator against tools/replay.js
+        run: node research/test-variants.js
+      - name: Re-simulate every signal under each variant
+        run: node --max-old-space-size=6000 research/variants.js
+      - name: Commit the results to this branch
+        run: |
+          git config user.name "krillin-research"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add -f research/out
+          git commit -m "Research: variant results $(date -u '+%Y-%m-%d %H:%M') UTC" || exit 0
+          git push
