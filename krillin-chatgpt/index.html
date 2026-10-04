@@ -14,6 +14,8 @@
   <script src="../tools/lib/engine.js" defer></script>
   <script src="./core.js" defer></script>
   <script src="./market.js" defer></script>
+  <script src="./vendor/lightweight-charts-5.0.9.js" defer></script>
+  <script src="./chart.js" defer></script>
   <script src="./app.js" defer></script>
 </head>
 <body>
@@ -70,6 +72,21 @@
             <p>Review its original observation, supporting setups, entry plan, cost-adjusted targets, and qualification reasons.</p>
           </div>
         </div>
+        <section id="idea-chart-panel" class="detail-section" aria-labelledby="idea-chart-heading" hidden>
+          <div class="section-heading"><h3 id="idea-chart-heading">Trade setup chart</h3><a id="idea-tv-link" target="_blank" rel="noopener noreferrer">Open TradingView</a></div>
+          <div class="chart-controls">
+            <label for="idea-chart-tf">Timeframe <select id="idea-chart-tf"></select></label>
+            <label for="idea-chart-view">Candles <select id="idea-chart-view"><option value="setup">At observation</option><option value="latest">Latest closed</option></select></label>
+            <button id="idea-chart-fit" class="btn" type="button">Reset view</button>
+          </div>
+          <p id="idea-chart-status" class="section-note" role="status" aria-live="polite"></p>
+          <div id="idea-chart" class="trade-chart" tabindex="0" role="img" aria-label="Trade setup candlestick chart; exact levels are listed below"></div>
+          <p id="idea-chart-ohlc" class="chart-ohlc num" aria-live="off">Move the crosshair to inspect a candle.</p>
+          <p class="section-note">Dotted: entry zone and setup reference levels. Dashed: entries, average, SL and TPs. Curves: EMA13/21, MA100, EMA200 (SMMA99), MA300 on native timeframes; EMA200 on derived timeframes when enough history exists.</p>
+          <details class="chart-levels" open><summary>Planned levels and allocations</summary><dl id="idea-chart-levels"></dl></details>
+          <p class="section-note">Lines show the original plan, not executed orders. Entry zone, SL and TP stay fixed when switching candles. Drag to pan; scroll or pinch to zoom. Reset view fits the plan. Times are UTC.</p>
+          <p class="chart-credit"><a href="https://www.tradingview.com/" target="_blank" rel="noopener noreferrer">TradingView Lightweight Charts™</a></p>
+        </section>
       </aside>
     </section>
 

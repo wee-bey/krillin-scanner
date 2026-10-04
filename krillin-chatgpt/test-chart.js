@@ -1,0 +1,33 @@
+'use strict';
+const assert = require('node:assert/strict');
+const Chart = require('./chart.js');
+const C = require('./core.js');
+const K = require('../tools/lib/engine.js');
+const AT = Date.UTC(2026, 9, 1);
+for (const dir of ['long', 'short']) {
+  const long = dir === 'long', raw = { sym: 'TESTUSDT', symbol: 'TEST', tf: '4h', id: 'B4', dir, status: 'active', gates: [], entry: long ? [97, 100] : [100, 103], stopText: 'Beyond setup', chartLevels: [{ name: '4h support', lo: 98, hi: 99 }], plan: { bids: (long ? [100, 99, 98, 97] : [100, 101, 102, 103]).map((price, i) => ({ price, weight: C.POLICY.entryWeights[i] })), stop: long ? 95 : 105, tps: (long ? [110, 115, 120] : [90, 85, 80]).map(price => ({ price, label: 'Mapped target' })) } };
+  const d = C.qualify(raw, { at: AT, price: 100, valid: true, source: 'binance-usdm', closedAt: AT }), before = JSON.stringify(d);
+  const levels = Chart.levelsFor(d, { fill: 0.5, avgFill: 100.1 });
+  assert.deepEqual(levels.filter(l => l.kind === 'entry').map(l => l.price), raw.plan.bids.map(b => b.price));
+  assert.equal(levels.find(l => l.kind === 'stop').price, raw.plan.stop);
+  assert.deepEqual(levels.filter(l => l.kind === 'target').map(l => l.price), raw.plan.tps.map(tp => tp.price));
+  assert(levels.find(l => l.title === 'Entry 4').note.includes('40%'));
+  assert.equal(levels.find(l => l.title === 'Paper avg fill').price, 100.1);
+  assert.equal(levels.filter(l => l.kind === 'zone').length, 2);
+  assert.equal(levels.filter(l => l.kind === 'context').length, 2);
+  assert.equal(JSON.stringify(d), before, 'Rendering must not mutate frozen decisions');
+}
+const invalid = Chart.levelsFor({ plan: null, px: null, raw: { entry: [NaN, 2], stop: 1 } });
+assert.deepEqual(invalid, [], 'Rejected plans must not become executable chart levels');
+assert.equal(Chart.levelsFor({ plan: null, raw: { watchZone: [3, 4] } }).length, 2);
+const step = K.TF_MS['4h'];
+const series = K.fromRows(Array.from({ length: 8 }, (_, i) => [AT + (i + 1) * step, 10 + i, 12 + i, 9 + i, 11 + i, 1]));
+const bars = Chart.chartBars(series, '12h', AT + 9 * step);
+assert.equal(bars.length, 2, 'Skip the incomplete leading 12h bucket');
+assert.deepEqual(bars[0], { time: (AT + 3 * step) / 1000, open: 12, high: 16, low: 11, close: 15 });
+assert.equal(Chart.chartBars(series, '12h', AT + 8 * step).length, 1, 'Skip the incomplete last 12h bucket');
+assert.equal(Chart.chartBars(series, '4h', AT + 8 * step).length, 7);
+assert.equal(Chart.nativeTF('12h'), '4h');
+assert.equal(Chart.nativeTF('1w'), '1d');
+assert.throws(() => Chart.chartBars(series, 'invalid', AT));
+console.log('Krillin Chatgpt chart: long/short levels, immutable plans, invalid/watch setups and UTC aggregation passed');

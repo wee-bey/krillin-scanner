@@ -257,7 +257,11 @@
         if (!valid) { summary.error = 'Missing, invalid, or stale executable quote'; errors.push({ symbol: c.sym, stage: 'quote', message: summary.error }); }
         coinData.push(summary);
         // Preserve raw detections when execution quotes fail; the decision layer must reject valid=false.
-        for (const s of a.setups) rawSignals.push(Object.assign({}, s, { symbol: c.base, sym: c.sym, base: c.base, t: observedAt, px: valid ? (s.dir === 'short' ? bid : ask) : null, scanPrice: a.scanPrice, marketData: { valid: !!valid, source: 'binance-usdm', closedAt: featureAt, observedAt, quoteAt, bid, ask, btcContext, history: summary.history, error: valid ? null : summary.error }, btc1d: btcContext.bias['1d'].label, btcAtRes: btcContext.atResistance, rsPct: c.rsPct, volRank: c.rank }));
+        for (const s of a.setups) {
+          const bounds = [...(s.entry || s.watchZone || []), s.stop, ...(s.plan && s.plan.tps || []).map(tp => tp.price)].filter(x => finite(x) && x > 0);
+          const chartLevels = bounds.length ? a.levels.levels.filter(lv => lv.hi >= Math.min(...bounds) && lv.lo <= Math.max(...bounds)).map(lv => ({ name: lv.name, lo: lv.lo, hi: lv.hi, moving: !!lv.moving })) : [];
+          rawSignals.push(Object.assign({}, s, { chartLevels, symbol: c.base, sym: c.sym, base: c.base, t: observedAt, px: valid ? (s.dir === 'short' ? bid : ask) : null, scanPrice: a.scanPrice, marketData: { valid: !!valid, source: 'binance-usdm', closedAt: featureAt, observedAt, quoteAt, bid, ask, btcContext, history: summary.history, error: valid ? null : summary.error }, btc1d: btcContext.bias['1d'].label, btcAtRes: btcContext.atResistance, rsPct: c.rsPct, volRank: c.rank }));
+        }
       }
       for (const e of errors) if (!coinData.some(c => c.sym === e.symbol)) coinData.push({ sym: e.symbol, symbol: baseOf(e.symbol), error: e.message });
       return { at: observedAt, featureAt, serverTime: observedAt, initialServerTime, source: 'binance-usdm', universe: U, rawSignals, coinData, errors, btcContext, counts: { requested: U.length, analyzed: analyses.length, scanned: analyses.length, quoted: coinData.filter(c => !c.error).length, signals: rawSignals.length, errors: errors.length } };

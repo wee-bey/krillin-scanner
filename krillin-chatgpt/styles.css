@@ -155,6 +155,20 @@ td.n, th.n { text-align: right; white-space: nowrap; }
 .event-log li { padding: 10px 2px; border-bottom: 1px solid var(--line); display: flex; flex-wrap: wrap; gap: 5px 16px; font-size: 12px; }
 .event-log time { color: var(--muted); font-size: 11px; }
 .event-log .log-empty { color: var(--muted); padding-block: 18px; }
+.chart-controls { display: flex; align-items: end; flex-wrap: wrap; gap: 12px; margin-block: 12px; }
+.chart-controls label { display: grid; gap: 4px; font-size: 12px; color: var(--ink-2); }
+.chart-controls select { min-height: 38px; padding: 6px; border: 1px solid var(--line-2); border-radius: var(--r-sm); background: var(--surface); color: var(--ink); }
+.trade-chart { width: 100%; height: 440px; position: relative; }
+.chart-ohlc { min-height: 36px; font-size: 12px; overflow-wrap: anywhere; }
+.chart-levels summary { cursor: pointer; font-size: 12px; font-weight: 600; }
+.chart-levels dl { margin: 10px 0; }
+.chart-levels dl > div { display: grid; grid-template-columns: minmax(85px, 1fr) minmax(0, 2fr); gap: 8px; padding-block: 6px; border-bottom: 1px solid var(--line); font-size: 12px; }
+.chart-levels dt { overflow-wrap: anywhere; }
+.chart-levels dd { margin: 0; overflow-wrap: anywhere; font-family: var(--f-mono); font-size: 12px; }
+.chart-levels [data-kind="stop"] dt { color: var(--short); }
+.chart-levels [data-kind="target"] dt { color: var(--long); }
+.chart-levels [data-kind="entry"] dt, .chart-levels [data-kind="zone"] dt { color: var(--accent); }
+.chart-credit { font-size: 12px; margin-bottom: 0; }
 footer { font-size: 11.5px; color: var(--muted); padding-top: 26px; }
 @media (max-width: 1050px) {
   .workbench { grid-template-columns: minmax(0,1fr); }
@@ -191,5 +205,5 @@ footer { font-size: 11.5px; color: var(--muted); padding-top: 26px; }
   .validation-comparison p { flex-wrap: wrap; gap: 4px 8px; }
   .evidence-section { margin-top: 26px; }
 }
-@media (pointer: coarse) { .btn, .setting-fields input, .setting-fields select { min-height: 44px; } }
+@media (pointer: coarse) { .btn, .setting-fields input, .setting-fields select, .chart-controls select { min-height: 44px; } }
 @media (prefers-reduced-motion: reduce) { *, *::before, *::after { transition: none !important; scroll-behavior: auto !important; } }

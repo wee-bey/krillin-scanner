@@ -114,6 +114,11 @@ async function main() {
   await assert.rejects(() => KM.createClient({ fetch: fake({ advance: true }).fetch }).scan({ universeSize: 2 }), /new 15-minute candle/);
   const stale = await KM.createClient({ fetch: fake({ staleQuote: true }).fetch }).scan({ universeSize: 2 });
   assert(stale.rawSignals.length > 0, 'Raw detections must remain auditable after quote rejection');
+  assert(stale.rawSignals.every(s => Array.isArray(s.chartLevels)), 'Each observation retains its setup reference snapshot');
+  for (const s of stale.rawSignals) {
+    const bounds = [...(s.entry || s.watchZone || []), s.stop, ...(s.plan && s.plan.tps || []).map(tp => tp.price)].filter(x => Number.isFinite(x) && x > 0);
+    assert(s.chartLevels.every(lv => lv.hi >= Math.min(...bounds) && lv.lo <= Math.max(...bounds)), 'Reference levels overlap the setup range');
+  }
   assert(stale.rawSignals.every(s => !s.marketData.valid && s.px === null));
   assert(stale.rawSignals.every(s => C.qualify(s, { at: stale.at, price: s.px, source: stale.source, closedAt: s.marketData.closedAt, valid: s.marketData.valid }).reasonCodes.includes('invalid_data')));
   assert.equal(stale.errors.length, 2);
