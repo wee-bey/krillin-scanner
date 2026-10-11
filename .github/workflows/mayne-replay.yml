@@ -1,0 +1,82 @@
+name: Mayne replay
+
+# Trader Mayne system (mayne.*), separate from Krillin: replays the mayne engine (mayne/lib/engine.js = indicator v1.1) on
+# the daily top-100 Binance USDT-M perpetuals from the public archive, paper-trades every armed setup with fees and
+# slippage, and commits the results to mayne/data/. See mayne/README.md.
+on:
+  push:
+    branches: [main, mayne-m3]
+    paths:
+      - 'mayne/lib/**'
+      - 'mayne/tools/**'
+      - '.github/workflows/mayne-replay.yml'
+  schedule:
+    - cron: '43 7 * * *'     # once a day, after the archive has published the previous day
+  workflow_dispatch:
+    inputs:
+      sweep:
+        description: 'Also run the parameter sweep (true/false)'
+        default: 'false'
+      from:
+        description: 'First day counted (YYYY-MM-DD)'
+        default: '2021-01-01'
+
+permissions:
+  contents: write
+
+concurrency:
+  group: mayne-replay-${{ github.ref }}
+  cancel-in-progress: false
+
+jobs:
+  replay:
+    runs-on: ubuntu-latest
+    timeout-minutes: 340
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+
+      - name: Restore the candle cache
+        uses: actions/cache/restore@v4
+        with:
+          path: .mcache
+          key: mayne-candles-${{ github.run_id }}
+          restore-keys: mayne-candles-
+
+      - name: Engine checks
+        run: node mayne/tools/test-engine.js
+
+      - name: Replay (and sweep on code pushes or when asked)
+        timeout-minutes: 300
+        env:
+          NODE_OPTIONS: --max-old-space-size=6144
+        run: node mayne/tools/replay.js --from "${{ github.event.inputs.from || '2021-01-01' }}" ${{ (github.event_name == 'push' || github.event.inputs.sweep == 'true') && '--sweep' || '' }}
+
+      - name: Fidelity logs (same charts as the TradingView checks)
+        if: always()
+        continue-on-error: true
+        run: |
+          # matched the indicator's tallies exactly on 2026-10-11: P1 H1 from 2024-01-01 (19 armed, 7W/9L, +8.1R) and
+          # P2 M15 Mar–Aug 2026 on full higher-TF history (49 armed, 7W/34L, −18.8R); see mayne/README.md
+          node mayne/tools/fidelity.js --sym BTCUSDT --market spot --profile P1 --chart-from 2024-01-01
+          node mayne/tools/fidelity.js --sym BTCUSDT --market spot --profile P2
+
+      - name: Save the candle cache
+        if: always()
+        uses: actions/cache/save@v4
+        with:
+          path: .mcache
+          key: mayne-candles-${{ github.run_id }}
+
+      - name: Commit the results
+        if: always()
+        run: |
+          git config user.name "mayne-replay"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add mayne/data
+          if git diff --cached --quiet; then echo "no changes"; exit 0; fi
+          git commit -m "Mayne replay $(date -u '+%Y-%m-%d %H:%M') UTC"
+          for i in 1 2 3 4 5; do git pull --rebase --autostash && git push && break; sleep 7; done
