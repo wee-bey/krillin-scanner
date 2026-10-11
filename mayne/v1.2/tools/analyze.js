@@ -7,7 +7,7 @@ const fs = require('fs');
 const path = require('path');
 const zlib = require('zlib');
 const args = Object.fromEntries(process.argv.slice(2).reduce((a, x, i, arr) => { if (x.startsWith('--')) a.push([x.slice(2), arr[i + 1] && !arr[i + 1].startsWith('--') ? arr[i + 1] : true]); return a; }, []));
-const DIR = path.resolve(args.dir); const BASE = args.base || 'B0';
+const DIR = args.dir ? path.resolve(args.dir) : null; const BASE = args.base || 'B0';
 const rd = (f) => JSON.parse(zlib.gunzipSync(fs.readFileSync(path.join(DIR, f))).toString('utf8'));
 const DAY = 864e5, WEEK = 7 * DAY, MON = 4 * DAY;
 const r3 = (x) => (Number.isFinite(x) ? Math.round(x * 1000) / 1000 : null);

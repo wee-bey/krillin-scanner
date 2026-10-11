@@ -52,4 +52,4 @@ clearly labelled "confluence" view.
 ## 5. Log of looks at CONFIRM
 | Date | What | Why |
 |---|---|---|
-| — | — | — |
+| 11 Oct 2026 | CONFIRM for K2 (Krillin side) and M3 (Mayne P1); Mayne P2 had no passing candidate | The one planned look. DECIDE: K2 +0.026R on 1,652 signals (Δ +0.074 vs base −0.048R; K4, K5 also passed with smaller Δ); M3 on P1 +0.300R on 102 trades (Δ +0.080). |
