@@ -53,3 +53,14 @@ clearly labelled "confluence" view.
 | Date | What | Why |
 |---|---|---|
 | 11 Oct 2026 | CONFIRM for K2 (Krillin side) and M3 (Mayne P1); Mayne P2 had no passing candidate | The one planned look. DECIDE: K2 +0.026R on 1,652 signals (Δ +0.074 vs base −0.048R; K4, K5 also passed with smaller Δ); M3 on P1 +0.300R on 102 trades (Δ +0.080). |
+
+## 6. Outcome (11 Oct 2026)
+| Group | Candidate | DECIDE (Sep 2025 – Mar 2026) | CONFIRM (Apr – Oct 2026) | Verdict |
+|---|---|---|---|---|
+| Krillin side | K2: Krillin signal while a Mayne P2 zone is live, same direction | +0.026R (1,652) vs base −0.048R | **−0.075R** (1,421) vs base −0.101R; 90% CI −0.14 … +0.00 | **FAIL** (better than base both times, never profitable) |
+| Mayne P1 | M3: no opposite Krillin signal in the 24 h before the arm | +0.300R (102) vs base +0.221R | **+0.010R** (87) vs base −0.047R; 90% CI −0.25 … +0.31 | **PROMISING** (indistinguishable from zero) |
+| Mayne P2 | — | nothing passed | — | — |
+
+Reading: agreement between the two systems helps a little at the margin (it removes some of the worst trades) but
+does not create an edge. M3 is tracked in the forward test only; nothing ships as a trading rule.
+
