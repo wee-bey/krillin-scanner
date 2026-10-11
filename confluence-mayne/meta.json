@@ -1,0 +1,146 @@
+{
+ "engine": "mayne.v1.2-js.1",
+ "lastDay": "2026-10-10",
+ "armFrom": "2025-09-01",
+ "armTo": "2026-10-10",
+ "variants": [
+  "B0"
+ ],
+ "specs": {
+  "B0": {}
+ },
+ "extra": {},
+ "exec": {
+  "X11": {
+   "maker": 0.065,
+   "taker": 0.065
+  },
+  "X12": {
+   "maker": 0.02,
+   "taker": 0.08
+  },
+  "THRU": 0.02
+ },
+ "cols": [
+  "v",
+  "sym",
+  "prof",
+  "dir",
+  "tArm",
+  "tFill",
+  "tExit",
+  "st",
+  "how",
+  "grade",
+  "cont",
+  "zone",
+  "slWhy",
+  "en",
+  "sl0",
+  "pl",
+  "pt",
+  "ft",
+  "rr",
+  "riskAtr",
+  "riskPct",
+  "R",
+  "Rg",
+  "Rn",
+  "Rn11",
+  "fR",
+  "rank",
+  "reg",
+  "swV11",
+  "swHtf",
+  "swZone",
+  "swLtf",
+  "extSw",
+  "tagN",
+  "sameBar",
+  "ote",
+  "stacked",
+  "aligned",
+  "nBoost",
+  "btc",
+  "rs30",
+  "hr",
+  "dow",
+  "part",
+  "att",
+  "mkt",
+  "qty"
+ ],
+ "dcols": [
+  "sym",
+  "prof",
+  "tArm",
+  "mfeX",
+  "maeX",
+  "mfeH",
+  "maeH",
+  "best",
+  "same"
+ ],
+ "pcols": [
+  "prof",
+  "kind",
+  "dir",
+  "tArm",
+  "Rg",
+  "Rn",
+  "realRg"
+ ],
+ "of": 8,
+ "shards": [
+  {
+   "shard": 0,
+   "coins": 94,
+   "rows": 261,
+   "made": "2026-10-11T18:43:16.599Z"
+  },
+  {
+   "shard": 1,
+   "coins": 93,
+   "rows": 293,
+   "made": "2026-10-11T18:43:09.770Z"
+  },
+  {
+   "shard": 2,
+   "coins": 93,
+   "rows": 355,
+   "made": "2026-10-11T18:43:07.565Z"
+  },
+  {
+   "shard": 3,
+   "coins": 93,
+   "rows": 286,
+   "made": "2026-10-11T18:43:07.755Z"
+  },
+  {
+   "shard": 4,
+   "coins": 93,
+   "rows": 236,
+   "made": "2026-10-11T18:43:11.908Z"
+  },
+  {
+   "shard": 5,
+   "coins": 93,
+   "rows": 218,
+   "made": "2026-10-11T18:43:13.641Z"
+  },
+  {
+   "shard": 6,
+   "coins": 93,
+   "rows": 179,
+   "made": "2026-10-11T18:43:05.491Z"
+  },
+  {
+   "shard": 7,
+   "coins": 93,
+   "rows": 458,
+   "made": "2026-10-11T18:43:17.679Z"
+  }
+ ],
+ "merged": "2026-10-11T18:43:49.109Z",
+ "rows": 2286
+}

@@ -1,0 +1,9 @@
+{
+ "name": "confluence-mayne",
+ "armFrom": "2025-09-01",
+ "armTo": "2026-10-10",
+ "variants": "B0",
+ "events": true,
+ "set": "",
+ "note": "CONFLUENCE_PLAN.md: Mayne B0 trades, state changes and daily W/D bias over Krillin's replay window (2025-09-01 to 2026-10-10), to join with Krillin's signals."
+}
