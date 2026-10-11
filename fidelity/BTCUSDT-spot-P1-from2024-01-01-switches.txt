@@ -1,0 +1,109 @@
+mayne.v1.2 JS engine mayne.v1.2-js.1 · settings {"fillThruPct":0.02,"sweepDef":"ltf","reqSweep":true,"maxTagN":2,"timeStopN":12,"noWeekend":true} · BINANCE:BTCUSDT · P1 H12–H1 · trigger H1 · data 2024-01-01 00:00 → 2026-10-10 23:00 UTC · every TF cut at the chart start 2024-01-01
+This chart: 4 armed · 3 filled · 2W/1L · +4.8R · 9 expired · 13 invalidated
+[2024-03-05 20:00 UTC] TAG LONG H12 OB 61320-62100 rev
+[2024-03-06 00:00 UTC] TURN LONG SFP H12
+[2024-03-06 05:00 UTC] REJ LONG D3 no target | rev | en 64259.33 sl 60819.155 pt —
+[2024-03-07 08:00 UTC] REJ LONG D3 R:R 0.5 | rev | en 66341.11 sl 60959.3 pt 69000
+[2024-03-10 02:00 UTC] REJ LONG D3 R:R 0.2 | rev | en 68769.57 sl 61079.661 pt 69990
+[2024-03-10 05:00 UTC] REJ LONG D3 R:R 0.1 | rev | en 69192.98 sl 61074.443 pt 69990
+[2024-03-12 00:00 UTC] ZEXP LONG no trigger within 12 H12 candles
+[2024-03-12 17:00 UTC] TAG LONG H12 OB 68094.75-69833.33 rev
+[2024-03-13 08:00 UTC] TURN LONG MSB H4 (displaced)
+[2024-03-14 03:00 UTC] REJ LONG D3 R:R 1.0 | rev | en 73009.11 sl 72365.502 pt 73650.25
+[2024-03-14 23:00 UTC] REJ LONG D3 no target | rev | en 71380 sl 67868.755 pt —
+[2024-03-15 03:00 UTC] ZINV LONG zone breached
+[2024-03-17 07:00 UTC] TAG LONG H12 FVG 63231.88-64533.67 rev
+[2024-03-17 08:00 UTC] TURN LONG SFP H4
+[2024-03-17 10:00 UTC] REJ LONG weekend | rev | en 66260 sl 64313.862 pt 73777
+[2024-03-19 09:00 UTC] ZINV LONG zone breached
+[2024-11-14 14:00 UTC] TAG LONG H4 FVG+OB 88083-89969.87 cont
+[2024-11-14 14:00 UTC] TURN LONG continuation (H4 POI from a displaced HTF break)
+[2024-11-14 16:00 UTC] ZINV LONG zone breached
+[2024-11-14 20:00 UTC] TAG LONG H12 OB 86127.99-88562.94 cont
+[2024-11-14 20:00 UTC] TURN LONG continuation (H12 POI from a displaced HTF break)
+[2024-11-15 10:00 UTC] ARM LONG A | cont H12 OB | turn continuation (H12 POI from a displaced HTF break) | att 1 | en 88943.53 sl 87118.936 (trigger swing (continuation), 1.83 ATR) pl 93139.93 pt 93265.64 rr 2.37 ft 93265.64 | tagged 2024-11-14 20:00
+[2024-11-19 18:00 UTC] CLOSE LONG FT hit 2.32R
+[2024-11-26 00:00 UTC] TAG LONG H4 OB+FVG 91320-93571.08 cont
+[2024-11-26 00:00 UTC] TURN LONG continuation (H4 POI from a displaced HTF break)
+[2024-11-26 20:00 UTC] ZINV LONG zone breached
+[2024-11-26 20:00 UTC] TAG LONG H4 OB+FVG 89667.66-92584.95 cont
+[2024-11-26 20:00 UTC] TURN LONG continuation (H4 POI from a displaced HTF break)
+[2024-11-27 07:00 UTC] ARM LONG B +OB/FVG | cont H4 OB+FVG | turn continuation (H4 POI from a displaced HTF break) | att 1 | en 93024 sl 92144.671 (trigger swing (continuation), 1.01 ATR) pl 94973.37 pt 98871.8 rr 6.65 ft 99588.01 | tagged 2024-11-26 20:00
+[2024-11-28 02:00 UTC] CLOSE LONG runner stopped 2.49R
+[2024-11-28 23:00 UTC] REJ LONG D3 R:R 1.7 | cont | en 95530.24 sl 94549.244 pt 97208.21
+[2024-11-29 02:00 UTC] REJ LONG D3 R:R 1.9 | cont | en 95903.93 sl 95212.403 pt 97208.21
+[2024-11-29 10:00 UTC] REJ LONG D3 R:R 1.1 | cont | en 96293.61 sl 95460.016 pt 97208.21
+[2024-11-29 15:00 UTC] REJ LONG D3 R:R 1.1 | cont | en 97685.46 sl 96608.595 pt 98871.8
+[2024-11-30 19:00 UTC] REJ LONG D2 not in discount | cont | en 96777.77 sl 95992.315 pt 98619.99
+[2024-12-01 09:00 UTC] REJ LONG D2 not in discount | cont | en 96853.82 sl 96096.954 pt 98619.99
+[2024-12-01 22:00 UTC] REJ LONG D3 R:R 1.8 | cont | en 97384 sl 96694.881 pt 98619.99
+[2024-12-02 15:00 UTC] REJ LONG D2 not in discount | cont | en 95501 sl 94583.234 pt 98619.99
+[2024-12-04 00:00 UTC] ZEXP LONG no trigger within 12 H12 candles
+[2024-12-10 16:00 UTC] TAG LONG H4 FVG 93885.6-95184.79 cont
+[2024-12-10 16:00 UTC] TURN LONG continuation (H4 POI from a displaced HTF break)
+[2024-12-11 03:00 UTC] ARM LONG A | cont H4 FVG | turn continuation (H4 POI from a displaced HTF break) | att 1 | en 97128.24 sl 95390.49 (trigger swing (continuation), 1.62 ATR) pl 100603.74 pt 101351 rr 2.43 ft 101898.99 | tagged 2024-12-10 16:00
+[2024-12-11 20:00 UTC] EXP LONG PT reached before fill
+[2024-12-19 01:00 UTC] TAG LONG H4 FVG 98472.57-99608.23 cont
+[2024-12-19 01:00 UTC] TURN LONG continuation (H4 POI from a displaced HTF break)
+[2024-12-19 17:00 UTC] ZINV LONG zone breached
+[2024-12-19 20:00 UTC] TAG LONG H4 Breaker+FVG 95900-97937.5 cont
+[2024-12-19 20:00 UTC] TURN LONG continuation (H4 POI from a displaced HTF break)
+[2024-12-20 08:00 UTC] ZINV LONG zone breached
+[2025-05-04 13:00 UTC] TAG LONG H12 OB 92910-95214.9 cont
+[2025-05-04 13:00 UTC] TURN LONG continuation (H12 POI from a displaced HTF break)
+[2025-05-04 20:00 UTC] REJ LONG D2 not in discount | cont | en 95582.25 sl 95170.823 pt 97895.68
+[2025-05-05 18:00 UTC] ARM LONG A+ +SWEEP +OTE | cont H12 OB | turn continuation (H12 POI from a displaced HTF break) | att 1 | en 94443.56 sl 93497.75 (trigger swing (continuation), 2.04 ATR) pl 96441.49 pt 97895.68 rr 3.65 ft 108353 | tagged 2025-05-04 13:00
+[2025-05-06 07:00 UTC] CLOSE LONG time stop -0.05R
+[2025-05-06 07:00 UTC] TAG LONG H12 Breaker+FVG 80075.47-95000 rev
+[2025-05-06 16:00 UTC] TURN LONG SFP H4
+[2025-05-06 18:00 UTC] REJ LONG D3 R:R 1.4 | rev | en 94080.09 sl 93252.739 pt 95199
+[2025-05-06 23:00 UTC] REJ LONG D3 R:R 0.1 | rev | en 96102.72 sl 79934.41 pt 97895.68
+[2025-05-07 08:00 UTC] REJ LONG D3 R:R 0.1 | rev | en 96861.57 sl 79950.911 pt 97895.68
+[2025-05-08 01:00 UTC] ZEXP LONG target reached before a trigger
+[2025-05-23 23:00 UTC] TAG LONG H12 Breaker+FVG 100119.04-107240.81 rev
+[2025-05-24 00:00 UTC] TURN LONG SFP H4
+[2025-05-24 11:00 UTC] REJ LONG D3 R:R 0.3 | rev | en 109094.99 sl 99946.609 pt 111980
+[2025-05-25 23:00 UTC] REJ LONG D3 R:R 0.4 | rev | en 108570.16 sl 99963.088 pt 111980
+[2025-05-27 08:00 UTC] REJ LONG D3 R:R 0.3 | rev | en 109492.59 sl 99963.651 pt 111980
+[2025-05-29 09:00 UTC] REJ LONG D3 R:R 1.6 | rev | en 108320 sl 106812.45 pt 110718
+[2025-05-30 00:00 UTC] ZEXP LONG no trigger within 12 H12 candles
+[2025-06-05 19:00 UTC] TAG LONG H12 FVG 99888-102364 rev
+[2025-06-06 00:00 UTC] TURN LONG SFP H12
+[2025-06-07 12:00 UTC] REJ LONG D3 R:R 0.2 | rev | en 105050.04 sl 99783.991 pt 105909.71
+[2025-06-08 12:00 UTC] REJ LONG D3 R:R 0.6 | rev | en 105520.25 sl 104890.35 pt 105900
+[2025-06-08 16:00 UTC] REJ LONG D3 no target | rev | en 105943.91 sl 99808.345 pt —
+[2025-06-09 09:00 UTC] ZEXP LONG target reached before a trigger
+[2025-07-15 01:00 UTC] TAG LONG H12 FVG 118086.66-118905.18 cont
+[2025-07-15 01:00 UTC] TURN LONG continuation (H12 POI from a displaced HTF break)
+[2025-07-15 02:00 UTC] ZINV LONG zone breached
+[2025-07-15 03:00 UTC] TAG LONG H12 OB 116900.05-117861.19 cont
+[2025-07-15 03:00 UTC] TURN LONG continuation (H12 POI from a displaced HTF break)
+[2025-07-15 04:00 UTC] ZINV LONG zone breached
+[2025-08-14 12:00 UTC] TAG LONG H12 Breaker+FVG 115796.23-118922.45 rev
+[2025-08-14 16:00 UTC] TURN LONG SFP H4
+[2025-08-16 13:00 UTC] REJ LONG weekend | rev | en 117582.29 sl 117038.57 pt 124474
+[2025-08-17 04:00 UTC] REJ LONG weekend | rev | en 117684.95 sl 117096.43 pt 124474
+[2025-08-17 09:00 UTC] REJ LONG D2 not in discount | rev | en 118235 sl 115722.57 pt 124474
+[2025-08-18 02:00 UTC] ZINV LONG zone breached
+[2025-08-22 12:00 UTC] TAG LONG H12 Breaker+FVG 106117.67-111980 rev
+[2025-08-22 14:00 UTC] ZEXP LONG target reached before a trigger
+[2025-10-10 17:00 UTC] TAG LONG H12 Breaker+FVG 114720.81-117900 rev
+[2025-10-10 20:00 UTC] ZINV LONG zone breached
+[2025-10-11 00:00 UTC] TAG LONG H12 Breaker+FVG 111042.66-113940 rev
+[2025-10-11 07:00 UTC] ZINV LONG zone breached
+[2026-03-04 15:00 UTC] TAG SHORT H12 FVG 73341.18-75467.22 rev
+[2026-03-08 22:00 UTC] ZEXP SHORT target reached before a trigger
+[2026-03-10 14:00 UTC] TAG SHORT H12 FVG+OB 71419.98-71757.17 rev
+[2026-03-10 20:00 UTC] TURN SHORT SFP H4
+[2026-03-12 02:00 UTC] REJ SHORT D2 not in premium | rev | en 69887.93 sl 71923.173 pt 65618.49
+[2026-03-13 00:00 UTC] ZINV SHORT zone breached
+[2026-08-20 08:00 UTC] TAG SHORT H12 Breaker+FVG 70505.88-73137.24 rev
+[2026-08-20 23:00 UTC] ZINV SHORT zone breached
+[2026-08-22 03:00 UTC] TAG SHORT H12 Breaker+FVG 78754.65-81788 rev
+[2026-08-23 16:00 UTC] TURN SHORT SFP H4
+[2026-08-25 08:00 UTC] REJ SHORT no sweep | rev | en 80249 sl 81966.495 pt 76670.01
+[2026-08-25 10:00 UTC] REJ SHORT D3 R:R 1.1 | rev | en 79484.01 sl 81968.435 pt 76670.01
+[2026-08-25 20:00 UTC] REJ SHORT D3 R:R 0.8 | rev | en 78976 sl 81952.589 pt 76670.01
+[2026-08-28 03:00 UTC] REJ SHORT D3 R:R 1.6 | rev | en 80060.01 sl 81609.588 pt 77632.58
+[2026-08-28 09:00 UTC] REJ SHORT D3 R:R 0.8 | rev | en 79516.78 sl 81900.627 pt 77632.58
+[2026-08-28 12:00 UTC] ZEXP SHORT no trigger within 12 H12 candles
