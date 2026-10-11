@@ -52,6 +52,7 @@
     noWeekend: false,     // C9b no arming on Saturday / Sunday (UTC)
     abl: '',              // diagnostics D3: 'noD2' | 'noTurn' | 'noDsync' | 'noRR'
     gate: null,           // research hook: fn(info) → '' or a rejection reason (used for C2, BTC context)
+    trackState: false,    // research: record every change of (state, direction) as [close time, state, dir] in result.stateLog
   };
   const STATE_NAMES = ['IDLE', 'WATCH', 'FORMING', 'FORMING+', 'ARMED', 'ACTIVE'];
 
@@ -270,6 +271,7 @@
     const stats = { armed: 0, filled: 0, win: 0, loss: 0, exp: 0, inv: 0, sumR: 0 };
     let hiSZ = NaN, loSZ = NaN, lastEvt = '—';
     let ctx = null;                                  // the HTF context of the latest bar (for the board)
+    const stateLog = []; let logSt = -1, logDir = 0;   // trackState (research only)
 
     for (let j = 0; j < n; j++) {
       const time = t[j], tc = time + tgMs;
@@ -612,6 +614,7 @@
           } else sSt = 0;
         } else sSt = 0;
       }
+      if (P.trackState) { const dNow = sSt >= 2 ? sDir : sSt === 1 ? wDir : 0; if (sSt !== logSt || dNow !== logDir) { stateLog.push([tc, sSt, dNow]); logSt = sSt; logDir = dNow; } }
     }
 
     // the live state after the last closed trigger candle (for the board)
@@ -623,7 +626,7 @@
       bias: ctx ? { dir: ctx.biasDir, dSync: ctx.dSync, ok: ctx.biasOK, w: ctx.w.st, d: ctx.d.st, z: ctx.z.st, cf: ctx.cf.st, zHi: ctx.z.hi, zLo: ctx.z.lo, zEQ: ctx.zEQ } : null,
       lastEvt,
     };
-    return { version: VERSION, profile: prof.id, trades, events, stats, state, params: P };
+    return { version: VERSION, profile: prof.id, trades, events, stats, state, params: P, stateLog };
   }
 
   // ───────────────────────── candle helpers ─────────────────────────

@@ -184,7 +184,8 @@ async function main() {
   const COLS = ['v', 'sym', 'prof', 'dir', 'tArm', 'tFill', 'tExit', 'st', 'how', 'grade', 'cont', 'zone', 'slWhy', 'en', 'sl0', 'pl', 'pt', 'ft', 'rr', 'riskAtr', 'riskPct', 'R', 'Rg', 'Rn', 'Rn11', 'fR', 'rank', 'reg', 'swV11', 'swHtf', 'swZone', 'swLtf', 'extSw', 'tagN', 'sameBar', 'ote', 'stacked', 'aligned', 'nBoost', 'btc', 'rs30', 'hr', 'dow', 'part', 'att', 'mkt', 'qty'];
   const DCOLS = ['sym', 'prof', 'tArm', 'mfeX', 'maeX', 'mfeH', 'maeH', 'best', 'same'];
   const PCOLS = ['prof', 'kind', 'dir', 'tArm', 'Rg', 'Rn', 'realRg'];
-  const rows = [], drows = [], prows = []; let done = 0;
+  const rows = [], drows = [], prows = [], zrows = [], brows = []; let done = 0;
+  const EVENTS = !!args.events;                                      // confluence research: Mayne state changes + daily W/D bias
   const W = { P1: 72, P2: 96 };
   await pool(mine, SAMPLE ? 2 : 4, async (sym) => {
     const mem = member.get(sym); const days = [...mem.keys()].sort(); const D1rows = daily.get(sym);
@@ -209,7 +210,19 @@ async function main() {
         if (VARIANTS[v].only && !VARIANTS[v].only.includes(prof)) continue;      // a variant meant for one profile only
         const spec = Object.assign({ fillThruPct: THRU }, VARIANTS[v] || {}, EXTRA); delete spec.only;
         const o = Object.assign({}, spec); if (typeof o.gate === 'string') o.gate = gates[o.gate]; if (o.gate === undefined) delete o.gate;
+        if (EVENTS && v === 'B0') o.trackState = true;
         const res = M.simulate(prep, o);
+        if (EVENTS && v === 'B0') {
+          for (const [tc, st, dir] of res.stateLog) if (tc >= ARM_FROM - 30 * DAY && tc < ARM_TO) zrows.push([sym, prof, tc, st, dir]);
+          if (prof === PROFILES[0]) { // daily W/D bias (S1 + S2) at each day's open, the same for every profile
+            const lastClosed = (C, ms, Tm) => { let lo = 0, hi = C.t.length - 1, r = -1; while (lo <= hi) { const mid = (lo + hi) >> 1; if (C.t[mid] + ms <= Tm) { r = mid; lo = mid + 1; } else hi = mid - 1; } return r; };
+            for (let dms = Math.max(ARM_FROM - 30 * DAY, dayStart(days[0])); dms < Math.min(ARM_TO, endMs); dms += DAY) {
+              const kw = lastClosed(dat.W, 7 * DAY, dms), kd = lastClosed(dat.D, DAY, dms); if (kw < 0 || kd < 0) continue;
+              const w = prep.wS[kw].st, d = prep.dS[kd].st; const b = w === 1 ? 1 : w === -1 ? -1 : 0; const sync = b === 1 ? d === 1 || d === -2 : b === -1 ? d === -1 || d === 2 : false;
+              brows.push([sym, dms, b !== 0 && sync ? b : 0]);
+            }
+          }
+        }
         for (const tr of res.trades) {
           if (!keep(tr)) continue;
           const day = ymd(tr.tArm); const ex12 = execR(tr, X12, F), ex11 = execR(tr, X11, null);
@@ -242,7 +255,7 @@ async function main() {
     done++; if (done % 10 === 0 || done === mine.length) log(`${done}/${mine.length} coins · ${rows.length} rows · ${data.net()} downloads`);
   });
   fs.mkdirSync(OUT, { recursive: true });
-  const out = { version: 1, engine: M.VERSION, made: new Date().toISOString(), lastDay, armFrom: ymd(ARM_FROM), armTo: ymd(ARM_TO - DAY), shard: SHARD, of: OF, variants: VLIST, specs: Object.fromEntries(VLIST.map((v) => [v, VARIANTS[v]])), extra: EXTRA, exec: { X11, X12, THRU }, coins: mine.length, cols: COLS, rows, dcols: DCOLS, drows, pcols: PCOLS, prows };
+  const out = { version: 1, engine: M.VERSION, made: new Date().toISOString(), lastDay, armFrom: ymd(ARM_FROM), armTo: ymd(ARM_TO - DAY), shard: SHARD, of: OF, variants: VLIST, specs: Object.fromEntries(VLIST.map((v) => [v, VARIANTS[v]])), extra: EXTRA, exec: { X11, X12, THRU }, coins: mine.length, cols: COLS, rows, dcols: DCOLS, drows, pcols: PCOLS, prows, zcols: ['sym', 'prof', 'tc', 'st', 'dir'], zrows, bcols: ['sym', 'day', 'bias'], brows };
   fs.writeFileSync(path.join(OUT, `shard-${SHARD}.json.gz`), zlib.gzipSync(JSON.stringify(out)));
   log(`done in ${((Date.now() - t0) / 1000).toFixed(0)} s · ${rows.length} rows · ${drows.length} diag · ${prows.length} pseudo`);
 }

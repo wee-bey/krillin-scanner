@@ -1,12 +1,9 @@
 {
- "name": "confirm",
- "armFrom": "2024-01-01",
- "armTo": "2026-12-31",
- "variants": "B0,F3,C2a",
- "custom": {
-  "F3": { "only": ["P1"], "gate": "btc", "maxTagN": 2, "sweepDef": "ltf", "reqSweep": true },
-  "C2a": { "only": ["P2"], "gate": "btc" }
- },
+ "name": "confluence-mayne",
+ "armFrom": "2025-09-01",
+ "armTo": "2026-10-10",
+ "variants": "B0",
+ "events": true,
  "set": "",
- "note": "TEST_PLAN §8: the single CONFIRM look. F_P1 = F3 (C2a + C7 + C1c), F_P2 = C2a; baseline B0 for both profiles."
+ "note": "CONFLUENCE_PLAN.md: Mayne B0 trades, state changes and daily W/D bias over Krillin's replay window (2025-09-01 to 2026-10-10), to join with Krillin's signals."
 }
