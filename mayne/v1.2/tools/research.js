@@ -49,8 +49,10 @@ const VARIANTS = {
   C9a: { session: '08-21' }, C9b: { noWeekend: true }, C10: { entryMode: 'ladder' },
   'A-noD2': { abl: 'noD2' }, 'A-noTurn': { abl: 'noTurn' }, 'A-noDsync': { abl: 'noDsync' }, 'A-noRR': { abl: 'noRR' },
 };
+// custom variants (e.g. the combinations of TEST_PLAN §7.3): --custom '{"F2":{"gate":"btc","maxTagN":2}}'
+if (args.custom) Object.assign(VARIANTS, JSON.parse(String(args.custom)));
 const VLIST = args.variants ? String(args.variants).split(',') : Object.keys(VARIANTS);
-for (const v of VLIST) if (!VARIANTS[v] && !/^F/.test(v)) throw new Error('unknown variant ' + v);
+for (const v of VLIST) if (!VARIANTS[v]) throw new Error('unknown variant ' + v);
 
 const log = (...a) => console.log(`[${new Date().toISOString().slice(11, 19)}] ` + a.join(' '));
 const r4 = (x) => (Number.isFinite(x) ? Math.round(x * 1e4) / 1e4 : null);
@@ -239,7 +241,7 @@ async function main() {
     done++; if (done % 10 === 0 || done === mine.length) log(`${done}/${mine.length} coins · ${rows.length} rows · ${data.net()} downloads`);
   });
   fs.mkdirSync(OUT, { recursive: true });
-  const out = { version: 1, engine: M.VERSION, made: new Date().toISOString(), lastDay, armFrom: ymd(ARM_FROM), armTo: ymd(ARM_TO - DAY), shard: SHARD, of: OF, variants: VLIST, extra: EXTRA, exec: { X11, X12, THRU }, coins: mine.length, cols: COLS, rows, dcols: DCOLS, drows, pcols: PCOLS, prows };
+  const out = { version: 1, engine: M.VERSION, made: new Date().toISOString(), lastDay, armFrom: ymd(ARM_FROM), armTo: ymd(ARM_TO - DAY), shard: SHARD, of: OF, variants: VLIST, specs: Object.fromEntries(VLIST.map((v) => [v, VARIANTS[v]])), extra: EXTRA, exec: { X11, X12, THRU }, coins: mine.length, cols: COLS, rows, dcols: DCOLS, drows, pcols: PCOLS, prows };
   fs.writeFileSync(path.join(OUT, `shard-${SHARD}.json.gz`), zlib.gzipSync(JSON.stringify(out)));
   log(`done in ${((Date.now() - t0) / 1000).toFixed(0)} s · ${rows.length} rows · ${drows.length} diag · ${prows.length} pseudo`);
 }

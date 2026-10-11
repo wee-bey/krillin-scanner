@@ -12,7 +12,7 @@ if (!files.length) throw new Error('no shard files in ' + IN);
 let meta = null; const rows = [], drows = [], prows = []; const shards = [];
 for (const f of files.sort()) {
   const d = JSON.parse(zlib.gunzipSync(fs.readFileSync(f)).toString('utf8'));
-  if (!meta) meta = { engine: d.engine, lastDay: d.lastDay, armFrom: d.armFrom, armTo: d.armTo, variants: d.variants, extra: d.extra, exec: d.exec, cols: d.cols, dcols: d.dcols, pcols: d.pcols, of: d.of };
+  if (!meta) meta = { engine: d.engine, lastDay: d.lastDay, armFrom: d.armFrom, armTo: d.armTo, variants: d.variants, specs: d.specs, extra: d.extra, exec: d.exec, cols: d.cols, dcols: d.dcols, pcols: d.pcols, of: d.of };
   shards.push({ shard: d.shard, coins: d.coins, rows: d.rows.length, made: d.made }); rows.push(...d.rows); drows.push(...d.drows); prows.push(...d.prows);
 }
 meta.shards = shards.sort((a, b) => a.shard - b.shard); meta.merged = new Date().toISOString(); meta.rows = rows.length;

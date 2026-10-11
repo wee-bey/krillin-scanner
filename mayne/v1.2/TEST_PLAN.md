@@ -123,3 +123,12 @@ tested; C1 and C1b stay in the run unchanged:
 | C1c | Trigger-TF sweep required | [M] V24@11:37 ("a high get taken, then a market structure shift, fair value gap") | Reversal setups arm only when condition (ii) of C1 holds (the MSB leg took out the last trigger-TF swing before the swing it breaks, after the tag). Stop beyond the leg extreme. In the sample, ~40% of reversal setups meet (ii). |
 | C1d | Zone-TF SFP or trigger-TF sweep required | [M] V24@7:23 ("SFP into the daily OB") | Reversal setups arm only when a **zone-TF** SFP (not the confirmation TF) printed after the tag, or (ii) holds. Stop: beyond the extreme since the tag for the SFP case, beyond the leg extreme for (ii). |
 Both belong to the C1 family for the selection rule (§7.2).
+
+**Addendum 2 (11 Oct 2026, after the DECIDE run, before any combination was run and before any CONFIRM look).**
+§7.3 does not say how to drop candidates when the full combination fails, nor that F must keep enough trades. Fixed
+now, before running any combination:
+- F must meet the same trade floor as single candidates (§7.1c: ≥ 150 closed for P1, ≥ 500 for P2) and must not be
+  worse on DECIDE than the best single kept candidate.
+- If it fails either test, drop the kept candidate with the smallest Δ first and re-run, until it passes.
+- DECIDE outcome: P1 kept C2a (+0.158), C7 (+0.112), C1c (+0.095), C8b12 (+0.068), C9b (+0.046); P2 kept C2a (+0.046).
+  So the P1 sequence is F5 = all five → F4 (− C9b) → F3 (− C8b12) → F2 (− C1c) → F1 = C2a alone; P2's F is C2a alone.

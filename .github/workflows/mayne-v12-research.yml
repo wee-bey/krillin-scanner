@@ -62,8 +62,9 @@ jobs:
           NODE_OPTIONS: --max-old-space-size=6144
         run: |
           A=$(node -e "const c=require('./mayne/v1.2/research-run.json'); const a=['--arm-from',c.armFrom,'--arm-to',c.armTo]; if(c.variants) a.push('--variants',c.variants); if(c.set) a.push('--set',c.set); if(c.profiles) a.push('--profiles',c.profiles); console.log(a.join(' '))")
+          C=$(node -e "const c=require('./mayne/v1.2/research-run.json'); console.log(c.custom ? JSON.stringify(c.custom) : '')")
           echo "args: $A"
-          node mayne/v1.2/tools/research.js $A --shard ${{ matrix.shard }} --of 8 --out "$RUNNER_TEMP/out"
+          if [ -n "$C" ]; then node mayne/v1.2/tools/research.js $A --custom "$C" --shard ${{ matrix.shard }} --of 8 --out "$RUNNER_TEMP/out"; else node mayne/v1.2/tools/research.js $A --shard ${{ matrix.shard }} --of 8 --out "$RUNNER_TEMP/out"; fi
       - name: Save the v1.2 funding cache (this shard)
         if: always()
         uses: actions/cache/save@v4
