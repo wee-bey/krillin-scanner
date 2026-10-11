@@ -1,16 +1,12 @@
 {
- "name": "decide-combos-p1",
- "armFrom": "2021-01-01",
- "armTo": "2023-12-31",
- "profiles": "P1",
- "variants": "B0,F5,F4,F3,F2,F1",
+ "name": "confirm",
+ "armFrom": "2024-01-01",
+ "armTo": "2026-12-31",
+ "variants": "B0,F3,C2a",
  "custom": {
-  "F5": { "gate": "btc", "maxTagN": 2, "sweepDef": "ltf", "reqSweep": true, "timeStopN": 12, "noWeekend": true },
-  "F4": { "gate": "btc", "maxTagN": 2, "sweepDef": "ltf", "reqSweep": true, "timeStopN": 12 },
-  "F3": { "gate": "btc", "maxTagN": 2, "sweepDef": "ltf", "reqSweep": true },
-  "F2": { "gate": "btc", "maxTagN": 2 },
-  "F1": { "gate": "btc" }
+  "F3": { "only": ["P1"], "gate": "btc", "maxTagN": 2, "sweepDef": "ltf", "reqSweep": true },
+  "C2a": { "only": ["P2"], "gate": "btc" }
  },
  "set": "",
- "note": "TEST_PLAN §7.3 + addendum 2: P1 combination sequence on DECIDE (2021-2023 only)."
+ "note": "TEST_PLAN §8: the single CONFIRM look. F_P1 = F3 (C2a + C7 + C1c), F_P2 = C2a; baseline B0 for both profiles."
 }

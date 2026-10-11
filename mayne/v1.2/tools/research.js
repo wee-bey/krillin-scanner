@@ -206,7 +206,8 @@ async function main() {
       const T = dat.T;
       const keep = (tr) => tr.tArm >= ARM_FROM && tr.tArm < ARM_TO && mem.has(ymd(tr.tArm));
       for (const v of VLIST) {
-        const spec = Object.assign({ fillThruPct: THRU }, VARIANTS[v] || {}, EXTRA);
+        if (VARIANTS[v].only && !VARIANTS[v].only.includes(prof)) continue;      // a variant meant for one profile only
+        const spec = Object.assign({ fillThruPct: THRU }, VARIANTS[v] || {}, EXTRA); delete spec.only;
         const o = Object.assign({}, spec); if (typeof o.gate === 'string') o.gate = gates[o.gate]; if (o.gate === undefined) delete o.gate;
         const res = M.simulate(prep, o);
         for (const tr of res.trades) {

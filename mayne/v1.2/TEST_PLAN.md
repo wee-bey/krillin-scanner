@@ -110,7 +110,7 @@ For each profile's F, on 2024-01-01 → latest:
 ## 9. Log of looks at CONFIRM
 | Date | What was looked at | Why |
 |---|---|---|
-| — | — | — |
+| 11 Oct 2026 | CONFIRM run: B0 (P1, P2), F_P1 = F3 (C2a + C7 + C1c), F_P2 = C2a; plus the baseline diagnostics | The one planned look (§8). F chosen by §7 + addendum 2 on DECIDE: F5 117 trades and F4 141 trades failed the 150 floor; F3 152 trades, +0.105R ≥ C2a alone (+0.011R). |
 
 ## 10. Addenda
 **Addendum 1 (11 Oct 2026, before any performance result).** A mechanics check on 4 sample coins (DECIDE period only;
