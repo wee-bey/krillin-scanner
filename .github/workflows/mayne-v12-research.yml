@@ -1,0 +1,108 @@
+name: Mayne v1.2 · research replay
+
+# Trader Mayne v1.2 research (mayne/v1.2/TEST_PLAN.md). Separate from Krillin and from the v1.1 Mayne replay.
+# A run is described by mayne/v1.2/research-run.json (name, armed-date window, variants, extra settings); pushing a
+# change to that file starts it. 8 shards replay the universe in parallel; the merged result is committed to the
+# orphan branch mayne-v12-results under <name>/ (never to main).
+on:
+  push:
+    branches: [mayne-v1.2]
+    paths:
+      - 'mayne/v1.2/research-run.json'
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+concurrency:
+  group: mayne-v12-research
+  cancel-in-progress: false
+
+jobs:
+  checks:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: v1.2 engine checks (v1.1 identity, no look-ahead, rule mechanics)
+        run: node mayne/v1.2/tools/test-engine.js
+
+  shard:
+    needs: checks
+    runs-on: ubuntu-latest
+    timeout-minutes: 150
+    strategy:
+      fail-fast: false
+      matrix:
+        shard: [0, 1, 2, 3, 4, 5, 6, 7]
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Restore the Mayne candle cache (from main's replay)
+        uses: actions/cache/restore@v4
+        with:
+          path: .mcache
+          key: mayne-candles-${{ github.run_id }}
+          restore-keys: mayne-candles-
+      - name: Restore the v1.2 funding cache (this shard)
+        uses: actions/cache/restore@v4
+        with:
+          path: .mcache/funding
+          key: mayne-v12-funding-s${{ matrix.shard }}-${{ github.run_id }}
+          restore-keys: |
+            mayne-v12-funding-s${{ matrix.shard }}-
+            mayne-v12-funding-
+      - name: Research replay
+        env:
+          NODE_OPTIONS: --max-old-space-size=6144
+        run: |
+          A=$(node -e "const c=require('./mayne/v1.2/research-run.json'); const a=['--arm-from',c.armFrom,'--arm-to',c.armTo]; if(c.variants) a.push('--variants',c.variants); if(c.set) a.push('--set',c.set); if(c.profiles) a.push('--profiles',c.profiles); console.log(a.join(' '))")
+          echo "args: $A"
+          node mayne/v1.2/tools/research.js $A --shard ${{ matrix.shard }} --of 8 --out "$RUNNER_TEMP/out"
+      - name: Save the v1.2 funding cache (this shard)
+        if: always()
+        uses: actions/cache/save@v4
+        with:
+          path: .mcache/funding
+          key: mayne-v12-funding-s${{ matrix.shard }}-${{ github.run_id }}
+      - uses: actions/upload-artifact@v4
+        with:
+          name: shard-${{ matrix.shard }}
+          path: ${{ runner.temp }}/out/shard-${{ matrix.shard }}.json.gz
+          retention-days: 3
+
+  merge:
+    needs: shard
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - uses: actions/download-artifact@v4
+        with:
+          path: ${{ runner.temp }}/shards
+      - name: Merge and commit to mayne-v12-results
+        run: |
+          NAME=$(node -e "console.log(require('./mayne/v1.2/research-run.json').name)")
+          git config --global user.name "mayne-v12"
+          git config --global user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          REPO="https://x-access-token:${{ github.token }}@github.com/${{ github.repository }}.git"
+          RES="$RUNNER_TEMP/results"
+          if git ls-remote --exit-code --heads "$REPO" mayne-v12-results >/dev/null 2>&1; then
+            git clone -q --depth 1 --branch mayne-v12-results "$REPO" "$RES"
+          else
+            mkdir -p "$RES" && cd "$RES" && git init -q -b mayne-v12-results && cd -
+          fi
+          node mayne/v1.2/tools/research-merge.js --in "$RUNNER_TEMP/shards" --out "$RES/$NAME"
+          cp mayne/v1.2/research-run.json "$RES/$NAME/run.json"
+          cd "$RES"
+          git add -A
+          git commit -q -m "Mayne v1.2 research: $NAME ($(date -u '+%Y-%m-%d %H:%M') UTC)"
+          git push -q "$REPO" HEAD:mayne-v12-results

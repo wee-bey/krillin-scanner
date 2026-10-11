@@ -113,4 +113,13 @@ For each profile's F, on 2024-01-01 → latest:
 | — | — | — |
 
 ## 10. Addenda
-_None yet._
+**Addendum 1 (11 Oct 2026, before any performance result).** A mechanics check on 4 sample coins (DECIDE period only;
+counts of rule states, no R looked at) showed that condition (i) of C1 — a zone- **or confirmation**-TF SFP after the
+tag — is met by **100%** of reversal setups (247 of 247), because the HTF turn (S5) is itself usually an SFP. As
+pre-registered, C1 and C1b would therefore be the same as B0. Two variants are added so the sweep idea is actually
+tested; C1 and C1b stay in the run unchanged:
+| # | Rule | Tag | Exact definition |
+|---|---|---|---|
+| C1c | Trigger-TF sweep required | [M] V24@11:37 ("a high get taken, then a market structure shift, fair value gap") | Reversal setups arm only when condition (ii) of C1 holds (the MSB leg took out the last trigger-TF swing before the swing it breaks, after the tag). Stop beyond the leg extreme. In the sample, ~40% of reversal setups meet (ii). |
+| C1d | Zone-TF SFP or trigger-TF sweep required | [M] V24@7:23 ("SFP into the daily OB") | Reversal setups arm only when a **zone-TF** SFP (not the confirmation TF) printed after the tag, or (ii) holds. Stop: beyond the extreme since the tag for the SFP case, beyond the leg extreme for (ii). |
+Both belong to the C1 family for the selection rule (§7.2).
