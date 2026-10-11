@@ -111,6 +111,17 @@ For each profile's F, on 2024-01-01 → latest:
 | Date | What was looked at | Why |
 |---|---|---|
 | 11 Oct 2026 | CONFIRM run: B0 (P1, P2), F_P1 = F3 (C2a + C7 + C1c), F_P2 = C2a; plus the baseline diagnostics | The one planned look (§8). F chosen by §7 + addendum 2 on DECIDE: F5 117 trades and F4 141 trades failed the 150 floor; F3 152 trades, +0.105R ≥ C2a alone (+0.011R). |
+| 11 Oct 2026 | **Unintended extra look:** the analysis script also printed the C4 universe tiers for CONFIRM, because it derives them from the B0 rows automatically (P1: top-20 +0.07R on 248, majors +0.51R on 29; P2: all tiers negative). | A script default, not a choice. C4 failed on DECIDE (every tier worse than B0), so it was not in F; these numbers are not acted on. Logged so the look is on record. |
+
+## 9b. Outcome (11 Oct 2026)
+| Profile | F | DECIDE 2021–23 | CONFIRM 2024–26 | Verdict |
+|---|---|---|---|---|
+| P1 | C2a + C7 + C1c | +0.105R (152 closed) | **−0.028R** (182 closed, 90% CI −0.25 … +0.18) | **FAIL** |
+| P2 | C2a | −0.055R (1,454 closed) | **−0.201R** (2,397 closed, 90% CI −0.27 … −0.13) | **FAIL** |
+
+Baselines on CONFIRM: B0 P1 −0.057R (1,152), B0 P2 −0.154R (5,058). **Kill rule applied (§8):** no further tuning on
+this history; the board and the indicator present setups as a candidate list for discretionary review, ARMED is
+labelled "not validated"; v1.2 rule switches stay available but off by default.
 
 ## 10. Addenda
 **Addendum 1 (11 Oct 2026, before any performance result).** A mechanics check on 4 sample coins (DECIDE period only;
