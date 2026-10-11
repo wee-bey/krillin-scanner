@@ -1,0 +1,163 @@
+{
+ "engine": "mayne.v1.2-js.1",
+ "lastDay": "2026-10-10",
+ "armFrom": "2024-01-01",
+ "armTo": "2026-12-31",
+ "variants": [
+  "B0",
+  "F3",
+  "C2a"
+ ],
+ "specs": {
+  "B0": {},
+  "F3": {
+   "only": [
+    "P1"
+   ],
+   "gate": "btc",
+   "maxTagN": 2,
+   "sweepDef": "ltf",
+   "reqSweep": true
+  },
+  "C2a": {
+   "only": [
+    "P2"
+   ],
+   "gate": "btc"
+  }
+ },
+ "extra": {},
+ "exec": {
+  "X11": {
+   "maker": 0.065,
+   "taker": 0.065
+  },
+  "X12": {
+   "maker": 0.02,
+   "taker": 0.08
+  },
+  "THRU": 0.02
+ },
+ "cols": [
+  "v",
+  "sym",
+  "prof",
+  "dir",
+  "tArm",
+  "tFill",
+  "tExit",
+  "st",
+  "how",
+  "grade",
+  "cont",
+  "zone",
+  "slWhy",
+  "en",
+  "sl0",
+  "pl",
+  "pt",
+  "ft",
+  "rr",
+  "riskAtr",
+  "riskPct",
+  "R",
+  "Rg",
+  "Rn",
+  "Rn11",
+  "fR",
+  "rank",
+  "reg",
+  "swV11",
+  "swHtf",
+  "swZone",
+  "swLtf",
+  "extSw",
+  "tagN",
+  "sameBar",
+  "ote",
+  "stacked",
+  "aligned",
+  "nBoost",
+  "btc",
+  "rs30",
+  "hr",
+  "dow",
+  "part",
+  "att",
+  "mkt",
+  "qty"
+ ],
+ "dcols": [
+  "sym",
+  "prof",
+  "tArm",
+  "mfeX",
+  "maeX",
+  "mfeH",
+  "maeH",
+  "best",
+  "same"
+ ],
+ "pcols": [
+  "prof",
+  "kind",
+  "dir",
+  "tArm",
+  "Rg",
+  "Rn",
+  "realRg"
+ ],
+ "of": 8,
+ "shards": [
+  {
+   "shard": 0,
+   "coins": 94,
+   "rows": 1356,
+   "made": "2026-10-11T18:26:29.062Z"
+  },
+  {
+   "shard": 1,
+   "coins": 93,
+   "rows": 1313,
+   "made": "2026-10-11T18:26:33.239Z"
+  },
+  {
+   "shard": 2,
+   "coins": 93,
+   "rows": 1306,
+   "made": "2026-10-11T18:26:25.457Z"
+  },
+  {
+   "shard": 3,
+   "coins": 93,
+   "rows": 959,
+   "made": "2026-10-11T18:26:27.042Z"
+  },
+  {
+   "shard": 4,
+   "coins": 93,
+   "rows": 1370,
+   "made": "2026-10-11T18:26:11.846Z"
+  },
+  {
+   "shard": 5,
+   "coins": 93,
+   "rows": 1210,
+   "made": "2026-10-11T18:26:23.412Z"
+  },
+  {
+   "shard": 6,
+   "coins": 93,
+   "rows": 930,
+   "made": "2026-10-11T18:26:25.390Z"
+  },
+  {
+   "shard": 7,
+   "coins": 93,
+   "rows": 1814,
+   "made": "2026-10-11T18:26:12.111Z"
+  }
+ ],
+ "merged": "2026-10-11T18:27:03.819Z",
+ "rows": 10258
+}
