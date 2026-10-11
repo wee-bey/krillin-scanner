@@ -1,0 +1,809 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="color-scheme" content="dark">
+<meta name="theme-color" content="#0e1217">
+<title>Mayne Scanner</title>
+<link rel="icon" href="data:,">
+<style>
+:root{
+  --bg:#0e1217; --panel:#161c24; --panel2:#1d2530; --line:#2b3644;
+  --text:#e8ecf1; --muted:#a3afbe; --dim:#8591a1;
+  --accent:#6cb4f0; --long:#44d69a; --short:#ff7b7b; --warn:#f0b955;
+  --p1:#6cb4f0; --p2:#f0b955;
+}
+*{box-sizing:border-box}
+html{-webkit-text-size-adjust:100%}
+body{margin:0;background:var(--bg);color:var(--text);font:16px/1.45 system-ui,-apple-system,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;color-scheme:dark}
+a{color:var(--accent)}
+button,input,select{font:inherit;color:inherit}
+.wrap{max-width:1180px;margin:0 auto;padding:0 16px}
+h1,h2,h3{margin:0;line-height:1.25}
+h2{font-size:19px}
+h3{font-size:17px}
+.muted{color:var(--muted)} .dim{color:var(--dim)}
+.pos{color:var(--long)} .neg{color:var(--short)}
+.num{font-variant-numeric:tabular-nums}
+
+/* top bar + tabs */
+.top{border-bottom:1px solid var(--line);background:var(--panel)}
+.top .wrap{display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap;padding-top:10px;padding-bottom:0}
+.brand{font-size:20px;font-weight:700;letter-spacing:.2px;padding-bottom:10px}
+.tabs{display:flex;gap:4px}
+.tab{background:none;border:0;border-bottom:3px solid transparent;padding:10px 16px;cursor:pointer;color:var(--muted);font-weight:600}
+.tab[aria-selected="true"]{color:var(--text);border-bottom-color:var(--accent)}
+.tab:focus-visible,.btn:focus-visible,summary:focus-visible,select:focus-visible,input:focus-visible,a:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+main{padding:16px 0 8px}
+.pane[hidden]{display:none}
+
+/* generic bits */
+.panel{background:var(--panel);border:1px solid var(--line);border-radius:10px;padding:12px 14px}
+.btn{background:var(--accent);color:#07131f;border:0;border-radius:8px;padding:8px 16px;font-weight:700;cursor:pointer;min-height:40px}
+.btn:disabled{opacity:.55;cursor:default}
+.btn.ghost{background:var(--panel2);color:var(--text);border:1px solid var(--line)}
+.chip{display:inline-block;padding:1px 9px;border-radius:999px;font-size:14px;border:1px solid var(--line);background:var(--panel2);color:var(--muted);white-space:nowrap}
+.chip.long{color:var(--long);border-color:var(--long)} .chip.short{color:var(--short);border-color:var(--short)}
+.chip.grade{color:var(--warn);border-color:var(--warn);font-weight:700}
+.chip.new{background:var(--accent);border-color:var(--accent);color:#07131f;font-weight:700}
+.chip.chg{color:var(--accent);border-color:var(--accent)}
+.banner{border:1px solid var(--warn);background:#2a2412;color:#f6dca0;border-radius:8px;padding:10px 12px;margin-bottom:12px}
+.banner.err{border-color:var(--short);background:#2c1a1a;color:#ffc9c9}
+
+/* board status */
+.status{display:grid;gap:10px;margin-bottom:14px}
+.status-row{display:flex;flex-wrap:wrap;align-items:center;justify-content:space-between;gap:10px}
+.progress{height:8px;border-radius:6px;background:var(--panel2);overflow:hidden}
+.progress>i{display:block;height:100%;width:0;background:var(--accent);transition:width .25s}
+.counts{display:flex;flex-wrap:wrap;gap:8px}
+.count{background:var(--panel2);border:1px solid var(--line);border-radius:8px;padding:4px 10px;cursor:pointer;color:var(--text);min-height:36px}
+.count b{margin-left:6px}
+.count.zero{color:var(--dim)}
+details.set summary,details.errs summary,details.how summary{cursor:pointer;font-weight:600}
+.setgrid{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:12px;margin-top:12px}
+.setgrid label{display:grid;gap:4px;color:var(--muted);font-size:15px}
+.setgrid input[type=number]{background:var(--bg);border:1px solid var(--line);border-radius:8px;padding:8px 10px;width:100%;min-height:40px}
+.checks{display:flex;flex-wrap:wrap;gap:6px 18px;margin-top:12px}
+.checks label{display:flex;align-items:center;gap:8px;min-height:32px}
+.checks input{width:18px;height:18px}
+.errs ul{margin:8px 0 0;padding-left:18px;color:var(--muted)}
+
+/* groups + cards */
+.grp{margin-bottom:18px}
+.grp>summary{list-style:none;cursor:pointer;display:flex;align-items:baseline;flex-wrap:wrap;gap:4px 12px;margin-bottom:10px}
+.grp>summary::-webkit-details-marker{display:none}
+.grp>summary h2::before{content:"\25BE";display:inline-block;width:1.1em;color:var(--dim)}
+.grp:not([open])>summary h2::before{content:"\25B8"}
+.grp .gdesc{color:var(--muted);font-size:15px}
+.empty{color:var(--dim);padding:2px 0 6px}
+.cards{display:grid;grid-template-columns:repeat(auto-fill,minmax(min(100%,470px),1fr));gap:12px}
+.card{min-width:0;background:var(--panel);border:1px solid var(--line);border-left:4px solid var(--dim);border-radius:10px;padding:12px 14px;display:grid;gap:9px;align-content:start}
+.card.long{border-left-color:var(--long)} .card.short{border-left-color:var(--short)}
+.c-head{display:flex;flex-wrap:wrap;align-items:center;gap:6px 8px}
+.coin{font-size:21px;font-weight:700;margin-right:2px}
+.c-head .tv{margin-left:auto;font-weight:600}
+.line{overflow-wrap:anywhere}
+.hint{color:var(--muted);font-size:15px}
+.bias{display:flex;flex-wrap:wrap;gap:4px 14px;font-size:15px;color:var(--muted)}
+.bias b{font-weight:600}
+.lv{display:grid;grid-template-columns:repeat(auto-fit,minmax(118px,1fr));gap:6px}
+.lv>div{background:var(--panel2);border-radius:8px;padding:6px 9px;min-width:0}
+.lv .k{color:var(--muted);font-size:14px}
+.lv .v{font-size:17px;font-weight:600}
+.lv .r{font-size:14px;color:var(--muted)}
+.lv .sl .v{color:var(--short)} .lv .tg .v{color:var(--long)}
+.facts{display:flex;flex-wrap:wrap;gap:4px 16px;font-size:15px}
+.facts span{white-space:nowrap}
+.facts b{font-weight:600}
+
+/* results */
+.kpis{display:grid;grid-template-columns:repeat(auto-fit,minmax(135px,1fr));gap:10px;margin:10px 0 16px}
+.kpi{background:var(--panel);border:1px solid var(--line);border-radius:10px;padding:10px 12px}
+.kpi .k{color:var(--muted);font-size:14px}
+.kpi .v{font-size:25px;font-weight:700;line-height:1.2}
+.seg{display:inline-flex;border:1px solid var(--line);border-radius:8px;overflow:hidden}
+.seg button{background:var(--panel2);border:0;padding:8px 18px;cursor:pointer;color:var(--muted);font-weight:600;min-height:40px}
+.seg button[aria-pressed="true"]{background:var(--accent);color:#07131f}
+.sec{margin:26px 0 8px}
+.sec>h2{margin-bottom:6px}
+.tablewrap{overflow-x:auto;border:1px solid var(--line);border-radius:10px;background:var(--panel);-webkit-overflow-scrolling:touch}
+table{border-collapse:collapse;width:100%;font-size:15px}
+th,td{padding:7px 10px;text-align:right;white-space:nowrap;border-bottom:1px solid var(--line)}
+th{color:var(--muted);font-weight:600;background:var(--panel2);font-size:14px}
+th:first-child,td:first-child{text-align:left;position:sticky;left:0;background:var(--panel);z-index:1}
+th:first-child{background:var(--panel2)}
+tr:last-child td{border-bottom:0}
+td.l,th.l{text-align:left}
+tr.small td{color:var(--dim)} tr.small td.pos,tr.small td.neg{color:var(--dim)}
+.ss{display:block;font-size:13px;font-style:italic;color:var(--dim)}
+tr.base td{background:#1c2a3a} tr.base td:first-child{background:#1c2a3a}
+tr.trow{cursor:pointer} tr.trow:hover td{background:var(--panel2)}
+tr.det td{white-space:normal;text-align:left;background:var(--bg);padding:0}
+tr.det td>div{position:sticky;left:0;width:min(calc(100vw - 34px),760px);padding:10px 14px;display:grid;gap:4px}
+.how dl{margin:10px 0 0;display:grid;gap:8px}
+.how dt{color:var(--muted);font-size:14px;text-transform:uppercase;letter-spacing:.04em}
+.how dd{margin:0}
+.filters{display:grid;grid-template-columns:repeat(auto-fit,minmax(130px,1fr));gap:10px;margin:8px 0 10px}
+.filters label{display:grid;gap:4px;color:var(--muted);font-size:14px}
+.filters select,.filters input{background:var(--panel);border:1px solid var(--line);border-radius:8px;padding:8px 10px;min-height:40px;width:100%}
+.chartbox{background:var(--panel);border:1px solid var(--line);border-radius:10px;padding:10px 8px 8px;position:relative}
+.chartbox svg{display:block;width:100%;touch-action:pan-y}
+.legend{display:flex;flex-wrap:wrap;gap:4px 18px;padding:0 6px 6px;font-size:15px}
+.legend i{display:inline-block;width:14px;height:4px;border-radius:2px;margin-right:6px;vertical-align:middle}
+.readout{min-height:22px;padding:0 6px;font-size:15px;color:var(--muted)}
+.notice{background:var(--panel);border:1px dashed var(--line);border-radius:10px;padding:18px;color:var(--muted)}
+.notice b{color:var(--text)}
+footer{border-top:1px solid var(--line);margin-top:28px;padding:16px 0 28px;color:var(--muted);font-size:15px}
+footer p{margin:0 0 6px}
+@media (max-width:520px){ .coin{font-size:20px} .kpi .v{font-size:22px} }
+</style>
+</head>
+<body>
+<header class="top"><div class="wrap">
+  <div class="brand">Mayne Scanner</div>
+  <div class="tabs" role="tablist" aria-label="Sections">
+    <button class="tab" role="tab" id="tab-board" aria-controls="pane-board" aria-selected="true">Board</button>
+    <button class="tab" role="tab" id="tab-results" aria-controls="pane-results" aria-selected="false">Results</button>
+  </div>
+</div></header>
+
+<main class="wrap">
+  <!-- ═════════ BOARD ═════════ -->
+  <section class="pane" id="pane-board" role="tabpanel" aria-labelledby="tab-board">
+    <div class="panel status" id="status">
+      <div class="status-row">
+        <div id="st-text" class="num" aria-live="polite">Starting…</div>
+        <button class="btn" id="scan-now" type="button">Scan now</button>
+      </div>
+      <div class="progress" id="st-prog" hidden><i></i></div>
+      <div class="counts" id="st-counts"></div>
+      <details class="errs" id="st-errs" hidden><summary></summary><ul></ul></details>
+    </div>
+    <div id="banners"></div>
+    <details class="panel set" id="settings" style="margin-bottom:16px">
+      <summary>Settings</summary>
+      <div class="setgrid">
+        <label>Account size (USD)<input type="number" id="s-acct" min="1" step="100" inputmode="decimal"></label>
+        <label>Risk % (base)<input type="number" id="s-risk" min="0.1" max="10" step="0.1" inputmode="decimal"></label>
+        <label>Risk % (A+ grade)<input type="number" id="s-riskap" min="0.1" max="10" step="0.1" inputmode="decimal"></label>
+        <label>Universe size (top coins by volume)<input type="number" id="s-uni" min="5" max="200" step="5" inputmode="numeric"></label>
+      </div>
+      <div class="checks">
+        <label><input type="checkbox" id="s-p1"> P1 (H12 zone, H1 trigger)</label>
+        <label><input type="checkbox" id="s-p2"> P2 (H4 zone, M15 trigger)</label>
+        <label><input type="checkbox" id="s-p3"> P3 (H4 zone, M5 trigger; extra data per coin)</label>
+        <label><input type="checkbox" id="s-notify"> Browser notification when a coin becomes ARMED</label>
+      </div>
+      <p class="hint" style="margin:10px 0 0">Saved in this browser. Account and risk update the position sizes at once; universe and profile changes start a new scan.</p>
+    </details>
+    <div id="board"></div>
+  </section>
+
+  <!-- ═════════ RESULTS ═════════ -->
+  <section class="pane" id="pane-results" role="tabpanel" aria-labelledby="tab-results" hidden>
+    <div id="results"><div class="notice">Open this tab to load the replay results.</div></div>
+  </section>
+</main>
+
+<footer><div class="wrap">
+  <p>Trader Mayne system (mayne.v1.1) · separate from the Krillin scanner · planning aid only, not financial advice</p>
+  <p><a href="../">Back to the Krillin scanner</a></p>
+</div></footer>
+
+<script src="lib/engine.js"></script>
+<script>
+(function () {
+'use strict';
+const ME = window.MayneEngine;
+const $ = (s, el) => (el || document).querySelector(s);
+const $$ = (s, el) => Array.from((el || document).querySelectorAll(s));
+const esc = (s) => String(s == null ? '' : s).replace(/[&<>"']/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
+const sleep = (ms) => new Promise((r) => setTimeout(r, ms));
+const MINUS = '−', NDASH = '–';
+
+// ───────────────────────── formatting ─────────────────────────
+function sgn(x, d) { // signed number with a real minus; zero gets no sign
+  if (x == null || !isFinite(x)) return '—';
+  const s = Math.abs(x).toFixed(d == null ? 2 : d);
+  return (+s === 0 ? '' : x > 0 ? '+' : MINUS) + s;
+}
+const pct = (x, d) => (x == null || !isFinite(x) ? '—' : (x * 100).toFixed(d == null ? 1 : d) + '%');
+const num = (x, d) => (x == null || !isFinite(x) ? '—' : x.toFixed(d == null ? 2 : d));
+function pxDecimals(ref) { // price precision from magnitude
+  const a = Math.abs(ref);
+  if (!isFinite(a) || a === 0) return 2;
+  if (a >= 1000) return 1; if (a >= 100) return 2; if (a >= 10) return 3; if (a >= 1) return 4;
+  return Math.min(10, 4 - Math.floor(Math.log10(a)));
+}
+function fmtPx(x, ref) {
+  if (x == null || !isFinite(x)) return '—';
+  const d = pxDecimals(ref == null ? x : ref);
+  return x.toLocaleString('en-US', { minimumFractionDigits: d, maximumFractionDigits: d });
+}
+function fmtQty(q) {
+  if (!isFinite(q)) return '—';
+  const a = Math.abs(q), d = a >= 1000 ? 0 : a >= 10 ? 1 : a >= 1 ? 2 : a >= 0.1 ? 3 : 4;
+  return q.toLocaleString('en-US', { minimumFractionDigits: 0, maximumFractionDigits: d });
+}
+const fmtUsd = (x) => '$' + x.toLocaleString('en-US', { maximumFractionDigits: x >= 100 ? 0 : 2 });
+const utc = (ms) => (ms == null || !isFinite(ms) ? '—' : new Date(ms).toISOString().slice(0, 16).replace('T', ' '));
+const clock = (ms) => new Date(ms).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', second: '2-digit', hour12: false });
+function ago(ms) {
+  const s = Math.max(0, Math.round(ms / 1000));
+  if (s < 60) return 'just now';
+  const m = Math.floor(s / 60); if (m < 60) return m + 'm ago';
+  const h = Math.floor(m / 60); if (h < 48) return h + 'h ' + (m % 60) + 'm ago';
+  return Math.floor(h / 24) + 'd ' + (h % 24) + 'h ago';
+}
+const mmss = (ms) => { const s = Math.max(0, Math.ceil(ms / 1000)); return Math.floor(s / 60) + ':' + String(s % 60).padStart(2, '0'); };
+const agoSpan = (ts) => `<span data-ago="${ts}">${ago(Date.now() - ts)}</span>`;
+
+// ───────────────────────── settings (localStorage may throw: always wrapped) ─────────────────────────
+const SKEY = 'mayne.settings.v1', PKEY = 'mayne.prevscan.v1';
+const DEF = { acct: 10000, riskBase: 1, riskAP: 2, universe: 100, P1: true, P2: true, P3: false, notify: false };
+function sanitize(c) {
+  const f = (v, lo, hi, d) => { v = +v; return isFinite(v) && v >= lo && v <= hi ? v : d; };
+  return { acct: f(c.acct, 1, 1e9, DEF.acct), riskBase: f(c.riskBase, 0.01, 100, DEF.riskBase), riskAP: f(c.riskAP, 0.01, 100, DEF.riskAP),
+    universe: Math.round(f(c.universe, 5, 200, DEF.universe)), P1: !!c.P1, P2: !!c.P2, P3: !!c.P3, notify: !!c.notify };
+}
+function loadCfg() { try { return sanitize(Object.assign({}, DEF, JSON.parse(localStorage.getItem(SKEY) || '{}'))); } catch (e) { return Object.assign({}, DEF); } }
+function saveCfg() { try { localStorage.setItem(SKEY, JSON.stringify(S.cfg)); } catch (e) { /* storage unavailable: settings last for this visit only */ } }
+
+// ───────────────────────── universe (same lists and 1000-prefix rule as tools/candles.js) ─────────────────────────
+const STABLES = new Set('usdt usdc dai fdusd tusd usde usdd pyusd usds usd1 frax lusd gusd busd eurc eure rlusd usdb susd usdx usdtb usdf usdg usdp usdq crvusd gho dola mim usdy usdm usd0 ousg buidl eurt xusd bfusd usdai usdr cusd ausd'.split(' '));
+const WRAPPED = new Set('wbtc weth steth wsteth weeth cbbtc cbeth reth wbeth bnsol jitosol msol lbtc solvbtc wbnb meth ezeth rseth susde tbtc btcb sweth oseth ethx wsol stsol jupsol bbsol clbtc unibtc pumpbtc fbtc enzobtc swbtc xsolvbtc lseth wrseth stkaave'.split(' '));
+const NON_CRYPTO = new Set('btcdom defi football bluebird xau xag xpt xpd'.split(' '));
+const baseOf = (sym) => { const b = sym.replace(/USDT$/, ''); const m = b.match(/^(1000000|1000|1M)(.+)$/); return m ? { base: m[2], mult: m[1] === '1000' ? 1000 : 1e6 } : { base: b, mult: 1 }; };
+function pickUniverse(tickers, info, n) {
+  const rows = [];
+  for (const t of tickers) {
+    const s = t && t.symbol; if (!s || !/^[A-Z0-9]+USDT$/.test(s)) continue;
+    if (info && !info.has(s)) continue;                       // perpetual + TRADING only
+    const base = baseOf(s).base, b = base.toLowerCase();
+    if (STABLES.has(b) || WRAPPED.has(b) || NON_CRYPTO.has(b)) continue;
+    const qv = +t.quoteVolume; if (!(qv > 0)) continue;
+    rows.push({ sym: s, base, qv });
+  }
+  rows.sort((a, b) => b.qv - a.qv);
+  const seen = new Set(), out = [];
+  for (const r of rows) { if (seen.has(r.base)) continue; seen.add(r.base); out.push(r); if (out.length >= n) break; }
+  if (!out.some((r) => r.sym === 'BTCUSDT')) out.unshift(rows.find((r) => r.sym === 'BTCUSDT') || { sym: 'BTCUSDT', base: 'BTC', qv: 0 });
+  return out;
+}
+
+// ───────────────────────── Binance access: rate limiter + retry ─────────────────────────
+// Sliding one-minute weight budget (limit is 2400/min per IP; we stay near 1000). klines with limit=499 weighs 2,
+// ticker/24hr for all symbols weighs 40, exchangeInfo weighs 1.
+const API = 'https://fapi.binance.com';
+const LIM = { budget: 1000, windowMs: 60000, maxInflight: 8, hist: [], inflight: 0, blockedUntil: 0, waiting: false };
+async function acquire(w) {
+  for (;;) {
+    const now = Date.now();
+    while (LIM.hist.length && LIM.hist[0][0] <= now - LIM.windowMs) LIM.hist.shift();
+    const used = LIM.hist.reduce((a, x) => a + x[1], 0);
+    if (now >= LIM.blockedUntil && LIM.inflight < LIM.maxInflight && used + w <= LIM.budget) { LIM.hist.push([now, w]); LIM.inflight++; LIM.waiting = false; return; }
+    let wait = 60;
+    if (now < LIM.blockedUntil) wait = LIM.blockedUntil - now;
+    else if (used + w > LIM.budget && LIM.hist.length) { wait = LIM.hist[0][0] + LIM.windowMs - now + 5; LIM.waiting = wait > 1500; }
+    await sleep(Math.min(Math.max(wait, 30), 1000));
+  }
+}
+async function getJSON(path, weight) { // one retry on network error / 5xx / 429
+  let lastErr;
+  for (let attempt = 0; attempt < 2; attempt++) {
+    await acquire(weight);
+    let retryMs = 0, retryable = true;
+    const ctrl = new AbortController(), to = setTimeout(() => ctrl.abort(), 20000);
+    try {
+      const res = await fetch(API + path, { signal: ctrl.signal });
+      if (res.status === 429 || res.status === 418) {
+        const ra = +res.headers.get('Retry-After') || 0;
+        retryMs = (ra || (res.status === 418 ? 60 : 5)) * 1000; LIM.blockedUntil = Date.now() + retryMs;
+        throw new Error('HTTP ' + res.status + ' (rate limited)');
+      }
+      if (!res.ok) { retryable = res.status >= 500; const e = new Error('HTTP ' + res.status + (res.status === 451 ? ' (Binance Futures is not available from this region)' : '')); e.status = res.status; throw e; }
+      return await res.json();
+    } catch (e) {
+      lastErr = e.name === 'AbortError' ? new Error('timeout') : e;
+      if (e.status && !retryable) break;
+    } finally { clearTimeout(to); LIM.inflight--; }
+    if (attempt === 0) await sleep(retryMs ? Math.min(retryMs, 30000) : 900 + Math.random() * 600);
+  }
+  throw lastErr;
+}
+
+// kline rows → closed-candle columns. A candle counts only when open time + TF length <= now.
+function toCols(rows, tf, now) {
+  if (!Array.isArray(rows)) throw new Error('unexpected klines response');
+  const ms = ME.TF_MS[tf], C = { t: [], o: [], h: [], l: [], c: [], v: [] };
+  for (const r of rows) {
+    const t = +r[0]; if (!isFinite(t) || t + ms > now) continue;
+    const o = +r[1], h = +r[2], l = +r[3], c = +r[4];
+    if (!isFinite(o + h + l + c)) continue;
+    C.t.push(t); C.o.push(o); C.h.push(h); C.l.push(l); C.c.push(c); C.v.push(+r[5] || 0);
+  }
+  return C;
+}
+const PROF_TFS = (p) => { const P = ME.PROFILES[p]; return { Z: P.zone, CF: P.conf, T: P.trig }; };
+const TV_INTERVAL = { P1: 60, P2: 15, P3: 5 };
+
+// ───────────────────────── state ─────────────────────────
+const S = {
+  cfg: loadCfg(), scanning: false, cur: null, last: null, nextAt: 0, info: null, infoAt: 0, banner: null,
+  prevSigs: null, tab: 'board', renderQueued: false, pending: false,
+};
+try { const p = JSON.parse(localStorage.getItem(PKEY) || 'null'); if (p && Date.now() - p.t < 3 * 3600e3) S.prevSigs = p.sigs; } catch (e) { /* ignore */ }
+
+const GROUPS = [
+  { st: 5, name: 'ACTIVE', desc: 'In a trade: the limit order has filled.' },
+  { st: 4, name: 'ARMED', desc: 'Limit order working: entry, stop and targets are known.' },
+  { st: 3, name: 'FORMING+', desc: 'Higher-timeframe turn confirmed; waiting for the trigger.' },
+  { st: 2, name: 'FORMING', desc: 'Zone tagged; waiting for a higher-timeframe turn.' },
+  { st: 1, name: 'WATCH', desc: 'Price is near a zone.' },
+];
+const STATE_HINT = {
+  1: 'Price is close to the zone. Waiting for it to be tagged.',
+  2: 'Zone tagged. Waiting for a higher-timeframe turn (SFP or MSB).',
+  3: 'Turn confirmed. Waiting for a trigger-timeframe MSB with displacement.',
+  4: 'Limit order at the entry. It is cancelled if price reaches the target first, the zone breaks, bias is lost or it is not filled in time.',
+  5: 'Filled. Take the partial at PL, runner to FT; the stop trails after the partial.',
+};
+const sig = (it) => [it.state.st, it.state.dir, it.trade ? it.trade.id : '', it.state.partDone ? 1 : 0].join('|');
+
+// ───────────────────────── scan ─────────────────────────
+async function getInfo() { // exchangeInfo once (refreshed every 6 h): PERPETUAL + TRADING symbols
+  if (S.info && Date.now() - S.infoAt < 6 * 3600e3) return S.info;
+  try {
+    const d = await getJSON('/fapi/v1/exchangeInfo', 1);
+    const set = new Set((d.symbols || []).filter((s) => s.contractType === 'PERPETUAL' && s.status === 'TRADING').map((s) => s.symbol));
+    if (!set.size) throw new Error('exchangeInfo looks empty');
+    S.info = set; S.infoAt = Date.now(); return set;
+  } catch (e) { S.infoWarn = e.message; return S.info; }   // null = fall back to ticker-only filtering
+}
+async function pool(items, n, fn) {
+  let i = 0;
+  await Promise.all(Array.from({ length: Math.min(n, items.length) }, async () => { while (i < items.length) { const k = i++; await fn(items[k], k); } }));
+}
+async function scanCoin(coin, profs, scan) {
+  const need = new Set(['1w', '1d']);
+  for (const p of profs) { const t = PROF_TFS(p); need.add(t.Z); need.add(t.CF); need.add(t.T); }
+  const tfs = Array.from(need), K = {};
+  try {
+    const rows = await Promise.all(tfs.map((tf) => getJSON(`/fapi/v1/klines?symbol=${coin.sym}&interval=${tf}&limit=499`, 2)));
+    const now = Date.now();
+    tfs.forEach((tf, i) => { K[tf] = toCols(rows[i], tf, now); });
+  } catch (e) { scan.errors.push({ sym: coin.sym, kind: 'data error', msg: e.message }); return; }
+  scan.okCoins++;
+  let any = false, short = false;
+  for (const p of profs) {
+    const t = PROF_TFS(p);
+    if (K['1w'].t.length < 3 || K['1d'].t.length < 20 || K[t.Z].t.length < 20 || K[t.CF].t.length < 20 || K[t.T].t.length < 40) { short = true; continue; }
+    try {
+      const res = ME.run({ W: K['1w'], D: K['1d'], Z: K[t.Z], CF: K[t.CF], T: K[t.T] },
+        { profile: p, sym: coin.sym, acct: scan.cfg.acct, riskBase: scan.cfg.riskBase, riskAP: scan.cfg.riskAP });
+      const st = res.state;
+      if (st.st >= 1) { scan.items.set(coin.sym + '|' + p, { sym: coin.sym, base: coin.base, prof: p, rank: coin.rank, state: st, trade: st.trade }); any = true; }
+    } catch (e) { scan.errors.push({ sym: coin.sym, kind: 'engine error ' + p, msg: e.message }); }
+  }
+  if (!any) { if (short) scan.short++; else scan.idle++; }
+}
+async function runScan(kind) {
+  if (S.scanning) { S.pending = true; return; }
+  if (!ME) return;
+  S.scanning = true; S.pending = false;
+  const started = Date.now(); S.nextAt = nextScanAt(started);
+  const cfg = Object.assign({}, S.cfg), profs = ['P1', 'P2', 'P3'].filter((p) => cfg[p]);
+  const scan = { kind, startedAt: started, cfg, profs, items: new Map(), errors: [], total: 0, done: 0, okCoins: 0, idle: 0, short: 0, finishedAt: 0 };
+  S.cur = scan; S.banner = null; queueRender();
+  try {
+    if (!profs.length) throw new Error('No profile is enabled. Turn on P1, P2 or P3 in Settings.');
+    const [tick, info] = await Promise.all([getJSON('/fapi/v1/ticker/24hr', 40), getInfo()]);
+    if (!Array.isArray(tick)) throw new Error('unexpected ticker response');
+    const uni = pickUniverse(tick, info, cfg.universe); uni.forEach((c, i) => { c.rank = i + 1; });
+    scan.total = uni.length; scan.noInfo = !info; queueRender();
+    await pool(uni, 4, async (coin) => { await scanCoin(coin, profs, scan); scan.done++; queueRender(); });
+    if (!scan.okCoins) throw new Error('No coin data could be loaded (' + (scan.errors[0] ? scan.errors[0].msg : 'unknown error') + ').');
+    scan.finishedAt = Date.now();
+    finishScan(scan);
+  } catch (e) {
+    S.banner = { kind: 'err', text: 'Scan failed: ' + e.message + (S.last ? ' Showing the previous scan.' : '') + ' It will retry at the next slot.' };
+  }
+  S.scanning = false; S.cur = null;
+  if (Date.now() >= S.nextAt) S.nextAt = nextScanAt(Date.now());
+  queueRender();
+  if (S.pending) { S.pending = false; runScan('queued'); }
+}
+function finishScan(scan) {
+  // mark rows that are new or changed since the previous scan (in this session, or the last visit if recent)
+  const prev = S.last ? new Map(Array.from(S.last.items, ([k, it]) => [k, { sig: sig(it), name: it.state.stName, st: it.state.st }])) : S.prevSigs ? new Map(Object.entries(S.prevSigs)) : null;
+  for (const [k, it] of scan.items) {
+    const p = prev && prev.get(k);
+    it.badge = !prev ? null : !p ? { kind: 'new' } : p.sig !== sig(it) ? { kind: 'chg', was: p.name } : null;
+    if (S.cfg.notify && prev && it.state.st === 4 && (!p || p.st !== 4)) notifyArmed(it);
+  }
+  S.last = scan;
+  try { localStorage.setItem(PKEY, JSON.stringify({ t: Date.now(), sigs: Object.fromEntries(Array.from(scan.items, ([k, it]) => [k, { sig: sig(it), name: it.state.stName, st: it.state.st }])) })); } catch (e) { /* ignore */ }
+}
+function notifyArmed(it) {
+  try {
+    if (!('Notification' in window) || Notification.permission !== 'granted') return;
+    const tr = it.trade, n = new Notification(`${it.base} ${it.state.dir === 1 ? 'LONG' : 'SHORT'} armed (${it.prof})`,
+      { body: tr ? `Entry ${fmtPx(tr.en)} · SL ${fmtPx(tr.sl0, tr.en)} · PT ${fmtPx(tr.pt, tr.en)} · grade ${tr.grade}` : '', tag: 'mayne-' + it.sym + '-' + it.prof });
+    void n;
+  } catch (e) { /* notifications are optional */ }
+}
+// next scan: 20 s after the next 15-minute candle close (UTC :00 :15 :30 :45)
+function nextScanAt(now) {
+  const Q = 9e5, OFF = 2e4, b = Math.floor(now / Q) * Q;
+  return now < b + OFF ? b + OFF : b + Q + OFF;
+}
+
+// ───────────────────────── board rendering ─────────────────────────
+function queueRender() { if (S.renderQueued) return; S.renderQueued = true; setTimeout(() => { S.renderQueued = false; renderBoard(); }, 200); }
+
+function biasHTML(b) {
+  if (!b) return '';
+  const col = (s) => (s === 1 || s === -2 ? 'pos' : s === -1 || s === 2 ? 'neg' : 'dim');
+  return `<div class="bias"><span>W <b class="${col(b.w)}">${esc(ME.stName(b.w))}</b></span><span>D <b class="${col(b.d)}">${esc(ME.stName(b.d))}</b></span></div>`;
+}
+function cardHTML(it) {
+  const st = it.state, tr = it.trade, long = st.dir === 1, cfg = S.cfg;
+  const z = st.zone, ref = tr ? tr.en : z ? (z.top + z.bot) / 2 : st.close;
+  const tgMs = ME.TF_MS[ME.PROFILES[it.prof].trig];
+  let h = `<article class="card ${long ? 'long' : 'short'}" data-sym="${esc(it.sym)}" data-prof="${it.prof}" data-state="${esc(st.stName)}">`;
+  h += `<div class="c-head"><span class="coin" title="${esc(it.sym)}">${esc(it.base)}</span><span class="chip">${esc(ME.PROFILES[it.prof].name)}</span><span class="chip ${long ? 'long' : 'short'}">${long ? 'LONG' : 'SHORT'}</span>`;
+  if (tr) h += `<span class="chip grade">${esc(tr.grade)}</span>`;
+  if (it.badge) h += it.badge.kind === 'new' ? '<span class="chip new">NEW</span>' : `<span class="chip chg" title="state changed since the previous scan">CHANGED, was ${esc(it.badge.was)}</span>`;
+  h += `<a class="tv" href="https://www.tradingview.com/chart/?symbol=BINANCE:${encodeURIComponent(it.sym)}.P&interval=${TV_INTERVAL[it.prof]}" target="_blank" rel="noopener noreferrer">TradingView</a></div>`;
+  if (z) {
+    h += `<div class="line"><b>${esc(z.tf)} ${esc(z.kind)}</b> <span class="num">${fmtPx(z.bot, ref)} ${NDASH} ${fmtPx(z.top, ref)}</span> <span class="muted">· ${z.cont ? 'continuation' : 'reversal'}</span></div>`;
+  }
+  if (st.st === 1 && z && isFinite(st.close)) {
+    const dist = long ? st.close - z.top : z.bot - st.close;
+    h += `<div class="hint num">Price ${fmtPx(st.close, ref)} is ${(Math.abs(dist) / st.close * 100).toFixed(2)}% ${long ? 'above' : 'below'} the zone.</div>`;
+  }
+  if (st.turn && st.turn.how) h += `<div class="line"><span class="muted">Turn:</span> ${esc(st.turn.how)}</div>`;
+  if (!tr) h += `<div class="hint">${STATE_HINT[st.st]}${st.swept ? ' Liquidity has been swept.' : ''}</div>`;
+  if (tr) {
+    const R = (px) => (long ? px - tr.en : tr.en - px) / tr.risk;
+    const lv = (cls, k, px, r) => `<div class="${cls}"><div class="k">${k}</div><div class="v num">${fmtPx(px, tr.en)}</div><div class="r num">${r}</div></div>`;
+    const riskPct = tr.grade === 'A+' ? cfg.riskAP : cfg.riskBase, riskUsd = cfg.acct * riskPct / 100, size = riskUsd / tr.risk;
+    h += '<div class="lv">' + lv('', 'Entry', tr.en, 'limit') + lv('sl', 'SL', tr.sl0, MINUS + '1.00R') + lv('tg', 'PL (partial)', tr.pl, sgn(R(tr.pl)) + 'R')
+      + lv('tg', 'PT', tr.pt, sgn(R(tr.pt)) + 'R') + lv('tg', 'FT', tr.ft, sgn(R(tr.ft)) + 'R');
+    if (st.st === 5 && tr.sl !== tr.sl0) h += lv('sl', 'Stop now (trailed)', tr.sl, sgn(R(tr.sl)) + 'R');
+    h += '</div>';
+    h += `<div class="facts num"><span>R:R to PT <b>${num(tr.rr, 2)}</b></span><span>Risk <b>${riskPct}%</b> = ${fmtUsd(riskUsd)}</span><span>Size <b>${fmtQty(size)}</b> ${esc(it.sym.replace(/USDT$/, ''))}</span><span>Notional ${fmtUsd(size * tr.en)}</span></div>`;
+    const chips = (tr.boost || []).map((b) => `<span class="chip">${esc(b)}</span>`).join(' ') + (tr.aligned ? ' <span class="chip">HTF aligned</span>' : '') + (tr.stacked ? ' <span class="chip">stacked</span>' : '') + (tr.att > 1 ? ` <span class="chip">attempt ${tr.att}</span>` : '');
+    if (chips.trim()) h += `<div><span class="muted">Grade ${esc(tr.grade)} boosters:</span> ${chips}</div>`;
+    h += `<div class="line"><span class="muted">Stop reason:</span> ${esc(tr.slWhy)}</div>`;
+    const armedAt = tr.tArm + tgMs;
+    if (st.st === 4) {
+      const away = isFinite(st.close) ? Math.abs(st.close - tr.en) / tr.en * 100 : NaN;
+      h += `<div class="facts num"><span>Armed ${agoSpan(armedAt)}</span><span>Last close ${fmtPx(st.close, tr.en)}${isFinite(away) ? ' (' + away.toFixed(2) + '% from entry)' : ''}</span></div>`;
+    } else {
+      h += `<div class="facts num"><span>Armed ${agoSpan(armedAt)}</span><span>Filled ${isFinite(tr.tFill) ? agoSpan(tr.tFill) : '—'}</span><span>Partial (PL): <b>${st.partDone ? 'done' : 'not yet'}</b></span><span>Stop now <b>${fmtPx(tr.sl, tr.en)}</b>${tr.sl !== tr.sl0 ? ' (trailed)' : ''}</span></div>`;
+      if (isFinite(st.close)) h += `<div class="hint num">Last close ${fmtPx(st.close, tr.en)} (${sgn(R(st.close))}R from entry)</div>`;
+    }
+  }
+  h += biasHTML(st.bias) + '</article>';
+  return h;
+}
+function sortItems(a, b, stN) {
+  if (stN === 5 || stN === 4) {
+    const ga = a.trade && a.trade.grade === 'A+' ? 0 : 1, gb = b.trade && b.trade.grade === 'A+' ? 0 : 1;
+    if (stN === 4) { const da = Math.abs(a.state.close - a.trade.en) / a.trade.en, db = Math.abs(b.state.close - b.trade.en) / b.trade.en; if (da !== db) return da - db; }
+    if (ga !== gb) return ga - gb;
+  }
+  return a.rank - b.rank;
+}
+function renderBoard() {
+  const src = S.scanning && !S.last ? S.cur : S.last;
+  const cur = S.cur, scanning = S.scanning;
+  // header text
+  const stText = $('#st-text'), prog = $('#st-prog'), btn = $('#scan-now');
+  btn.disabled = scanning; btn.textContent = scanning ? 'Scanning…' : 'Scan now';
+  if (scanning && cur) {
+    stText.textContent = cur.total ? `Scanning ${cur.done}/${cur.total}${LIM.waiting ? ' (waiting for the rate limit)' : ''}` : 'Loading the coin list…';
+    prog.hidden = false; $('i', prog).style.width = (cur.total ? Math.round(cur.done / cur.total * 100) : 3) + '%';
+  } else prog.hidden = true;
+  if (!scanning) updateClockText();
+  // banners
+  let bn = '';
+  if (S.banner) bn += `<div class="banner ${S.banner.kind === 'err' ? 'err' : ''}" role="alert">${esc(S.banner.text)}</div>`;
+  if (src && src.noInfo) bn += `<div class="banner">The contract list (exchangeInfo) could not be loaded, so delivery contracts are filtered by name only.</div>`;
+  if (!ME) bn += '<div class="banner err">The engine file (lib/engine.js) did not load.</div>';
+  $('#banners').innerHTML = bn;
+  // counts + errors
+  const by = {}; GROUPS.forEach((g) => { by[g.st] = []; });
+  if (src) for (const it of src.items.values()) if (S.cfg[it.prof] && by[it.state.st]) by[it.state.st].push(it);
+  $('#st-counts').innerHTML = GROUPS.map((g) => `<button type="button" class="count ${by[g.st].length ? '' : 'zero'}" data-go="${g.name}">${g.name}<b class="num">${by[g.st].length}</b></button>`).join('')
+    + `<span class="count zero" style="cursor:default" title="Coins with no setup">Idle<b class="num">${src ? src.idle : 0} coins</b></span>`;
+  const errs = src ? src.errors : [], det = $('#st-errs');
+  det.hidden = !errs.length;
+  if (errs.length) { $('summary', det).textContent = `${errs.length} error${errs.length > 1 ? 's' : ''}`; $('ul', det).innerHTML = errs.map((e) => `<li><b>${esc(e.sym)}</b> ${esc(e.kind)}: ${esc(e.msg)}</li>`).join(''); }
+  // groups
+  if (!src) { $('#board').innerHTML = `<div class="notice">${scanning ? 'Loading data from Binance…' : 'No scan yet.'}</div>`; return; }
+  const keepOpen = {}; $$('#board details.grp').forEach((d) => { keepOpen[d.dataset.g] = d.open; });
+  let h = '';
+  for (const g of GROUPS) {
+    const list = by[g.st].sort((a, b) => sortItems(a, b, g.st));
+    const open = g.name in keepOpen ? keepOpen[g.name] : true;
+    h += `<details class="grp" data-g="${g.name}" id="g-${g.name.replace('+', 'P')}"${open ? ' open' : ''}><summary><h2>${g.name} <span class="muted num">${list.length}</span></h2><span class="gdesc">${g.desc}</span></summary>`;
+    h += list.length ? `<div class="cards">${list.map(cardHTML).join('')}</div>` : '<div class="empty">None right now.</div>';
+    h += '</details>';
+  }
+  const extra = [];
+  if (src.short) extra.push(`${src.short} coin${src.short > 1 ? 's' : ''} with too little history`);
+  if (S.infoWarn && !src.noInfo) { /* transient exchangeInfo problem, already recovered from cache */ }
+  h += `<p class="hint">${src.idle} coins have no setup${extra.length ? ' · ' + extra.join(' · ') : ''}. ${src.total ? `Universe: top ${src.total} USDT perpetuals by 24 h volume.` : ''}</p>`;
+  $('#board').innerHTML = h;
+}
+function updateClockText() {
+  if (S.scanning) return;
+  const el = $('#st-text'), l = S.last;
+  const nx = S.nextAt ? ` · next scan in ${mmss(S.nextAt - Date.now())}` : '';
+  el.textContent = l ? `Last scan ${clock(l.finishedAt)}${nx}` : (S.banner ? 'No data yet' + nx : 'Starting…');
+}
+function refreshAgo() { $$('[data-ago]').forEach((e) => { e.textContent = ago(Date.now() - +e.dataset.ago); }); }
+
+// ───────────────────────── settings UI ─────────────────────────
+function initSettings() {
+  const c = S.cfg;
+  $('#s-acct').value = c.acct; $('#s-risk').value = c.riskBase; $('#s-riskap').value = c.riskAP; $('#s-uni').value = c.universe;
+  $('#s-p1').checked = c.P1; $('#s-p2').checked = c.P2; $('#s-p3').checked = c.P3; $('#s-notify').checked = c.notify;
+  let t = null;
+  const rescanSoon = () => { clearTimeout(t); t = setTimeout(() => runScan('settings'), 1200); };
+  const readNums = () => { S.cfg = sanitize(Object.assign({}, S.cfg, { acct: $('#s-acct').value, riskBase: $('#s-risk').value, riskAP: $('#s-riskap').value, universe: $('#s-uni').value })); saveCfg(); };
+  ['#s-acct', '#s-risk', '#s-riskap'].forEach((s) => $(s).addEventListener('input', () => { readNums(); renderBoard(); }));
+  $('#s-uni').addEventListener('change', () => { const old = S.cfg.universe; readNums(); $('#s-uni').value = S.cfg.universe; if (old !== S.cfg.universe) rescanSoon(); });
+  ['p1', 'p2', 'p3'].forEach((p) => $('#s-' + p).addEventListener('change', (e) => { S.cfg[p.toUpperCase()] = e.target.checked; saveCfg(); if (e.target.checked) rescanSoon(); else renderBoard(); }));
+  $('#s-notify').addEventListener('change', async (e) => {
+    if (!e.target.checked) { S.cfg.notify = false; saveCfg(); return; }
+    let ok = false;
+    try { if ('Notification' in window) ok = Notification.permission === 'granted' || (await Notification.requestPermission()) === 'granted'; } catch (err) { ok = false; }
+    S.cfg.notify = ok; e.target.checked = ok; saveCfg();
+    if (!ok) { S.banner = { kind: 'warn', text: 'Notifications are not allowed in this browser, so the option stays off.' }; renderBoard(); }
+  });
+}
+
+// ═════════════════════════ RESULTS ═════════════════════════
+const RES = { loaded: false, loading: false, index: null, trades: null, sweep: null, market: null, prof: null, filt: { prof: '', dir: '', grade: '', st: '', q: '' }, rows: [], open: new Set() };
+async function getStatic(name) { // null when the file is missing or not JSON
+  try { const r = await fetch('data/' + name, { cache: 'no-cache' }); if (!r.ok) return null; return await r.json(); } catch (e) { return null; }
+}
+async function loadResults() {
+  if (RES.loading) return; RES.loading = true;
+  $('#results').innerHTML = '<div class="notice">Loading replay results…</div>';
+  const [index, trades, sweep, market] = await Promise.all(['index.json', 'trades.json', 'sweep.json', 'market.json'].map(getStatic));
+  Object.assign(RES, { index, trades, sweep, market, loaded: true, loading: false });
+  decodeTrades(); RES.prof = index && index.summary ? Object.keys(index.summary)[0] : null;
+  renderResults();
+}
+function decodeTrades() {
+  RES.rows = [];
+  const T = RES.trades; if (!T || !Array.isArray(T.cols) || !Array.isArray(T.rows)) return;
+  for (const r of T.rows) { const o = {}; T.cols.forEach((c, i) => { o[c] = r[i]; }); o.base = baseOf(o.sym || '').base; RES.rows.push(o); }
+}
+const SMALL_N = 30;
+function sCell(s, key, kind) { // coloured, signed stat cell
+  const v = s[key]; if (v == null) return '<td class="num">—</td>';
+  const small = (s.closed || 0) < SMALL_N;
+  const cls = !small && kind === 'r' ? (v > 0 ? 'pos' : v < 0 ? 'neg' : '') : '';
+  return `<td class="num ${cls}">${kind === 'r' ? sgn(v, 2) : kind === 'dd' ? num(v, 2) : num(v, 2)}</td>`;
+}
+function statRow(label, s) {
+  const small = (s.closed || 0) < SMALL_N;
+  return `<tr class="${small ? 'small' : ''}"><td>${esc(label)}${small ? '<span class="ss">small sample</span>' : ''}</td><td class="num">${s.closed == null ? '—' : s.closed}</td><td class="num">${pct(s.win)}</td>${sCell(s, 'avgR', 'r')}<td class="num">${num(s.pf, 2)}</td>${sCell(s, 'sumR', 'r')}<td class="num">${num(s.maxDD, 2)}</td></tr>`;
+}
+const BREAK = [['regime', 'By market regime (BTC 60-day trend)', ['bull', 'chop', 'bear']], ['year', 'By year armed'], ['grade', 'By grade', ['A+', 'A', 'B']], ['dir', 'By direction', ['long', 'short']],
+  ['path', 'By path'], ['zone', 'By zone'], ['stop', 'By stop reason'], ['btc', 'By coin group', ['BTC', 'ETH', 'SOL', 'other']]];
+function breakdownHTML(sum) {
+  let h = '';
+  for (const [key, title, order] of BREAK) {
+    const obj = sum[key]; if (!obj || !Object.keys(obj).length) continue;
+    const keys = Object.keys(obj).sort((a, b) => { if (!order) return 0; const ia = order.indexOf(a), ib = order.indexOf(b); return (ia < 0 ? 99 : ia) - (ib < 0 ? 99 : ib); });
+    h += `<h3 style="margin:16px 0 6px">${title}</h3><div class="tablewrap"><table><thead><tr><th>${esc(key)}</th><th>Closed</th><th>Win %</th><th>Avg R</th><th>PF</th><th>${'Σ'}R</th><th>Max DD</th></tr></thead><tbody>${keys.map((k) => statRow(k, obj[k])).join('')}</tbody></table></div>`;
+  }
+  return h;
+}
+function kpiHTML(a) {
+  const k = (label, v, cls) => `<div class="kpi"><div class="k">${label}</div><div class="v num ${cls || ''}">${v}</div></div>`;
+  return '<div class="kpis">' + k('Armed', a.armed) + k('Filled', a.filled) + k('Closed', a.closed) + k('Win rate', pct(a.win)) + k('Avg R (net)', sgn(a.avgR), a.avgR > 0 ? 'pos' : a.avgR < 0 ? 'neg' : '')
+    + k('Profit factor', num(a.pf, 2)) + k('ΣR (net)', sgn(a.sumR, 1), a.sumR > 0 ? 'pos' : a.sumR < 0 ? 'neg' : '') + k('Max drawdown (R)', num(a.maxDD, 1)) + '</div>';
+}
+function profBlockHTML() {
+  const I = RES.index, profs = Object.keys(I.summary || {});
+  if (!profs.length) return '';
+  const p = RES.prof, sum = I.summary[p];
+  let h = `<div class="sec"><h2>Results by profile</h2><div class="seg" role="group" aria-label="Profile">${profs.map((x) => `<button type="button" data-prof="${x}" aria-pressed="${x === p}">${x}</button>`).join('')}</div></div>`;
+  h += `<p class="muted" style="margin:6px 0 0">${esc(ME && ME.PROFILES[p] ? ME.PROFILES[p].name : p)} · net of costs, in R (planned risk)</p>`;
+  h += kpiHTML(sum.all) + breakdownHTML(sum);
+  return h;
+}
+function equitySeries() {
+  const out = {}; const T = RES.rows;
+  for (const r of T) {
+    if (r.st !== 'closed' || r.Rn == null || !isFinite(r.tExit)) continue;
+    (out[r.prof] = out[r.prof] || []).push([r.tExit, r.Rn]);
+  }
+  return Object.keys(out).sort().map((p) => {
+    const a = out[p].sort((x, y) => x[0] - y[0]); let cum = 0; const pts = [];
+    for (const [t, rn] of a) { cum += rn; pts.push([t, cum]); }
+    return { name: p, color: p === 'P1' ? 'var(--p1)' : p === 'P2' ? 'var(--p2)' : '#c792ea', pts };
+  });
+}
+function niceTicks(lo, hi, want) {
+  const span = hi - lo || 1, raw = span / want, mag = Math.pow(10, Math.floor(Math.log10(raw)));
+  const step = [1, 2, 2.5, 5, 10].map((m) => m * mag).find((s) => s >= raw) || 10 * mag;
+  const out = []; for (let v = Math.ceil(lo / step) * step; v <= hi + 1e-9; v += step) out.push(+v.toFixed(6));
+  return out;
+}
+const MON = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
+function drawEquity() {
+  const box = $('#eq-svg'); if (!box) return;
+  const series = equitySeries().filter((s) => s.pts.length > 1);
+  if (!series.length) { box.innerHTML = '<div class="notice" style="margin:8px">No closed trades with a net R to draw yet.</div>'; return; }
+  const W = Math.max(300, box.clientWidth || 320), H = W < 520 ? 260 : 340, m = { l: 48, r: 14, t: 12, b: 32 };
+  let t0 = Infinity, t1 = -Infinity, y0 = 0, y1 = 0;
+  for (const s of series) for (const [t, y] of s.pts) { t0 = Math.min(t0, t); t1 = Math.max(t1, t); y0 = Math.min(y0, y); y1 = Math.max(y1, y); }
+  if (t1 <= t0) t1 = t0 + 864e5; const padY = (y1 - y0) * 0.06 || 1; y0 -= padY; y1 += padY;
+  const X = (t) => m.l + (t - t0) / (t1 - t0) * (W - m.l - m.r), Y = (y) => m.t + (1 - (y - y0) / (y1 - y0)) * (H - m.t - m.b);
+  let g = '';
+  for (const v of niceTicks(y0, y1, H < 300 ? 5 : 7)) g += `<line x1="${m.l}" x2="${W - m.r}" y1="${Y(v)}" y2="${Y(v)}" stroke="#2b3644" stroke-width="1"/><text x="${m.l - 6}" y="${Y(v) + 4}" text-anchor="end" fill="#a3afbe" font-size="13">${v}</text>`;
+  g += `<line x1="${m.l}" x2="${W - m.r}" y1="${Y(0)}" y2="${Y(0)}" stroke="#e8ecf1" stroke-opacity=".6" stroke-width="1.5" stroke-dasharray="5 4"/>`;
+  // month / year ticks: choose the step (in months) so labels stay at least ~66 px apart; January carries the year
+  const d0 = new Date(t0), spanMonths = (t1 - t0) / (30.44 * 864e5), perMonth = (W - m.l - m.r) / Math.max(spanMonths, 0.1);
+  const step = [1, 2, 3, 6, 12, 24, 48].find((s) => s * perMonth >= 66) || 48;
+  for (let a = d0.getUTCFullYear() * 12 + d0.getUTCMonth(); ; a++) {
+    const yy = Math.floor(a / 12), mm = a % 12, tt = Date.UTC(yy, mm, 1);
+    if (tt > t1) break; if (tt < t0 || a % step) continue;
+    const lab = mm === 0 || step >= 12 ? String(yy) : MON[mm];
+    g += `<line x1="${X(tt)}" x2="${X(tt)}" y1="${H - m.b}" y2="${H - m.b + 5}" stroke="#8591a1"/><text x="${X(tt)}" y="${H - m.b + 20}" text-anchor="middle" fill="#a3afbe" font-size="13">${lab}</text>`;
+    if (mm === 0 && step < 12) g += `<line x1="${X(tt)}" x2="${X(tt)}" y1="${m.t}" y2="${H - m.b}" stroke="#2b3644" stroke-dasharray="2 3"/>`;
+  }
+  for (const s of series) {
+    let pts = s.pts; if (pts.length > 2500) { const k = Math.ceil(pts.length / 2500); pts = pts.filter((_, i) => i % k === 0 || i === pts.length - 1); }
+    g += `<polyline fill="none" stroke="${s.color}" stroke-width="2" stroke-linejoin="round" points="${pts.map(([t, v]) => X(t).toFixed(1) + ',' + Y(v).toFixed(1)).join(' ')}"/>`;
+  }
+  g += `<line id="eq-cross" x1="0" x2="0" y1="${m.t}" y2="${H - m.b}" stroke="#e8ecf1" stroke-opacity=".5" visibility="hidden"/>`;
+  box.innerHTML = `<svg viewBox="0 0 ${W} ${H}" width="${W}" height="${H}" role="img" aria-label="Cumulative net R by exit time">${g}</svg>`;
+  const svg = $('svg', box), cross = $('#eq-cross', box), ro = $('#eq-read');
+  const idx = (pts, t) => { let lo = 0, hi = pts.length - 1, r = -1; while (lo <= hi) { const mid = (lo + hi) >> 1; if (pts[mid][0] <= t) { r = mid; lo = mid + 1; } else hi = mid - 1; } return r; };
+  const move = (ev) => {
+    const rect = svg.getBoundingClientRect(), x = ev.clientX - rect.left; if (x < m.l || x > W - m.r) return;
+    const t = t0 + (x - m.l) / (W - m.l - m.r) * (t1 - t0);
+    cross.setAttribute('x1', x); cross.setAttribute('x2', x); cross.setAttribute('visibility', 'visible');
+    ro.innerHTML = `${new Date(t).toISOString().slice(0, 10)} · ` + series.map((s) => { const i = idx(s.pts, t); return `${s.name} <b class="num">${i < 0 ? '0.0' : sgn(s.pts[i][1], 1)}R</b>`; }).join(' · ');
+  };
+  svg.addEventListener('pointermove', move); svg.addEventListener('pointerdown', move);
+}
+function sweepHTML() {
+  const S_ = RES.sweep; if (!S_ || !Array.isArray(S_.combos) || !S_.combos.length) return '';
+  const years = Array.from(new Set(S_.combos.flatMap((c) => Object.keys(c.year || {})))).sort();
+  const rcell = (s) => { if (!s || s.avgR == null) return '<td class="num">—</td>'; const small = (s.closed || 0) < SMALL_N; return `<td class="num ${small ? 'dim' : s.avgR > 0 ? 'pos' : s.avgR < 0 ? 'neg' : ''}" title="${s.closed} closed${small ? ' (small sample)' : ''}">${sgn(s.avgR, 2)}</td>`; };
+  let h = '<div class="sec"><h2>Parameter sweep</h2><p class="muted" style="margin:0 0 8px">Each row is one setting of the stop buffer and the tag-to-trigger wait. Average R is net of costs.</p>';
+  h += `<div class="tablewrap"><table><thead><tr><th rowspan="2" class="l">Combo</th><th colspan="6">All closed trades</th><th colspan="3">Avg R by regime</th><th colspan="${years.length}">Avg R by year armed</th></tr>`;
+  h += `<tr><th>Closed</th><th>Win %</th><th>Avg R</th><th>PF</th><th>${'Σ'}R</th><th>Max DD</th><th>bull</th><th>bear</th><th>chop</th>${years.map((y) => `<th>${esc(y)}</th>`).join('')}</tr></thead><tbody>`;
+  for (const c of S_.combos) {
+    const a = c.all || {}, base = c.slBufM === 0.25 && c.maxWaitZ === 12, small = (a.closed || 0) < SMALL_N;
+    h += `<tr class="${base ? 'base' : ''}${small ? ' small' : ''}"><td>${esc(c.prof)} · ${c.slBufM} · ${c.maxWaitZ}${base ? '<span class="ss" style="font-style:normal;color:var(--accent)">base</span>' : ''}</td><td class="num">${a.closed == null ? '—' : a.closed}</td><td class="num">${pct(a.win)}</td>${sCell(a, 'avgR', 'r')}<td class="num">${num(a.pf, 2)}</td>${sCell(a, 'sumR', 'r')}<td class="num">${num(a.maxDD, 2)}</td>`;
+    h += ['bull', 'bear', 'chop'].map((r) => rcell((c.regime || {})[r])).join('') + years.map((y) => rcell((c.year || {})[y])).join('') + '</tr>';
+  }
+  h += '</tbody></table></div>';
+  h += `<p class="hint" style="margin:8px 0 0">Combo = profile · stop buffer (× ATR) · max wait (zone candles). The highlighted row is the base setting. Muted cells have fewer than ${SMALL_N} closed trades.</p>`;
+  if (S_.note) h += `<p class="muted" style="margin:6px 0 0">${esc(S_.note)}</p>`;
+  return h + '</div>';
+}
+function tradeFilterHTML() {
+  const f = RES.filt, profs = Array.from(new Set(RES.rows.map((r) => r.prof))).sort(), sts = Array.from(new Set(RES.rows.map((r) => r.st))).sort();
+  const opt = (list, cur) => list.map(([v, l]) => `<option value="${esc(v)}"${v === cur ? ' selected' : ''}>${esc(l)}</option>`).join('');
+  return `<div class="filters">
+    <label>Profile<select data-f="prof">${opt([['', 'All'], ...profs.map((p) => [p, p])], f.prof)}</select></label>
+    <label>Direction<select data-f="dir">${opt([['', 'All'], ['1', 'Long'], ['-1', 'Short']], f.dir)}</select></label>
+    <label>Grade<select data-f="grade">${opt([['', 'All'], ['A+', 'A+'], ['A', 'A'], ['B', 'B']], f.grade)}</select></label>
+    <label>Status<select data-f="st">${opt([['', 'All'], ...sts.map((s) => [s, s])], f.st)}</select></label>
+    <label>Coin<input type="search" data-f="q" value="${esc(f.q)}" placeholder="e.g. SOL" autocomplete="off"></label></div>`;
+}
+function tradeRowsHTML() {
+  const f = RES.filt, q = f.q.trim().toUpperCase();
+  const all = RES.rows.filter((r) => (!f.prof || r.prof === f.prof) && (!f.dir || String(r.dir) === f.dir) && (!f.grade || r.grade === f.grade) && (!f.st || r.st === f.st) && (!q || (r.sym || '').indexOf(q) >= 0));
+  const list = all.slice(-300).reverse();
+  let h = '';
+  list.forEach((r, i) => {
+    const key = r.sym + '|' + r.prof + '|' + r.tArm, open = RES.open.has(key), dirTxt = r.dir === 1 ? 'LONG' : 'SHORT';
+    h += `<tr class="trow" data-k="${esc(key)}" tabindex="0" aria-expanded="${open}"><td>${utc(r.tArm)}</td><td class="l"><b>${esc(r.base)}</b></td><td>${esc(r.prof)}</td><td class="${r.dir === 1 ? 'pos' : 'neg'}">${dirTxt}</td><td>${esc(r.grade)}</td><td class="l">${r.cont ? 'continuation' : 'reversal'}</td><td class="l">${esc(r.zoneTf)} ${esc(r.zoneKind)}</td><td class="l">${esc(r.st)}${r.how ? ' · ' + esc(r.how) : ''}</td><td class="num">${num(r.rr, 1)}</td><td class="num ${r.Rn > 0 ? 'pos' : r.Rn < 0 ? 'neg' : ''}">${r.Rn == null ? '—' : sgn(r.Rn, 2)}</td></tr>`;
+    if (open) h += detailHTML(r);
+  });
+  return { html: h || '<tr><td colspan="10" class="l" style="white-space:normal">No trades match these filters.</td></tr>', shown: list.length, total: all.length };
+}
+function detailHTML(r) {
+  const ref = r.en, p = (x) => fmtPx(x, ref), long = r.dir === 1;
+  const R = (px) => (long ? px - r.en : r.en - px) / (Math.abs(r.en - r.sl0) || 1);
+  return `<tr class="det"><td colspan="10"><div>
+    <div class="num"><b>Plan:</b> entry ${p(r.en)} · SL ${p(r.sl0)} · PL ${p(r.pl)} (${sgn(R(r.pl), 1)}R) · PT ${p(r.pt)} (${sgn(R(r.pt), 1)}R) · FT ${p(r.ft)} (${sgn(R(r.ft), 1)}R)</div>
+    <div><b>Boosters:</b> ${esc(r.boost || 'none')} · <b>Turn:</b> ${esc(r.turnHow || '—')}</div>
+    <div><b>Stop reason:</b> ${esc(r.slWhy || '—')} · <b>Risk:</b> ${num(r.riskAtr, 2)} ATR · <b>Attempt:</b> ${r.att == null ? '—' : r.att}</div>
+    <div class="num"><b>Filled:</b> ${utc(r.tFill)} · <b>Exit:</b> ${utc(r.tExit)}</div>
+    <div class="num"><b>Gross R:</b> ${sgn(r.R, 2)} · <b>Net R:</b> ${r.Rn == null ? '—' : sgn(r.Rn, 2)} · <b>Regime:</b> ${esc(r.reg || '—')} · <b>Volume rank:</b> ${r.rank == null ? '—' : r.rank}</div>
+  </div></td></tr>`;
+}
+function renderTradeTable() {
+  const box = $('#tr-body'); if (!box) return;
+  const t = tradeRowsHTML(); box.innerHTML = t.html;
+  $('#tr-count').textContent = t.total > t.shown ? `Showing the newest ${t.shown} of ${t.total} matching trades.` : `${t.total} matching trade${t.total === 1 ? '' : 's'}.`;
+}
+function renderResults() {
+  const I = RES.index, el = $('#results');
+  if (!I) {
+    el.innerHTML = '<div class="notice"><b>No replay results yet.</b><br>The replay writes <code>data/index.json</code>, <code>trades.json</code>, <code>sweep.json</code> and <code>market.json</code> next to this page. They appear after the first replay run. The Board tab does not need them.<p style="margin:12px 0 0"><button class="btn ghost" type="button" id="res-reload">Check again</button></p></div>';
+    return;
+  }
+  const cov = I.coverage || {}, rules = I.rules || {};
+  const mk = RES.market && RES.market.days ? (() => { const ds = Object.keys(RES.market.days).sort(); const d = RES.market.days[ds[ds.length - 1]]; return d ? { day: ds[ds.length - 1], d } : null; })() : null;
+  let h = `<div class="sec" style="margin-top:0"><h2>Replay results</h2><p class="muted" style="margin:4px 0 0">Covers ${esc(cov.from || '?')} to ${esc(cov.through || '?')} · ${cov.coins == null ? '?' : cov.coins} coins${cov.candles15m ? ' · ' + (cov.candles15m / 1e6).toFixed(1) + 'M 15m candles' : ''}${I.updated ? ' · updated ' + esc(utc(Date.parse(I.updated))) + ' UTC' : ''}${I.engine ? ' · engine ' + esc(I.engine) : ''}</p>`;
+  if (mk) h += `<p class="muted" style="margin:2px 0 0">Latest BTC regime in the data (${esc(mk.day)}): <b>${esc(mk.d.reg)}</b> (${sgn(mk.d.chg, 1)}% over 60 days)</p>`;
+  h += '</div>';
+  h += `<details class="how panel" style="margin-top:10px"><summary>How these numbers are made</summary><dl>`
+    + [['Universe', rules.universe], ['Which setups count', rules.counted], ['Costs', rules.costs], ['What R means', rules.R], ['Same-candle rule', rules.sameCandle], ['Market regime', rules.regime], ['Engine', rules.engine]]
+      .filter((x) => x[1]).map((x) => `<div><dt>${x[0]}</dt><dd>${esc(x[1])}</dd></div>`).join('')
+    + (rules.params ? `<div><dt>Engine parameters</dt><dd class="num">${esc(Object.entries(rules.params).map(([k, v]) => k + ' ' + v).join(' · '))}</dd></div>` : '') + '</dl></details>';
+  h += '<div class="sec"><h2>Equity curve</h2><p class="muted" style="margin:0 0 8px">Cumulative net R by exit time, closed trades only.</p>';
+  if (RES.rows.length) {
+    h += `<div class="chartbox"><div class="legend" id="eq-legend"></div><div class="readout num" id="eq-read">Touch or hover the chart to read a date.</div><div id="eq-svg"></div></div>`;
+  } else h += '<div class="notice">The trade file is not available yet, so there is no curve to draw.</div>';
+  h += '</div>';
+  h += '<div id="prof-block">' + profBlockHTML() + '</div>';
+  h += sweepHTML();
+  h += '<div class="sec"><h2>Trade list</h2>';
+  if (RES.rows.length) h += tradeFilterHTML() + '<p class="hint" id="tr-count" style="margin:0 0 8px"></p><div class="tablewrap"><table><thead><tr><th class="l">Armed (UTC)</th><th class="l">Coin</th><th>Profile</th><th>Dir</th><th>Grade</th><th class="l">Path</th><th class="l">Zone</th><th class="l">Status</th><th>R:R plan</th><th>Net R</th></tr></thead><tbody id="tr-body"></tbody></table></div><p class="hint" style="margin:8px 0 0">Tap a row for details.</p>';
+  else h += '<div class="notice">The trade list is not available yet.</div>';
+  h += '</div>';
+  h += '<p style="margin-top:16px"><button class="btn ghost" type="button" id="res-reload">Reload results</button></p>';
+  el.innerHTML = h;
+  const lg = $('#eq-legend');
+  if (lg) lg.innerHTML = equitySeries().map((s) => `<span><i style="background:${s.color}"></i>${s.name} <b class="num ${s.pts.length && s.pts[s.pts.length - 1][1] >= 0 ? 'pos' : 'neg'}">${s.pts.length ? sgn(s.pts[s.pts.length - 1][1], 1) : '0.0'}R</b> <span class="dim">(${s.pts.length} trades)</span></span>`).join('');
+  drawEquity(); renderTradeTable();
+}
+
+// ───────────────────────── events + boot ─────────────────────────
+function showTab(name) {
+  S.tab = name;
+  for (const n of ['board', 'results']) { const on = n === name; $('#pane-' + n).hidden = !on; $('#tab-' + n).setAttribute('aria-selected', on); }
+  try { history.replaceState(null, '', name === 'results' ? '#results' : location.pathname + location.search); } catch (e) { /* ignore */ }
+  if (name === 'results') { if (!RES.loaded) loadResults(); else drawEquity(); }
+}
+document.addEventListener('click', (e) => {
+  const t = e.target;
+  const go = t.closest && t.closest('[data-go]');
+  if (go) { const d = $('#g-' + go.dataset.go.replace('+', 'P')); if (d) { d.open = true; d.scrollIntoView({ behavior: 'smooth', block: 'start' }); } return; }
+  const pb = t.closest && t.closest('[data-prof]');
+  if (pb && pb.closest('.seg')) { RES.prof = pb.dataset.prof; $('#prof-block').innerHTML = profBlockHTML(); return; }
+  const tr = t.closest && t.closest('tr.trow');
+  if (tr) { toggleRow(tr.dataset.k); return; }
+  if (t.id === 'res-reload') { RES.loaded = false; loadResults(); }
+});
+document.addEventListener('keydown', (e) => { if ((e.key === 'Enter' || e.key === ' ') && e.target.matches && e.target.matches('tr.trow')) { e.preventDefault(); toggleRow(e.target.dataset.k); } });
+function toggleRow(k) { if (RES.open.has(k)) RES.open.delete(k); else RES.open.add(k); renderTradeTable(); const r = $(`tr.trow[data-k="${CSS.escape(k)}"]`); if (r) r.focus({ preventScroll: true }); }
+document.addEventListener('input', (e) => { const f = e.target.dataset && e.target.dataset.f; if (f) { RES.filt[f] = e.target.value; renderTradeTable(); } });
+$('#tab-board').addEventListener('click', () => showTab('board'));
+$('#tab-results').addEventListener('click', () => showTab('results'));
+$('#scan-now').addEventListener('click', () => runScan('manual'));
+let rz = null; window.addEventListener('resize', () => { clearTimeout(rz); rz = setTimeout(() => { if (S.tab === 'results') drawEquity(); }, 150); });
+
+initSettings();
+showTab(location.hash === '#results' ? 'results' : 'board');
+renderBoard();
+setInterval(() => {                                  // 1 s ticker: countdown, relative times, auto-rescan
+  updateClockText();
+  if (!S.scanning && S.nextAt && Date.now() >= S.nextAt) runScan('auto');
+}, 1000);
+setInterval(refreshAgo, 20000);
+if (ME) runScan('load'); else renderBoard();
+
+// small hook for the page test
+window.__mayne = { nextScanAt, fmtPx, pxDecimals, toCols, pickUniverse, LIM, state: S, baseOf };
+})();
+</script>
+</body>
+</html>
