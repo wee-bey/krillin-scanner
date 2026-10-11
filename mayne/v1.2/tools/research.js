@@ -174,6 +174,7 @@ async function main() {
   let cands = [...member.keys()].sort((a, b) => (a === 'BTCUSDT' ? -1 : b === 'BTCUSDT' ? 1 : a < b ? -1 : 1));
   if (SAMPLE) cands = cands.filter((s) => data.sampleSyms.has(s));
   if (args.syms) { const want = new Set(String(args.syms).split(',')); cands = cands.filter((s) => want.has(s)); }
+  if (args['cands-from']) { const cf = String(args['cands-from']); cands = cands.filter((s) => [...member.get(s).keys()].some((d) => d >= cf)); }   // forward test: only coins in the universe since that day
   const mine = cands.filter((_, i) => i % OF === SHARD);
   log(`${cands.length} coins ever in the top ${UNIVERSE_N}; this shard runs ${mine.length}`);
   // regime per day and BTC context
@@ -181,7 +182,7 @@ async function main() {
   for (let i = REGIME.lookback; i < btcRows.length; i++) { const chg = (btcRows[i][4] / btcRows[i - REGIME.lookback][4] - 1) * 100; regime[ymd(btcRows[i][0] + DAY)] = chg >= REGIME.band ? 'bull' : chg <= -REGIME.band ? 'bear' : 'chop'; }
   const BTC = btcContext(toCols(btcRows));
 
-  const COLS = ['v', 'sym', 'prof', 'dir', 'tArm', 'tFill', 'tExit', 'st', 'how', 'grade', 'cont', 'zone', 'slWhy', 'en', 'sl0', 'pl', 'pt', 'ft', 'rr', 'riskAtr', 'riskPct', 'R', 'Rg', 'Rn', 'Rn11', 'fR', 'rank', 'reg', 'swV11', 'swHtf', 'swZone', 'swLtf', 'extSw', 'tagN', 'sameBar', 'ote', 'stacked', 'aligned', 'nBoost', 'btc', 'rs30', 'hr', 'dow', 'part', 'att', 'mkt', 'qty'];
+  const COLS = ['v', 'sym', 'prof', 'dir', 'tArm', 'tFill', 'tExit', 'st', 'how', 'grade', 'cont', 'zone', 'slWhy', 'en', 'sl0', 'pl', 'pt', 'ft', 'rr', 'riskAtr', 'riskPct', 'R', 'Rg', 'Rn', 'Rn11', 'fR', 'rank', 'reg', 'swV11', 'swHtf', 'swZone', 'swLtf', 'extSw', 'tagN', 'sameBar', 'ote', 'stacked', 'aligned', 'nBoost', 'btc', 'rs30', 'hr', 'dow', 'part', 'att', 'mkt', 'qty', 'boost', 'turnHow'];
   const DCOLS = ['sym', 'prof', 'tArm', 'mfeX', 'maeX', 'mfeH', 'maeH', 'best', 'same'];
   const PCOLS = ['prof', 'kind', 'dir', 'tArm', 'Rg', 'Rn', 'realRg'];
   const rows = [], drows = [], prows = [], zrows = [], brows = []; let done = 0;
@@ -232,7 +233,7 @@ async function main() {
             `${tr.zoneTf} ${tr.zoneKind}`, tr.slWhy, sig(tr.en), sig(tr.sl0), sig(tr.pl), sig(tr.pt), sig(tr.ft), r4(tr.rr), r4(tr.riskAtr), r4(tr.risk / tr.en * 100), r4(tr.R),
             ex12 ? r4(ex12.Rg) : null, ex12 ? r4(ex12.Rn) : null, ex11 ? r4(ex11.Rn) : null, ex12 ? r4(ex12.fR) : null, mem.get(day), regime[day] || null,
             tr.swV11 ? 1 : 0, tr.swHtf ? 1 : 0, tr.swZone ? 1 : 0, tr.swLtf ? 1 : 0, tr.extSw ? 1 : 0, tr.tagN, tr.sameBar ? 1 : 0, tr.ote ? 1 : 0, tr.stacked ? 1 : 0, tr.aligned ? 1 : 0, tr.boost.length,
-            isBTC ? tr.dir === 'long' ? 1 : -1 : BTC.bias(tr.tArm), r4(rs), new Date(tc).getUTCHours(), new Date(tr.tArm).getUTCDay(), tr.partDone ? 1 : 0, tr.att, tr.mkt ? 1 : 0, r4(tr.qty)]);
+            isBTC ? tr.dir === 'long' ? 1 : -1 : BTC.bias(tr.tArm), r4(rs), new Date(tc).getUTCHours(), new Date(tr.tArm).getUTCDay(), tr.partDone ? 1 : 0, tr.att, tr.mkt ? 1 : 0, r4(tr.qty), tr.boost.join('+'), tr.turnHow]);
           if (v === 'B0' && tr.st === 'closed' && Number.isFinite(tr.fillBar)) {
             const e = excursions(tr, T, W[prof]); drows.push([sym, prof, tr.tArm, r4(e.mfeX), r4(e.maeX), r4(e.mfeH), r4(e.maeH), r4(e.best), e.same]);
             // D2 random-entry baselines: 5 bias-only + 5 no-bias pseudo-trades per filled trade

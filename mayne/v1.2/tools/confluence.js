@@ -54,6 +54,7 @@ const MC = {
 };
 const avg = (a, k) => (a.length ? a.reduce((s, r) => s + r[k], 0) / a.length : NaN);
 const per = (a, t0, t1, tk) => a.filter((r) => r[tk] >= t0 && r[tk] < t1);
+const J = { groups: {}, confirm: [] };
 const md = ['# Mayne × Krillin confluence', '', `Krillin resolved signals: ${K.length} · Mayne B0 closed trades: ${MT.length} · Mayne state changes: ${E.zrows.length}`, ''];
 
 function group(name, base, cands, key, minN) {
@@ -63,6 +64,7 @@ function group(name, base, cands, key, minN) {
   for (const [c, f] of Object.entries(cands)) {
     const a = dec.filter(f), a1 = s1.filter(f), a2 = s2.filter(f); const d = avg(a, key) - avg(dec, key), d1 = avg(a1, key) - avg(s1, key), d2 = avg(a2, key) - avg(s2, key);
     const pass = d >= 0.05 && d1 > 0 && d2 > 0 && a.length >= minN;
+    (J.groups[name] = J.groups[name] || { base: { n: dec.length, avg: avg(dec, key) }, cands: [] }).cands.push({ c, n: a.length, avg: avg(a, key), d, d1, d2, pass });
     md.push(`| ${c} | ${a.length} | ${sgn(avg(a, key))} | ${sgn(d)} | ${sgn(d1)} | ${sgn(d2)} | ${pass ? '**yes**' : 'no'} |`);
     if (pass && (!best || d > best.d)) best = { c, d };
   }
@@ -80,9 +82,11 @@ if (args.confirm) {
     const base = isK ? per(K, SPLIT, END, 'tArm') : per(MT.filter((r) => r.prof === p), SPLIT, END, 'tArm'); const key = isK ? 'R' : 'Rn';
     const a = base.filter(isK ? KC[c] : MC[c]); const ci = bootCI(a.map((r) => Object.assign({}, r, { Rn: r[key] })), 'Rn');
     const m = avg(a, key); const verdict = m > 0 && ci && ci.lo90 > 0 ? 'PASS' : m > 0 ? 'PROMISING' : 'FAIL';
+    J.confirm.push({ group: isK ? 'Krillin side' : 'Mayne ' + p, c, base: { n: base.length, avg: avg(base, key) }, n: a.length, avg: m, ci, verdict });
     md.push(`| ${isK ? 'Krillin side' : 'Mayne ' + p} | ${c} | ${sgn(avg(base, key))} (${base.length}) | ${sgn(m)} (${a.length}) | ${ci ? `${sgn(ci.lo90, 2)} … ${sgn(ci.hi90, 2)}` : '—'} | **${verdict}** |`);
   }
   md.push('');
 }
 const out = md.join('\n') + '\n'; if (args.out) fs.writeFileSync(path.resolve(args.out), out); console.log(out);
+if (args.json) fs.writeFileSync(path.resolve(args.json), JSON.stringify(J, (k, v) => (typeof v === 'number' ? Math.round(v * 1000) / 1000 : v)));
 console.log('PICKS ' + JSON.stringify(picks));

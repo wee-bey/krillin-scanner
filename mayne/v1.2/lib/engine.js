@@ -621,7 +621,7 @@
     const last = n - 1;
     const state = {
       st: sSt, stName: STATE_NAMES[sSt], dir: sSt >= 2 ? sDir : sSt === 1 ? wDir : 0, t: n ? t[last] : NaN, tc: n ? t[last] + tgMs : NaN, close: n ? c[last] : NaN, atr: n ? atrC[last] : NaN,
-      zone: sSt >= 2 ? { tf: zTfS, kind: kindName(zCode), top: zTop, bot: zBot, cont: zCont, tTag: tagTm, ptTag } : sSt === 1 ? { tf: wTfS, kind: kindName(wCode), top: wTop, bot: wBot, cont: wCont } : null,
+      zone: sSt >= 2 ? { tf: zTfS, kind: kindName(zCode), top: zTop, bot: zBot, cont: zCont, tTag: tagTm, ptTag, tagN } : sSt === 1 ? { tf: wTfS, kind: kindName(wCode), top: wTop, bot: wBot, cont: wCont } : null,
       turn: sSt >= 3 ? { how: turnHow, t: turnTm } : null, swept, att, trade: tr ? Object.assign({}, tr) : null, partDone,
       bias: ctx ? { dir: ctx.biasDir, dSync: ctx.dSync, ok: ctx.biasOK, w: ctx.w.st, d: ctx.d.st, z: ctx.z.st, cf: ctx.cf.st, zHi: ctx.z.hi, zLo: ctx.z.lo, zEQ: ctx.zEQ } : null,
       lastEvt,

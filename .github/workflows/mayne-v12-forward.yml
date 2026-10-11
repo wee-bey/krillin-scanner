@@ -1,0 +1,68 @@
+name: Mayne v1.2 · forward test
+
+# Trader Mayne v1.2 forward test (separate from Krillin and from the v1.1 Mayne replay). The rules were frozen on
+# 11 Oct 2026; every day this replays the v1.2 engine (v1.1 rules + realistic fills and costs) on the daily top-100
+# universe for setups that arm from 12 Oct 2026 on, and commits mayne/v1.2/data/forward-*.json for the board's
+# Evidence tab. It also flags the Krillin veto of the confluence test (tracked only, never traded).
+on:
+  schedule:
+    - cron: '13 8 * * *'     # after the v1.1 Mayne replay (07:43) has refreshed the candle cache
+  push:
+    branches: [main]
+    paths:
+      - 'mayne/v1.2/tools/forward.js'
+      - '.github/workflows/mayne-v12-forward.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+concurrency:
+  group: mayne-v12-forward
+  cancel-in-progress: false
+
+jobs:
+  forward:
+    runs-on: ubuntu-latest
+    timeout-minutes: 90
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Restore the Mayne candle cache
+        uses: actions/cache/restore@v4
+        with:
+          path: .mcache
+          key: mayne-candles-${{ github.run_id }}
+          restore-keys: mayne-candles-
+      - name: Restore the funding cache
+        uses: actions/cache/restore@v4
+        with:
+          path: .mcache/funding
+          key: mayne-v12-funding-fwd-${{ github.run_id }}
+          restore-keys: |
+            mayne-v12-funding-fwd-
+            mayne-v12-funding-
+      - name: Engine checks
+        run: node mayne/v1.2/tools/test-engine.js
+      - name: Forward replay (setups armed from 12 Oct 2026)
+        env:
+          NODE_OPTIONS: --max-old-space-size=6144
+        run: |
+          node mayne/v1.2/tools/research.js --arm-from 2026-10-12 --variants B0 --cands-from 2026-10-12 --out "$RUNNER_TEMP/fwd"
+          node mayne/v1.2/tools/forward.js --in "$RUNNER_TEMP/fwd" --krillin data --out mayne/v1.2/data
+      - name: Save the funding cache
+        if: always()
+        uses: actions/cache/save@v4
+        with:
+          path: .mcache/funding
+          key: mayne-v12-funding-fwd-${{ github.run_id }}
+      - name: Commit the forward files
+        run: |
+          git config user.name "mayne-v12-forward"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add mayne/v1.2/data/forward-index.json mayne/v1.2/data/forward-trades.json
+          if git diff --cached --quiet; then echo "no changes"; exit 0; fi
+          git commit -m "Mayne v1.2 forward test $(date -u '+%Y-%m-%d %H:%M') UTC"
+          for i in 1 2 3 4 5; do git pull --rebase --autostash && git push && break; sleep 7; done
