@@ -33,7 +33,8 @@ const UNIVERSE_N = 100;
 const WARM_DAYS = 92;                                   // 15m history before a coin's first day in the universe (zone/confirm warm-up)
 const COST = { feePct: 0.05, slipPct: 0.03 };           // the same cost model as the Krillin replay
 const SIDE = (COST.feePct + COST.slipPct / 2) / 100;
-const SWEEP = { slBufM: [0.10, 0.25, 0.50], maxWaitZ: [6, 12, 24] };   // HANDOFF NEXT §2: SL buffer × tag-to-trigger expiry, per profile
+const SWEEP = { slBufM: [0.10, 0.25, 0.50], maxWaitZ: [6, 12, 24],   // HANDOFF NEXT §2: SL buffer × tag-to-trigger expiry, per profile
+  extra: [{ exitMode: 'mechanical' }, { entryMode: 'ce' }, { exitMode: 'mechanical', entryMode: 'ce' }] }; // Mayne's own alternatives (§5.1, §5.4), at the base values
 const REGIME = { lookback: 60, band: 10 };              // BTC 60-day change ≥ +10% bull, ≤ −10% bear, else chop (as of the previous daily close)
 const runLog = []; const log = (...a) => { const s = `[${new Date().toISOString().slice(11, 19)}] ` + a.join(' '); console.log(s); runLog.push(s); };
 const r4 = (x) => (Number.isFinite(x) ? Math.round(x * 1e4) / 1e4 : null);
@@ -117,6 +118,7 @@ async function main() {
 
   // 3) run the engine per coin and profile
   const grid = []; for (const a of SWEEP.slBufM) for (const b of SWEEP.maxWaitZ) grid.push({ slBufM: a, maxWaitZ: b });
+  for (const x of SWEEP.extra) grid.push(Object.assign({ slBufM: 0.25, maxWaitZ: 12 }, x));
   const trades = []; const sweepRows = new Map(); // combo key → rows
   let done = 0, bars = 0;
   await pool(cands, 4, async (sym) => {
@@ -136,7 +138,7 @@ async function main() {
       const base = M.simulate(prep);
       for (const tr of base.trades) if (keep(tr)) trades.push(rowOf(tr));
       if (args.sweep) for (const g of grid) {
-        const k = `${prof}|${g.slBufM}|${g.maxWaitZ}`; if (!sweepRows.has(k)) sweepRows.set(k, []);
+        const k = `${prof}|${g.slBufM}|${g.maxWaitZ}|${g.exitMode || 'mayne'}|${g.entryMode || 'edge'}`; if (!sweepRows.has(k)) sweepRows.set(k, []);
         const r = M.simulate(prep, g); const arr = sweepRows.get(k);
         for (const tr of r.trades) if (keep(tr)) { const x = rowOf(tr); arr.push({ st: x.st, tFill: x.tFill, tExit: x.tExit, R: x.R, Rn: x.Rn, reg: x.reg, tArm: x.tArm, grade: x.grade, dir: x.dir, cont: x.cont, zoneTf: x.zoneTf, zoneKind: x.zoneKind, slWhy: x.slWhy, sym: x.sym }); }
       }
@@ -170,9 +172,9 @@ async function main() {
     summary: byProf,
   };
   if (args.sweep) {
-    const sw = { version: 1, grid: SWEEP, note: 'base = slBufM 0.25 · maxWaitZ 12 (rulebook defaults). Choose on earlier years, confirm on later ones.', combos: [] };
-    for (const [k, rows] of sweepRows) { const [prof, a, b] = k.split('|'); sw.combos.push({ prof, slBufM: +a, maxWaitZ: +b, all: stats(rows), regime: groupStats(rows, (r) => r.reg), year: groupStats(rows, (r) => ymd(r.tArm).slice(0, 4)), grade: groupStats(rows, (r) => r.grade), path: groupStats(rows, (r) => (r.cont ? 'continuation' : 'reversal')) }); }
-    sw.combos.sort((x, y) => (x.prof + x.slBufM + '|' + x.maxWaitZ < y.prof + y.slBufM + '|' + y.maxWaitZ ? -1 : 1));
+    const sw = { version: 1, grid: SWEEP, note: 'base = slBufM 0.25 · maxWaitZ 12 · Mayne-own exit · entry at the FVG edge (rulebook defaults). Extra rows change only the exit mode (mechanical = 100% at PT) and/or the entry (CE = 50% of the FVG). Choose on earlier years, confirm on later ones.', combos: [] };
+    for (const [k, rows] of sweepRows) { const [prof, a, b, ex, enm] = k.split('|'); sw.combos.push({ prof, slBufM: +a, maxWaitZ: +b, exitMode: ex, entryMode: enm, all: stats(rows), regime: groupStats(rows, (r) => r.reg), year: groupStats(rows, (r) => ymd(r.tArm).slice(0, 4)), grade: groupStats(rows, (r) => r.grade), path: groupStats(rows, (r) => (r.cont ? 'continuation' : 'reversal')) }); }
+    const ck = (x) => [x.prof, x.exitMode, x.entryMode, x.slBufM.toFixed(2), String(x.maxWaitZ).padStart(2, '0')].join('|'); sw.combos.sort((x, y) => (ck(x) < ck(y) ? 1 : -1) * -1);
     fs.writeFileSync(path.join(OUT, 'sweep.json'), JSON.stringify(sw));
     index.sweep = { combos: sw.combos.length, file: 'sweep.json' };
   }

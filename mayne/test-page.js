@@ -304,7 +304,7 @@ async function main() {
     assert.ok((await page.$$('#eq-svg svg polyline')).length >= 2, 'a line per profile');
     assert.ok(await page.$('#eq-svg svg text'), 'axis labels');
     const sw = await page.evaluate(() => { const h = Array.from(document.querySelectorAll('h2')).find((x) => /Parameter sweep/.test(x.textContent)); const t = h.parentElement.querySelector('table'); return { rows: t.querySelectorAll('tbody tr').length, base: t.querySelectorAll('tr.base').length, head: t.tHead.innerText, note: h.parentElement.innerText }; });
-    assert.strictEqual(sw.rows, 18, 'sweep rows: 2 profiles x 9 combos'); assert.strictEqual(sw.base, 2, 'two base rows highlighted'); assert.ok(/2024/.test(sw.head) && /2026/.test(sw.head), 'year columns');
+    assert.strictEqual(sw.rows, 24, 'sweep rows: 2 profiles x (9 grid + 3 exit/entry variants)'); assert.strictEqual(sw.base, 2, 'two base rows highlighted'); assert.ok(/2024/.test(sw.head) && /2026/.test(sw.head), 'year columns');
     assert.ok(sw.note.includes('Choose on earlier years'), 'sweep note');
     const breakdowns = await page.$$eval('#prof-block h3', (e) => e.map((x) => x.textContent)); assert.ok(breakdowns.length >= 7, 'breakdown tables: ' + breakdowns.join(', '));
     assert.ok(await page.$('#prof-block tr.small .ss'), 'small-sample hint appears for thin cells');

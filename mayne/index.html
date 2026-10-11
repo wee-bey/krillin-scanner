@@ -686,12 +686,13 @@ function sweepHTML() {
   h += `<div class="tablewrap"><table><thead><tr><th rowspan="2" class="l">Combo</th><th colspan="6">All closed trades</th><th colspan="3">Avg R by regime</th><th colspan="${years.length}">Avg R by year armed</th></tr>`;
   h += `<tr><th>Closed</th><th>Win %</th><th>Avg R</th><th>PF</th><th>${'Σ'}R</th><th>Max DD</th><th>bull</th><th>bear</th><th>chop</th>${years.map((y) => `<th>${esc(y)}</th>`).join('')}</tr></thead><tbody>`;
   for (const c of S_.combos) {
-    const a = c.all || {}, base = c.slBufM === 0.25 && c.maxWaitZ === 12, small = (a.closed || 0) < SMALL_N;
-    h += `<tr class="${base ? 'base' : ''}${small ? ' small' : ''}"><td>${esc(c.prof)} · ${c.slBufM} · ${c.maxWaitZ}${base ? '<span class="ss" style="font-style:normal;color:var(--accent)">base</span>' : ''}</td><td class="num">${a.closed == null ? '—' : a.closed}</td><td class="num">${pct(a.win)}</td>${sCell(a, 'avgR', 'r')}<td class="num">${num(a.pf, 2)}</td>${sCell(a, 'sumR', 'r')}<td class="num">${num(a.maxDD, 2)}</td>`;
+    const variant = [c.exitMode === 'mechanical' ? 'mechanical exit' : '', c.entryMode === 'ce' ? 'CE entry' : ''].filter(Boolean).join(' + ');
+    const a = c.all || {}, base = c.slBufM === 0.25 && c.maxWaitZ === 12 && !variant, small = (a.closed || 0) < SMALL_N;
+    h += `<tr class="${base ? 'base' : ''}${small ? ' small' : ''}"><td>${esc(c.prof)} · ${c.slBufM} · ${c.maxWaitZ}${variant ? ' · ' + esc(variant) : ''}${base ? '<span class="ss" style="font-style:normal;color:var(--accent)">base</span>' : ''}</td><td class="num">${a.closed == null ? '—' : a.closed}</td><td class="num">${pct(a.win)}</td>${sCell(a, 'avgR', 'r')}<td class="num">${num(a.pf, 2)}</td>${sCell(a, 'sumR', 'r')}<td class="num">${num(a.maxDD, 2)}</td>`;
     h += ['bull', 'bear', 'chop'].map((r) => rcell((c.regime || {})[r])).join('') + years.map((y) => rcell((c.year || {})[y])).join('') + '</tr>';
   }
   h += '</tbody></table></div>';
-  h += `<p class="hint" style="margin:8px 0 0">Combo = profile · stop buffer (× ATR) · max wait (zone candles). The highlighted row is the base setting. Muted cells have fewer than ${SMALL_N} closed trades.</p>`;
+  h += `<p class="hint" style="margin:8px 0 0">Combo = profile · stop buffer (× ATR) · max wait (zone candles), plus Mayne's own exit / entry alternatives where named (mechanical = 100% off at PT; CE = limit at 50% of the FVG). The highlighted row is the base setting. Muted cells have fewer than ${SMALL_N} closed trades.</p>`;
   if (S_.note) h += `<p class="muted" style="margin:6px 0 0">${esc(S_.note)}</p>`;
   return h + '</div>';
 }
