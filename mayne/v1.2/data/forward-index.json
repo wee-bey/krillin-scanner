@@ -1,0 +1,64 @@
+{
+ "version": 1,
+ "engine": "mayne.v1.2-js.1",
+ "updated": "2026-10-12T03:56:31.663Z",
+ "coverage": {
+  "from": "2026-10-12",
+  "through": "2026-10-12",
+  "coins": 0
+ },
+ "rules": {
+  "universe": "daily top 100 Binance USDT-M perpetuals by the previous day’s volume",
+  "engine": "mayne/v1.2/lib/engine.js with v1.1 rules (the v1.2 switches are off), frozen on 11 Oct 2026",
+  "counted": "setups that arm on or after 12 Oct 2026 on a day their coin is in the top 100",
+  "costs": "maker 0.02% for limit entries and targets, taker 0.05% + 0.03% slippage for stops, limits must trade through by 0.02%, funding charged",
+  "R": "net PnL ÷ planned risk; Mayne-own exit",
+  "krillin": "M3 flag: an opposite Krillin signal on the same coin in the 24 h (P1) / 6 h (P2) before the arm (tracked only)"
+ },
+ "summary": {
+  "P1": {
+   "all": {
+    "armed": 0,
+    "filled": 0,
+    "closed": 0,
+    "open": 0,
+    "expired": 0,
+    "cancelled": 0,
+    "win": null,
+    "avgR": null,
+    "sumR": 0,
+    "avgRgross": null,
+    "pf": null,
+    "maxDD": 0
+   },
+   "regime": {},
+   "year": {},
+   "grade": {},
+   "dir": {},
+   "path": {},
+   "krillin": {}
+  },
+  "P2": {
+   "all": {
+    "armed": 0,
+    "filled": 0,
+    "closed": 0,
+    "open": 0,
+    "expired": 0,
+    "cancelled": 0,
+    "win": null,
+    "avgR": null,
+    "sumR": 0,
+    "avgRgross": null,
+    "pf": null,
+    "maxDD": 0
+   },
+   "regime": {},
+   "year": {},
+   "grade": {},
+   "dir": {},
+   "path": {},
+   "krillin": {}
+  }
+ }
+}
