@@ -1,0 +1,45 @@
+name: Mayne v1.2 · fidelity logs
+
+# Prints the v1.2 engine's log for the TradingView charts used to check the indicator mayne.v1.2 (same format as the
+# indicator's Pine Logs), for the default settings and with the v1.2 switches on. Results go to mayne-v12-results/fidelity.
+on:
+  push:
+    branches: [mayne-v1.2]
+    paths:
+      - 'mayne/v1.2/tools/fidelity.js'
+      - '.github/workflows/mayne-v12-fidelity.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  fidelity:
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Restore the Mayne candle cache (from main's replay; includes the spot charts)
+        uses: actions/cache/restore@v4
+        with:
+          path: .mcache
+          key: mayne-candles-${{ github.run_id }}
+          restore-keys: mayne-candles-
+      - name: Fidelity logs
+        run: |
+          O="$RUNNER_TEMP/fid"
+          node mayne/v1.2/tools/fidelity.js --sym BTCUSDT --market spot --profile P1 --chart-from 2024-01-01 --to 2026-10-10 --out "$O" --tag default
+          node mayne/v1.2/tools/fidelity.js --sym BTCUSDT --market spot --profile P1 --chart-from 2024-01-01 --to 2026-10-10 --out "$O" --tag touch --set fillThruPct=0
+          node mayne/v1.2/tools/fidelity.js --sym BTCUSDT --market spot --profile P1 --chart-from 2024-01-01 --to 2026-10-10 --out "$O" --tag switches --set fillThruPct=0.02,sweepDef=ltf,reqSweep=true,maxTagN=2,timeStopN=12,noWeekend=true
+          node mayne/v1.2/tools/fidelity.js --sym BTCUSDT --market spot --profile P2 --to 2026-10-10 --out "$O" --tag default
+      - name: Commit to mayne-v12-results
+        run: |
+          git config --global user.name "mayne-v12"
+          git config --global user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          REPO="https://x-access-token:${{ github.token }}@github.com/${{ github.repository }}.git"
+          git clone -q --depth 1 --branch mayne-v12-results "$REPO" "$RUNNER_TEMP/res"
+          mkdir -p "$RUNNER_TEMP/res/fidelity" && cp "$RUNNER_TEMP"/fid/*.txt "$RUNNER_TEMP/res/fidelity/"
+          cd "$RUNNER_TEMP/res" && git add -A && git commit -q -m "Mayne v1.2 fidelity logs $(date -u '+%Y-%m-%d %H:%M') UTC" && git push -q "$REPO" HEAD:mayne-v12-results

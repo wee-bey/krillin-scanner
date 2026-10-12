@@ -1,0 +1,58 @@
+name: Mayne v1.2 · research sample
+
+# Trader Mayne v1.2 (separate from Krillin and from the v1.1 Mayne replay): exports a research sample from the Mayne
+# candle cache (every symbol's daily candles, 15m candles + funding for ~20 sample coins) to the orphan branch
+# mayne-v12-sample, so the v1.2 research can be developed offline. Nothing on main or in mayne/ (v1.1) changes.
+on:
+  push:
+    branches: [mayne-v1.2]
+    paths:
+      - 'mayne/v1.2/tools/export-sample.js'
+      - '.github/workflows/mayne-v12-sample.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+concurrency:
+  group: mayne-v12-sample
+  cancel-in-progress: true
+
+jobs:
+  export:
+    runs-on: ubuntu-latest
+    timeout-minutes: 90
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Restore the Mayne candle cache (from main's replay)
+        uses: actions/cache/restore@v4
+        with:
+          path: .mcache
+          key: mayne-candles-${{ github.run_id }}
+          restore-keys: mayne-candles-
+      - name: Restore the v1.2 funding cache
+        uses: actions/cache/restore@v4
+        with:
+          path: .mcache/funding
+          key: mayne-v12-funding-${{ github.run_id }}
+          restore-keys: mayne-v12-funding-
+      - name: Export
+        run: node mayne/v1.2/tools/export-sample.js --out "$RUNNER_TEMP/sample"
+      - name: Save the v1.2 funding cache
+        if: always()
+        uses: actions/cache/save@v4
+        with:
+          path: .mcache/funding
+          key: mayne-v12-funding-${{ github.run_id }}
+      - name: Push to the orphan branch mayne-v12-sample
+        run: |
+          cd "$RUNNER_TEMP/sample"
+          git init -q -b mayne-v12-sample
+          git config user.name "mayne-v12"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add -A
+          git commit -q -m "Mayne v1.2 research sample $(date -u '+%Y-%m-%d %H:%M') UTC"
+          git push -f "https://x-access-token:${{ github.token }}@github.com/${{ github.repository }}.git" mayne-v12-sample
