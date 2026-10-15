@@ -1,0 +1,10 @@
+{
+ "name": "decide-A",
+ "armFrom": "2021-01-01",
+ "armTo": "2023-12-31",
+ "variants": "B0,E1,E3,E2a,E2b,E4",
+ "profiles": "P1,P2,P1D,P2D",
+ "diag": "B0,E1,E4",
+ "set": "",
+ "note": "FABLE_PLAN §3 Stage A (the exit) on DECIDE: B0 and the exit candidates on P1, P2 and the direct profiles P1D, P2D; diagnostics for B0, E1 and E4."
+}
