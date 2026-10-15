@@ -20,3 +20,6 @@ How the data is made:
 - The archive is published a few hours after each UTC day ends, so the latest replayed day is usually yesterday. The first run backfills the last 30 days.
 
 To run it by hand: **Actions → Signal replay → Run workflow**.
+
+## Fable version (regime first)
+`fable/` is a separate module at https://wee-bey.github.io/krillin-scanner/fable/: the BTC daily MA100 regime as the signal (paper books A and C), the Krillin setups as a gated 4h/daily watch list, and Telegram alerts (regime flips + a daily digest). See `fable/README.md`.

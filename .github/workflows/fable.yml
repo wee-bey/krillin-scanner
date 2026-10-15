@@ -1,0 +1,67 @@
+name: Fable
+
+# Fable version (fable/*): the BTC daily MA100 regime first, the Krillin setups as a gated 4h/daily watch list.
+# Reads the Krillin replay's data/ (never writes it), downloads BTC daily candles + funding from Binance's public
+# archive, writes fable/data/ and sends the regime-flip alert and the daily digest to Telegram when the secrets
+# TELEGRAM_BOT_TOKEN and TELEGRAM_CHAT_ID exist. See fable/README.md.
+on:
+  schedule:
+    - cron: '23 8,14,20 * * *'   # 3 times a day, after the Krillin replay's 6-hourly runs; each run is a few seconds once cached
+  push:
+    branches: [main]
+    paths:
+      - 'fable/lib/**'
+      - 'fable/tools/**'
+      - '.github/workflows/fable.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+concurrency:
+  group: fable
+  cancel-in-progress: false
+
+jobs:
+  fable:
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+
+      - name: Restore the candle cache
+        uses: actions/cache/restore@v4
+        with:
+          path: .fcache
+          key: fable-candles-${{ github.run_id }}
+          restore-keys: fable-candles-
+
+      - name: Checks
+        run: node fable/tools/test-fable.js
+
+      - name: Regime, books, watch list, alerts
+        env:
+          TELEGRAM_BOT_TOKEN: ${{ secrets.TELEGRAM_BOT_TOKEN }}
+          TELEGRAM_CHAT_ID: ${{ secrets.TELEGRAM_CHAT_ID }}
+        run: node fable/tools/run.js
+
+      - name: Save the candle cache
+        if: always()
+        uses: actions/cache/save@v4
+        with:
+          path: .fcache
+          key: fable-candles-${{ github.run_id }}
+
+      - name: Commit the results
+        if: always()
+        run: |
+          git config user.name "fable"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add fable/data
+          if git diff --cached --quiet; then echo "no changes"; exit 0; fi
+          git commit -m "Fable $(date -u '+%Y-%m-%d %H:%M') UTC"
+          for i in 1 2 3; do git pull --rebase --autostash && git push && break; sleep 5; done

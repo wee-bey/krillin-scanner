@@ -1,0 +1,11 @@
+--- 2026-10-15T21:22:38.862Z
+Fable · BTC 81,642 vs daily MA100 73,463 (+11.133%) → RISK-ON (56 d since the flip; daily EMA200/SMMA99 above)
+Book A target +0.688x BTC (6,880 on 10,000) · Book C 0.688x
+Context 2026-10-14: BTC daily neutral / 4h bullish / weekly neutral · daily regime chop · 30-day +8.2% · BTC at HTF resistance: yes
+
+Watch list 2026-10-14 (4h/1d, gated): 0 of 56 signals passed
+• nothing passed the gates today
+Rejected: 47 BTC at HTF resistance: no alt longs · 32 coin daily bias against · 23 2+ warnings · 9 against the BTC regime (risk-on) · 6 stop under 1%
+
+Gated subset so far: 1841 closed, 0.03R avg, PF 1.08 (first half 0.046R / second half -0.013R). Everything: -0.074R, PF 0.84.
+Planning aid only, not financial advice. https://wee-bey.github.io/krillin-scanner/fable/

@@ -1,0 +1,196 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Fable · regime-first</title>
+<meta name="description" content="Krillin Scanner, Fable version: the BTC daily MA100 regime first, the Krillin setups as a gated 4h/daily watch list.">
+<meta name="theme-color" content="#0E1016">
+<meta name="referrer" content="no-referrer">
+<link rel="icon" href="../icon-192.png">
+<link rel="apple-touch-icon" href="../icon-180.png">
+<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Archivo:wght@600;700&family=Public+Sans:wght@400;500;600&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+:root{--bg:#F3F4F8;--surface:#FFFFFF;--surface-2:#F7F8FB;--sunk:#EDEFF5;--ink:#14161F;--ink-2:#444A5C;--muted:#6A7084;--line:#E1E4EC;--line-2:#CFD3DE;--accent:#3D34C9;--accent-soft:#E9E8FB;--long:#0D7A59;--long-soft:#DFF3EC;--short:#BE3448;--short-soft:#FBE6E9;--warn:#9C5B00;--warn-soft:#FBEFD9;--info:#2A64CC;--info-soft:#E3ECFB;--gain:#1F6FD6;--loss:#BE3448;--grid:#E8EAF0;--r:10px;--r-sm:6px;--shadow:0 1px 2px rgba(20,22,31,.06),0 4px 16px rgba(20,22,31,.06);--f-body:"Public Sans",system-ui,-apple-system,"Segoe UI",sans-serif;--f-display:"Archivo","Arial Narrow",system-ui,sans-serif;--f-mono:"JetBrains Mono",ui-monospace,"Cascadia Mono",Consolas,monospace}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#0E1016;--surface:#161922;--surface-2:#1B1F2A;--sunk:#12151D;--ink:#E7E9F0;--ink-2:#B9BECC;--muted:#8B91A4;--line:#262A37;--line-2:#343948;--accent:#8F89FF;--accent-soft:#24234A;--long:#3FCB98;--long-soft:#15302A;--short:#FF6F83;--short-soft:#3A1C24;--warn:#F0AC43;--warn-soft:#3A2B12;--info:#72A6FF;--info-soft:#182640;--gain:#3D8BF0;--loss:#EB4E5A;--grid:#20242F;--shadow:0 1px 2px rgba(0,0,0,.4),0 6px 20px rgba(0,0,0,.35)}}
+:root[data-theme="dark"]{--bg:#0E1016;--surface:#161922;--surface-2:#1B1F2A;--sunk:#12151D;--ink:#E7E9F0;--ink-2:#B9BECC;--muted:#8B91A4;--line:#262A37;--line-2:#343948;--accent:#8F89FF;--accent-soft:#24234A;--long:#3FCB98;--long-soft:#15302A;--short:#FF6F83;--short-soft:#3A1C24;--warn:#F0AC43;--warn-soft:#3A2B12;--info:#72A6FF;--info-soft:#182640;--gain:#3D8BF0;--loss:#EB4E5A;--grid:#20242F;--shadow:0 1px 2px rgba(0,0,0,.4),0 6px 20px rgba(0,0,0,.35)}
+*{box-sizing:border-box}html{-webkit-text-size-adjust:100%}
+body{margin:0;background:var(--bg);color:var(--ink);font:15px/1.5 var(--f-body)}
+a{color:var(--accent);text-decoration:none}a:hover{text-decoration:underline}
+.wrap{max-width:1040px;margin:0 auto;padding:16px 16px 48px}
+header{display:flex;flex-wrap:wrap;align-items:baseline;gap:8px 16px;margin-bottom:14px}
+h1{font:700 26px/1.1 var(--f-display);margin:0;letter-spacing:-.01em}h1 small{font:600 13px var(--f-body);color:var(--muted);margin-left:8px}
+nav{margin-left:auto;display:flex;gap:14px;font-size:13px}
+h2{font:700 17px/1.2 var(--f-display);margin:0 0 10px}
+h3{font:600 13px/1.2 var(--f-body);color:var(--muted);text-transform:uppercase;letter-spacing:.06em;margin:14px 0 6px}
+.card{background:var(--surface);border:1px solid var(--line);border-radius:var(--r);box-shadow:var(--shadow);padding:16px;margin-bottom:16px}
+.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:10px}
+.kpi{background:var(--surface-2);border:1px solid var(--line);border-radius:var(--r-sm);padding:10px 12px}
+.kpi .l{font-size:11px;color:var(--muted);text-transform:uppercase;letter-spacing:.05em}.kpi .v{font:500 20px/1.2 var(--f-mono);margin-top:3px}.kpi .s{font-size:12px;color:var(--ink-2);margin-top:2px}
+.pill{display:inline-block;padding:2px 10px;border-radius:999px;font:600 12px var(--f-body);text-transform:uppercase;letter-spacing:.05em}
+.on{background:var(--long-soft);color:var(--long)}.off{background:var(--short-soft);color:var(--short)}.na{background:var(--sunk);color:var(--muted)}
+.big{font:700 34px/1.1 var(--f-display)}
+.muted{color:var(--muted)}.small{font-size:12.5px}.mono{font-family:var(--f-mono)}
+.pos{color:var(--gain)}.neg{color:var(--loss)}
+table{border-collapse:collapse;width:100%;font-size:13px}th,td{padding:6px 8px;border-bottom:1px solid var(--line);text-align:right;white-space:nowrap}th{color:var(--muted);font-weight:600;font-size:11.5px;text-transform:uppercase;letter-spacing:.04em}th:first-child,td:first-child{text-align:left}
+.scroll{overflow-x:auto;-webkit-overflow-scrolling:touch}
+.sig{border:1px solid var(--line);border-radius:var(--r-sm);padding:10px 12px;margin:8px 0;background:var(--surface-2)}
+.sig .t{display:flex;flex-wrap:wrap;gap:6px 10px;align-items:center;font-weight:600}.sig .plan{font:13px var(--f-mono);margin:6px 0;color:var(--ink-2);white-space:normal;word-break:break-word}.sig .why{font-size:13px;color:var(--ink-2)}.sig .soft{font-size:12.5px;color:var(--warn)}
+.dir-long{color:var(--long)}.dir-short{color:var(--short)}
+.note{font-size:13px;color:var(--ink);background:var(--info-soft);border-left:3px solid var(--info);padding:8px 12px;border-radius:var(--r-sm);margin:10px 0}
+.warn{background:var(--warn-soft);border-left-color:var(--warn)}
+input[type=number]{font:14px var(--f-mono);width:110px;padding:4px 8px;border:1px solid var(--line-2);border-radius:var(--r-sm);background:var(--surface);color:var(--ink)}
+svg text{font:11px var(--f-mono);fill:var(--muted)}
+details summary{cursor:pointer;color:var(--accent);font-size:13px}
+footer{font-size:12.5px;color:var(--muted);margin-top:24px}
+@media (max-width:600px){.big{font-size:28px}.wrap{padding:12px 12px 40px}.card{padding:13px}}
+</style>
+</head>
+<body>
+<div class="wrap">
+<header><h1>Fable <small>regime-first · Krillin Scanner</small></h1><nav><a href="../">Scanner</a><a href="../#results">Results</a><a href="https://github.com/wee-bey/krillin-scanner/tree/main/fable">About</a></nav></header>
+
+<section class="card" id="regime">
+  <h2>Market regime <span id="regPill" class="pill na">loading</span></h2>
+  <div id="regMain" class="muted">Reading BTC daily candles…</div>
+  <div class="grid" id="regKpis" style="margin-top:10px"></div>
+  <div style="margin-top:10px;font-size:13px" class="muted">Account <input type="number" id="acct" min="100" step="100"> → target exposure for the books: <span id="target" class="mono"></span></div>
+  <div class="note" id="regNote"></div>
+</section>
+
+<section class="card" id="book">
+  <h2>Regime book (paper portfolio)</h2>
+  <div class="small muted" id="bookRule"></div>
+  <div class="scroll"><table id="bookTable"></table></div>
+  <h3>Equity since 2022 (log, costs and funding included)</h3>
+  <div id="eqChart"></div>
+  <div class="scroll"><table id="yearTable"></table></div>
+  <div class="note warn" id="bookCaveat">Modest and not statistically proven: about 60 switches since 2022 (t ≈ 1.3–1.7). Expect −20% to −37% drawdowns and flat stretches in chop. The daily close is the 00:00 UTC print; execute the same morning, a full day's delay removed the replay-year gain.</div>
+</section>
+
+<section class="card" id="digest">
+  <h2>Watch list <span id="digestDay" class="muted small"></span></h2>
+  <div id="digestCtx" class="small muted"></div>
+  <div id="watch"></div>
+  <div id="rejected" class="small muted"></div>
+  <div class="note">The watch list follows the Krillin replay, which is about a day behind the archive: these are the 4h and daily setups from that day that passed every gate (direction with the BTC regime, the coin's own daily bias, no pre-pump / shrinking-highs warning, fewer than 2 warnings, stop at least 1%, no alt longs with BTC at HTF resistance, no D4@1d right after a D4@1h). Planned trades, not trade calls: check the chart, set your own alert, journal it.</div>
+</section>
+
+<section class="card" id="subset">
+  <h2>How the gated subset has done</h2>
+  <div class="small muted">The same gates applied to every 4h/daily signal of the replay history, paper-traded by the replay itself (fees + slippage, no funding). First half / second half as in HANDOFF §5d. This is the forward test the watch list has to pass before it means anything.</div>
+  <div class="scroll"><table id="subsetTable"></table></div>
+  <details><summary>Breakdowns of the gated subset</summary><div class="scroll"><table id="breakTable"></table></div></details>
+</section>
+
+<section class="card" id="alerts">
+  <h2>Alerts</h2>
+  <div id="alertList" class="small"></div>
+  <div class="note">Tier 1: a regime flip (about 5–19 a year) is the only "act now" alert. Tier 2: the daily digest. Tier 3: the level alerts you set yourself in TradingView. Delivery is a Telegram bot driven by the GitHub job: add the repository secrets <span class="mono">TELEGRAM_BOT_TOKEN</span> and <span class="mono">TELEGRAM_CHAT_ID</span> yourself; until then the messages are only written to <span class="mono">fable/data/outbox.txt</span>.</div>
+</section>
+
+<footer>Fable version · built 2026-10-16 from the course's regime rule (HANDOFF §5f) · every MA names its timeframe: the switch line is BTC's <b>daily</b> MA100 (SMA of 100 daily closes); the second opinion is the daily "EMA200", which Krillin's script computes as SMMA(99) · data from Binance's public archive and API · planning aid only, not financial advice.</footer>
+</div>
+<script src="lib/regime.js"></script>
+<script>
+(() => {
+'use strict';
+const $ = (s) => document.querySelector(s);
+const fmt = (x, d = 0) => Number.isFinite(x) ? x.toLocaleString('en-US', { maximumFractionDigits: d, minimumFractionDigits: d }) : '–';
+const pct = (x, d = 1, sign = false) => Number.isFinite(x) ? (sign && x > 0 ? '+' : '') + (x * 100).toFixed(d) + '%' : '–';
+const cls = (x) => Number.isFinite(x) ? (x > 0 ? 'pos' : x < 0 ? 'neg' : '') : '';
+const esc = (s) => String(s == null ? '' : s).replace(/[&<>"]/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]));
+const DAY = 864e5; const ymd = (t) => new Date(t).toISOString().slice(0, 10);
+let acct = 10000; try { acct = +localStorage.getItem('fable.account') || 10000; } catch (e) {} $('#acct').value = acct;
+$('#acct').addEventListener('change', () => { acct = Math.max(100, +$('#acct').value || 10000); try { localStorage.setItem('fable.account', acct); } catch (e) {} if (window.__latest) showTargets(window.__latest); });
+const get = (u) => fetch(u, { cache: 'no-store' }).then((r) => { if (!r.ok) throw new Error(u + ' ' + r.status); return r.json(); });
+
+function showTargets(l) { const a = l.vol > 0 ? Math.min(2, 0.30 / l.vol) : 0; const A = l.state > 0 ? a : -a, C = l.state > 0 ? a : 0; $('#target').textContent = `A ${A > 0 ? '+' : ''}${A.toFixed(2)}x (${fmt(acct * A)} BTC-notional) · C ${C.toFixed(2)}x (${fmt(acct * C)})`; }
+
+function showRegime(l, src) {
+  window.__latest = l;
+  const on = l.state > 0; $('#regPill').className = 'pill ' + (on ? 'on' : 'off'); $('#regPill').textContent = on ? 'risk-on' : 'risk-off';
+  $('#regMain').innerHTML = `<span class="big">BTC ${fmt(l.close)}</span> <span class="muted">vs daily MA100</span> <span class="big mono">${fmt(l.ma100)}</span> <span class="${cls(l.dist)}">(${l.dist > 0 ? '+' : ''}${l.dist.toFixed(1)}%)</span><div class="small muted">Judged at the last daily close (${l.day}, 00:00 UTC) · ${src}</div>`;
+  $('#regKpis').innerHTML = [
+    ['Days since the flip', l.daysSinceFlip == null ? '–' : l.daysSinceFlip, l.flipDay ? 'flipped at the ' + l.flipDay + ' close' : ''],
+    ['Daily EMA200 (SMMA 99)', fmt(l.smma99), 'second opinion: price ' + (l.smmaState > 0 ? 'above' : l.smmaState < 0 ? 'below' : 'on it')],
+    ['Daily ATR14', fmt(l.atr14), 'the RG tracker stop is 3 × ATR'],
+    ['Realised vol (60 d)', pct(l.vol, 0), 'sizes the book to 30%/yr'],
+    ['Live price', l.live ? fmt(l.live) : '–', l.live ? `${l.live > l.ma100 ? 'above' : 'below'} the line now; ${l.liveDay === l.day ? 'same' : 'current'} day still open` : ''],
+  ].map(([k, v, s]) => `<div class="kpi"><div class="l">${k}</div><div class="v">${v}</div><div class="s">${esc(s)}</div></div>`).join('');
+  showTargets(l);
+  $('#regNote').textContent = `The regime changes only at a daily close on the other side of the line. ${on ? 'A close below' : 'A close above'} about ${fmt(l.ma100)} would flip it (the line moves a little each day: the 100-day average of closes).`;
+}
+
+async function liveRegime() { // BTC daily candles from Binance's public API (Bybit as the fallback), in your browser; else the job's regime.json
+  let k = null, src = '';
+  try { const r = await fetch('https://fapi.binance.com/fapi/v1/klines?symbol=BTCUSDT&interval=1d&limit=400', { referrerPolicy: 'no-referrer' }); if (r.ok) { k = (await r.json()).map((x) => [x[0], +x[1], +x[2], +x[3], +x[4], x[6]]); src = 'live from Binance'; } } catch (e) {}
+  if (!k) try { const r = await fetch('https://api.bybit.com/v5/market/kline?category=linear&symbol=BTCUSDT&interval=D&limit=400', { referrerPolicy: 'no-referrer' }); if (r.ok) { const j = await r.json(); k = (j.result.list || []).map((x) => [+x[0], +x[1], +x[2], +x[3], +x[4], +x[0] + DAY - 1]).sort((a, b) => a[0] - b[0]); src = 'live from Bybit'; } } catch (e) {}
+  if (!k || k.length < 150) return null;
+  const closed = k.filter((x) => x[5] < Date.now()); const live = k[k.length - 1];
+  const D = { t: closed.map((x) => x[0]), o: closed.map((x) => x[1]), h: closed.map((x) => x[2]), l: closed.map((x) => x[3]), c: closed.map((x) => x[4]) };
+  const s = FableRegime.series(D); const l = s.rows[s.rows.length - 1]; const flips = s.rows.filter((x) => x.flip);
+  return { ...l, flipDay: flips.length ? flips[flips.length - 1].day : null, vol: FableRegime.realisedVol(D.c, D.c.length - 1, 60), live: live[4], liveDay: ymd(live[0]), src };
+}
+function bookTable(R) {
+  const rows = [['A: long BTC in risk-on / short in risk-off', R.books.A], ['C: long BTC in risk-on / flat in risk-off', R.books.C]];
+  let h = '<tr><th>Book</th><th>Replay year</th><th>Since 2022</th><th>CAGR</th><th>Sharpe</th><th>Max DD</th><th>Switches</th><th>Costs</th><th>Funding</th><th>Now</th></tr>';
+  for (const [n, b] of rows) h += `<tr><td>${n}</td><td class="${cls(b.replayYear && b.replayYear.ret)}">${pct(b.replayYear && b.replayYear.ret)}</td><td class="${cls(b.since2022 && b.since2022.ret)}">${pct(b.since2022 && b.since2022.ret)}</td><td>${pct(b.stats.cagr)}</td><td>${b.stats.sharpe == null ? '–' : b.stats.sharpe.toFixed(2)}</td><td class="neg">−${pct(b.stats.maxDD)}</td><td>${b.stats.switches}</td><td>${pct(b.stats.costPaid)}</td><td>${pct(b.stats.fundingPaid)}</td><td class="mono">${b.stats.lastPos > 0 ? '+' : ''}${b.stats.lastPos}x</td></tr>`;
+  h += `<tr><td class="muted">BTC buy &amp; hold (1x, no costs)</td><td class="${cls(R.buyHold.replayYear)}">${pct(R.buyHold.replayYear)}</td><td class="${cls(R.buyHold.since2022)}">${pct(R.buyHold.since2022)}</td><td colspan="7" class="muted" style="text-align:left">for scale; the books average 0.3–0.7x exposure</td></tr>`;
+  $('#bookTable').innerHTML = h;
+  const ys = Object.keys(R.books.A.byYear).sort(); let y = '<tr><th>Year</th>' + ys.map((k) => `<th>${k}</th>`).join('') + '</tr>';
+  for (const k of ['A', 'C']) y += `<tr><td>Book ${k}</td>` + ys.map((yy) => `<td class="${cls(R.books[k].byYear[yy])}">${pct(R.books[k].byYear[yy])}</td>`).join('') + '</tr>';
+  $('#yearTable').innerHTML = y;
+  $('#bookRule').textContent = R.rule + ` Funding known through ${R.funding.knownThrough || '–'}; later days use the mean of the last 30 known days (${(R.funding.estimateDaily * 100).toFixed(3)}%/day).`;
+}
+function eqChart(R) {
+  const W = 920, H = 230, P = { l: 48, r: 12, t: 10, b: 24 }; const series = [['A', R.books.A.eq, 'var(--accent)'], ['C', R.books.C.eq, 'var(--long)']];
+  const all = series.flatMap((s) => s[1].map((r) => r[1])); const lo = Math.min(...all), hi = Math.max(...all); const t0 = Date.parse(series[0][1][0][0]), t1 = Date.parse(series[0][1][series[0][1].length - 1][0]);
+  const x = (d) => P.l + (Date.parse(d) - t0) / (t1 - t0) * (W - P.l - P.r), y = (v) => P.t + (1 - (Math.log(v) - Math.log(lo)) / (Math.log(hi) - Math.log(lo))) * (H - P.t - P.b);
+  let g = ''; for (const v of [0.5, 0.75, 1, 1.5, 2, 3]) if (v >= lo && v <= hi) g += `<line x1="${P.l}" x2="${W - P.r}" y1="${y(v)}" y2="${y(v)}" stroke="var(--grid)"/><text x="${P.l - 6}" y="${y(v) + 4}" text-anchor="end">${v}x</text>`;
+  for (let yr = new Date(t0).getUTCFullYear() + 1; yr <= new Date(t1).getUTCFullYear(); yr++) { const d = `${yr}-01-01`; g += `<line x1="${x(d)}" x2="${x(d)}" y1="${P.t}" y2="${H - P.b}" stroke="var(--grid)"/><text x="${x(d) + 3}" y="${H - 8}">${yr}</text>`; }
+  // shade risk-off days from the regime rows
+  const shade = R.rows.filter((r) => r[0] >= series[0][1][0][0]); let sh = '', start = null;
+  for (let i = 0; i < shade.length; i++) { const off = shade[i][3] < 0; if (off && start === null) start = shade[i][0]; if ((!off || i === shade.length - 1) && start !== null) { sh += `<rect x="${x(start)}" y="${P.t}" width="${Math.max(1, x(shade[i][0]) - x(start))}" height="${H - P.t - P.b}" fill="var(--short)" opacity=".07"/>`; start = null; } }
+  const paths = series.map(([n, eq, c]) => `<path d="${eq.map((r, i) => (i ? 'L' : 'M') + x(r[0]).toFixed(1) + ' ' + y(r[1]).toFixed(1)).join(' ')}" fill="none" stroke="${c}" stroke-width="1.6"/>`).join('');
+  const leg = series.map(([n, eq, c], i) => `<rect x="${P.l + i * 90}" y="${P.t}" width="10" height="10" fill="${c}"/><text x="${P.l + i * 90 + 14}" y="${P.t + 9}" style="fill:var(--ink-2)">Book ${n} ${(eq[eq.length - 1][1]).toFixed(2)}x</text>`).join('');
+  $('#eqChart').innerHTML = `<svg viewBox="0 0 ${W} ${H}" width="100%" role="img" aria-label="Equity of the regime books since 2022; shaded = risk-off">${sh}${g}${paths}${leg}</svg>`;
+}
+function signalCard(s) {
+  const bids = s.bids.length > 1 ? `${fmt(s.bids[0], 6)} → ${fmt(s.bids[s.bids.length - 1], 6)}` : fmt(s.bids[0], 6);
+  const tps = (s.tps || []).map((t, i) => `TP${i + 1} ${fmt(t[0], 6)} (${t[1]}R, ${esc(t[2])})`).join(' · ');
+  const ev = s.ev && s.ev.st && s.ev.st !== 'pending' ? `<span class="muted small">replay: ${esc(s.ev.st)}${s.ev.done && Number.isFinite(s.ev.R) ? ' ' + s.ev.R.toFixed(2) + 'R' : (Number.isFinite(s.ev.uR) ? ' ' + s.ev.uR.toFixed(2) + 'R open' : '')}</span>` : '';
+  return `<div class="sig"><div class="t"><span class="mono">${esc(s.S)}</span><span class="dir-${s.dir}">${esc(s.setup)} ${esc(s.tf)} ${esc(s.dir)}</span><span class="muted">grade ${esc(s.grade)} · ${esc(new Date(s.t).toISOString().slice(0, 16).replace('T', ' '))} UTC</span>${ev}</div>
+  <div class="plan">${s.dir === 'long' ? 'bids' : 'asks'} ${bids} (10/20/30/40%) · avg ${fmt(s.avg, 6)} · stop ${fmt(s.stop, 6)} (${s.stopPct.toFixed(1)}%) · ${tps || 'no TP'} · avg ${s.avgTP}R${Number.isFinite(s.room) ? ` · room ${s.room}R` : ''}</div>
+  <div class="why">${esc(s.name)}: ${esc(s.why)}${s.entryText ? ' · ' + esc(s.entryText) : ''}</div>${s.warnings && s.warnings.length ? `<div class="soft">warning: ${esc(s.warnings.join('; '))}</div>` : ''}${s.soft && s.soft.length ? `<div class="soft">⚠ ${esc(s.soft.join('; '))}</div>` : ''}</div>`;
+}
+function statRow(label, s) { return `<tr><td>${label}</td><td>${s.n}</td><td>${s.closed}</td><td>${s.winRate == null ? '–' : pct(s.winRate, 0)}</td><td class="${cls(s.avgR)}">${s.avgR == null ? '–' : (s.avgR > 0 ? '+' : '') + s.avgR.toFixed(3)}R</td><td class="${cls(s.totalR)}">${(s.totalR > 0 ? '+' : '') + s.totalR}R</td><td>${s.pf == null ? '–' : s.pf === Infinity ? '∞' : s.pf.toFixed(2)}</td></tr>`; }
+function showDigest(d) {
+  $('#digestDay').textContent = `replay day ${d.day} · ${d.counts.passed} of ${d.counts.signals4h1d} 4h/daily signals passed (${d.counts.signalsAll} signals on all timeframes)`;
+  const m = d.market; $('#digestCtx').textContent = m ? `BTC that day: daily bias ${m.bias1d}, 4h ${m.bias4h}, weekly ${m.bias1w} · daily regime ${m.reg1d} · 30-day ${m.chg30 > 0 ? '+' : ''}${m.chg30.toFixed(1)}% · 20-day vol ${m.vol20.toFixed(1)}%/day` : '';
+  $('#watch').innerHTML = d.watch.length ? d.watch.map(signalCard).join('') : '<div class="sig muted">Nothing passed the gates that day.</div>';
+  const rej = Object.entries(d.rejectedToday); $('#rejected').innerHTML = rej.length ? 'Rejected: ' + rej.map(([k, v]) => `${v} × ${esc(k)}`).join(' · ') : '';
+  const S = d.subset; const H = '<tr><th></th><th>Signals</th><th>Closed</th><th>Win</th><th>Avg R</th><th>Total R</th><th>PF</th></tr>';
+  $('#subsetTable').innerHTML = H + statRow('<b>Gated 4h/1d</b>', S.gated.all) + statRow('&nbsp;&nbsp;first half (to ' + S.split + ')', S.gated.firstHalf) + statRow('&nbsp;&nbsp;second half', S.gated.secondHalf) + statRow('All 4h/1d signals', S.all4h1d.all) + statRow('&nbsp;&nbsp;first half', S.all4h1d.firstHalf) + statRow('&nbsp;&nbsp;second half', S.all4h1d.secondHalf) + statRow('Everything (all TFs)', S.everything.all) + statRow('Alerted (A/A+)', S.alerted);
+  let b = H; const sec = (name, o) => { b += `<tr><td colspan="7" class="muted" style="text-align:left;background:var(--surface-2)">${name}</td></tr>`; for (const [k, v] of Object.entries(o).sort((x, y) => y[1].n - x[1].n)) b += statRow(esc(k), v); };
+  sec('By regime', S.gated.byRegime); sec('By direction', S.gated.byDir); sec('By timeframe', S.gated.byTf); sec('By grade', S.gated.byGrade); sec('By setup', S.gated.bySetup);
+  $('#breakTable').innerHTML = b;
+  const rejAll = Object.entries(S.rejected); if (rejAll.length) $('#rejected').innerHTML += `<div style="margin-top:6px">Over the whole history: ${rejAll.map(([k, v]) => `${v} × ${esc(k)}`).join(' · ')}</div>`;
+}
+function showAlerts(a) { $('#alertList').innerHTML = a.length ? a.slice().reverse().slice(0, 20).map((x) => `<div class="sig"><div class="t"><span class="pill ${x.kind === 'flip' ? 'off' : 'na'}">${esc(x.kind)}</span><span class="muted">${esc(new Date(x.t).toISOString().slice(0, 16).replace('T', ' '))} UTC · ${x.sent ? 'sent to Telegram' : esc(x.why || 'not sent')}</span></div><pre class="small" style="white-space:pre-wrap;margin:6px 0 0;font-family:var(--f-mono)">${esc(x.text)}</pre></div>`).join('') : '<div class="muted">No alerts yet.</div>'; }
+
+(async () => {
+  let R = null; try { R = await get('data/regime.json'); } catch (e) {}
+  const live = await liveRegime();
+  if (live) showRegime(live, live.src + (R ? ` · the job last saw ${R.latest.day}` : ''));
+  else if (R) showRegime({ ...R.latest, flipDay: R.flips.length ? R.flips[R.flips.length - 1].day : null, vol: R.books.A.stats.lastVol }, 'from the daily job (Binance API unreachable from this browser)');
+  else { $('#regMain').textContent = 'No regime data yet: the GitHub job has not run and Binance is unreachable from here.'; $('#regPill').textContent = 'n/a'; }
+  if (R) { bookTable(R); eqChart(R); }
+  try { showDigest(await get('data/digest.json')); } catch (e) { $('#watch').innerHTML = '<div class="sig muted">No digest yet (the job has not run).</div>'; }
+  try { showAlerts(await get('data/alerts.json')); } catch (e) { showAlerts([]); }
+})();
+})();
+</script>
+</body>
+</html>
