@@ -109,7 +109,7 @@ One look at 2024-01-01 → latest for: B0, B1 and F per profile (P1, P2, P1D, P2
 ## 9. Log of looks at CONFIRM
 | Date | What was looked at | Why |
 |---|---|---|
-| (none yet) | | |
+| 16 Oct 2026 | CONFIRM run `confirm`: B0, B1 and F per profile (P1 F = E3 + N2 + N5; P2 F = E4 + N6b; P1D F = B1 = E4; P2D F = B0), with the baseline diagnostics on B0, B1 and both F variants | The one planned look (§7). Configuration fixed by addendum 1 and the `decide-F` run (P1 F = +0.062R on 356 trades on DECIDE, ≥ N2 alone −0.025R, ≥ 150 trades). Logged before the run was started. |
 
 ## 10. Addenda
 **Addendum 1 (16 Oct 2026, after the Stage A and Stage B DECIDE runs, before any CONFIRM look).** DECIDE outcomes,
@@ -124,3 +124,9 @@ recorded here so the CONFIRM configuration is fixed before it is opened:
 - F per profile: **P1 = B1 + N2 + N5** (combination run `decide-F`, must hold ≥ 150 trades and ≥ N2 alone, −0.025R;
   else drop N5 then N2 per §6); **P2 = B1 + N6b**; **P1D = B1 (E4)**; **P2D = B0**.
 - The CONFIRM look (§7) will open B0, B1 and F for all four profiles at once.
+- `decide-F` (P1): F = B1 + N2 + N5 made **+0.062R on 356 closed trades** (90% CI −0.14 … +0.28; +0.23 / +0.30 / −0.08 by
+  year), vs B1 −0.094 and N2 alone −0.025. It passes §6 step 3, so P1's F stands as B1 + N2 + N5.
+- Independent verification (separate agent, 16 Oct 2026): the report numbers, the selection rule and the DECIDE split
+  were re-derived from the raw rows and match; the engine's daily-pool partial and daily-close test read only closed
+  daily candles. Noted: 0.15% of DECIDE trades (armed in 2023) exited in 2024, so their exits use 2024 prices; and
+  several Stage A margins are thin (P1 E3 over E1 by 0.001R; P2 E3 at +0.0295 missed the 0.03 bar).

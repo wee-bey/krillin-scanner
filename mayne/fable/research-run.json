@@ -1,14 +1,15 @@
 {
- "name": "decide-F",
- "armFrom": "2021-01-01",
- "armTo": "2023-12-31",
- "variants": "B1,F",
- "profiles": "P1",
- "diag": "F",
+ "name": "confirm",
+ "armFrom": "2024-01-01",
+ "armTo": "2099-12-31",
+ "variants": "B0,B1,F_P1,F_P2",
+ "profiles": "P1,P2,P1D,P2D",
+ "diag": "B0,B1,F_P1,F_P2",
  "set": "",
  "custom": {
-  "B1": { "fable": "exit" },
-  "F":  { "fable": "exit", "pathOnly": "cont", "poiKind": "overlap" }
+  "B1":   { "fable": "exit" },
+  "F_P1": { "fable": "exit", "pathOnly": "cont", "poiKind": "overlap", "only": ["P1"] },
+  "F_P2": { "fable": "exit", "session": "sb", "only": ["P2"] }
  },
- "note": "FABLE_PLAN §6 step 3: P1's combination F = B1 (E3 exit) + N2 + N5 on DECIDE. Must keep ≥ 150 closed trades and not be worse than N2 alone (−0.025R). P2's F = B1 + N6b needs no combination run (one kept candidate); P1D and P2D kept nothing (F = B1)."
+ "note": "FABLE_PLAN §7: the ONE CONFIRM look (setups armed 2024-01-01 → latest). B0, B1 (= B0 + the profile's Stage A exit) and F per profile. P1D's F is B1; P2D's F is B0. Logged in §9 before this run."
 }
