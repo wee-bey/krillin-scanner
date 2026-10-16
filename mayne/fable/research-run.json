@@ -1,20 +1,14 @@
 {
- "name": "decide-B",
+ "name": "decide-F",
  "armFrom": "2021-01-01",
  "armTo": "2023-12-31",
- "variants": "B1,N2,N3a,N3b,N4,N5,N6a,N6b",
- "profiles": "P1,P2,P1D,P2D",
- "diag": "B1",
+ "variants": "B1,F",
+ "profiles": "P1",
+ "diag": "F",
  "set": "",
  "custom": {
-  "B1":  { "fable": "exit" },
-  "N2":  { "fable": "exit", "pathOnly": "cont" },
-  "N3a": { "fable": "exit", "dailyBias": "close" },
-  "N3b": { "fable": "exit", "dailyBias": "sweep" },
-  "N4":  { "fable": "exit", "po3": true },
-  "N5":  { "fable": "exit", "poiKind": "overlap" },
-  "N6a": { "fable": "exit", "session": "kz" },
-  "N6b": { "fable": "exit", "session": "sb" }
+  "B1": { "fable": "exit" },
+  "F":  { "fable": "exit", "pathOnly": "cont", "poiKind": "overlap" }
  },
- "note": "FABLE_PLAN §4 Stage B on DECIDE: each N-rule on top of B1 = B0 + the profile's Stage A exit E* (P1: trail=zone; P1D and P2: trail=none + plFrom=dailyEq; P2D: B0's exit). 'fable: exit' is resolved per profile by research.js."
+ "note": "FABLE_PLAN §6 step 3: P1's combination F = B1 (E3 exit) + N2 + N5 on DECIDE. Must keep ≥ 150 closed trades and not be worse than N2 alone (−0.025R). P2's F = B1 + N6b needs no combination run (one kept candidate); P1D and P2D kept nothing (F = B1)."
 }

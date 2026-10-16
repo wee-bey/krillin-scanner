@@ -1,0 +1,195 @@
+{
+ "engine": "mayne.fable-js.1",
+ "lastDay": "2026-10-14",
+ "armFrom": "2021-01-01",
+ "armTo": "2023-12-31",
+ "variants": [
+  "B1",
+  "N2",
+  "N3a",
+  "N3b",
+  "N4",
+  "N5",
+  "N6a",
+  "N6b"
+ ],
+ "specs": {
+  "B1": {
+   "fable": "exit"
+  },
+  "N2": {
+   "fable": "exit",
+   "pathOnly": "cont"
+  },
+  "N3a": {
+   "fable": "exit",
+   "dailyBias": "close"
+  },
+  "N3b": {
+   "fable": "exit",
+   "dailyBias": "sweep"
+  },
+  "N4": {
+   "fable": "exit",
+   "po3": true
+  },
+  "N5": {
+   "fable": "exit",
+   "poiKind": "overlap"
+  },
+  "N6a": {
+   "fable": "exit",
+   "session": "kz"
+  },
+  "N6b": {
+   "fable": "exit",
+   "session": "sb"
+  }
+ },
+ "extra": {},
+ "exec": {
+  "X11": {
+   "maker": 0.065,
+   "taker": 0.065
+  },
+  "X12": {
+   "maker": 0.02,
+   "taker": 0.08
+  },
+  "THRU": 0.02
+ },
+ "cols": [
+  "v",
+  "sym",
+  "prof",
+  "dir",
+  "tArm",
+  "tFill",
+  "tExit",
+  "st",
+  "how",
+  "grade",
+  "cont",
+  "zone",
+  "slWhy",
+  "en",
+  "sl0",
+  "pl",
+  "pt",
+  "ft",
+  "rr",
+  "riskAtr",
+  "riskPct",
+  "R",
+  "Rg",
+  "Rn",
+  "Rn11",
+  "fR",
+  "rank",
+  "reg",
+  "swV11",
+  "swHtf",
+  "swZone",
+  "swLtf",
+  "extSw",
+  "tagN",
+  "sameBar",
+  "ote",
+  "stacked",
+  "aligned",
+  "nBoost",
+  "btc",
+  "rs30",
+  "hr",
+  "dow",
+  "part",
+  "att",
+  "mkt",
+  "qty",
+  "boost",
+  "turnHow",
+  "trailed",
+  "dLoc",
+  "dbOK",
+  "dbSw",
+  "po3",
+  "kz",
+  "sb",
+  "direct"
+ ],
+ "dcols": [
+  "v",
+  "sym",
+  "prof",
+  "tArm",
+  "mfeX",
+  "maeX",
+  "mfeH",
+  "maeH",
+  "best",
+  "same"
+ ],
+ "pcols": [
+  "v",
+  "prof",
+  "kind",
+  "dir",
+  "tArm",
+  "Rg",
+  "Rn",
+  "realRg"
+ ],
+ "of": 8,
+ "shards": [
+  {
+   "shard": 0,
+   "coins": 94,
+   "rows": 4580,
+   "made": "2026-10-16T03:05:03.674Z"
+  },
+  {
+   "shard": 1,
+   "coins": 93,
+   "rows": 4339,
+   "made": "2026-10-16T03:05:09.709Z"
+  },
+  {
+   "shard": 2,
+   "coins": 93,
+   "rows": 4402,
+   "made": "2026-10-16T03:03:51.089Z"
+  },
+  {
+   "shard": 3,
+   "coins": 93,
+   "rows": 3332,
+   "made": "2026-10-16T03:04:47.912Z"
+  },
+  {
+   "shard": 4,
+   "coins": 93,
+   "rows": 3737,
+   "made": "2026-10-16T03:04:14.561Z"
+  },
+  {
+   "shard": 5,
+   "coins": 93,
+   "rows": 3764,
+   "made": "2026-10-16T03:04:38.769Z"
+  },
+  {
+   "shard": 6,
+   "coins": 93,
+   "rows": 3200,
+   "made": "2026-10-16T03:04:38.202Z"
+  },
+  {
+   "shard": 7,
+   "coins": 93,
+   "rows": 4232,
+   "made": "2026-10-16T03:04:57.323Z"
+  }
+ ],
+ "merged": "2026-10-16T03:05:35.925Z",
+ "rows": 31586
+}
