@@ -6,7 +6,7 @@
 //  mayne/fable/FABLE_PLAN.md; the JS engine mayne/fable/lib/engine.js is a port of this script (if they disagree,
 //  the plan wins). Strategy namespace mayne.* — a separate module. Never combined with Krillin scores or filters.
 //
-//  WHAT CHANGED IN FABLE (group "Fable rules"; FABLE_PLAN.md says which switches are on by default and why)
+//  WHAT CHANGED IN FABLE (group "Fable rules"; all OFF by default: none survived the 2024–26 check, FABLE_PLAN §9b)
 //  • Exit: the runner can keep its original stop after the partial (E1, Mayne's V24 journal trade) or trail to
 //    zone-TF structure (E3); the partial can sit at the nearest unswept DAILY pool / daily equal highs-lows at ≥ 2R
 //    (E2a / E2b, Mayne V24 "internal range liquidity… all those lows that had built up").
@@ -39,7 +39,7 @@
 //  Optional: "Any alert() function call" gives one alert with full text incl. grade and boosters.
 //
 //  Interpretations made in code: rulebook §14 (unchanged from v1.1), §16 (v1.2 switches) and FABLE_PLAN §3–§4.
-const string VALID = "(not validated)"   // set by FABLE_PLAN §7 after the one CONFIRM look
+const string VALID = "(not validated)"   // FABLE_PLAN §7 (16 Oct 2026): FAIL on 2024–26 for every profile; every Fable switch ships off
 // =====================================================================================================
 indicator("mayne.fable · Trader Mayne System", shorttitle = "mayne.fable", overlay = true, max_boxes_count = 500, max_lines_count = 500, max_labels_count = 500, max_bars_back = 500)
 

@@ -170,7 +170,7 @@ footer p{margin:0 0 6px}
       <div class="counts" id="st-counts"></div>
       <details class="errs" id="st-errs" hidden><summary></summary><ul></ul></details>
     </div>
-    <div class="verdict" role="note" id="verdict"><b>Fable version — validation pending.</b> The Fable test (FABLE_PLAN.md) checks Mayne's own exit (runner on its original stop, partial at daily liquidity) and his untested entry rules on 745 coins, 2021–23 to decide and 2024–26 to confirm. Until the one confirm look is logged, treat every setup as a candidate and judge it on the chart. <a href="#results" id="go-evidence">See the evidence</a></div>
+    <div class="verdict" role="note" id="verdict"><b>Not validated: use this as a candidate list.</b> The Fable test (745 coins, 2021–23 to decide, 2024–26 to confirm, realistic fills and costs) checked Mayne's own exit and his untested entry rules. Every set that looked better on 2021–23 was worse on 2024–26: P1's chosen set made <b>−0.05R</b> per trade, P2's <b>−0.48R</b>, and the exit change alone hurt every profile. The Fable switches ship off; judge each setup on the chart yourself. <a href="#results" id="go-evidence">See the evidence</a></div>
     <div id="banners"></div>
     <details class="panel set" id="settings" style="margin-bottom:16px">
       <summary>Settings</summary>
@@ -199,7 +199,7 @@ footer p{margin:0 0 6px}
         <label><input type="checkbox" id="s-po3"> Power of 3: trigger leg beyond the daily open (N4 · V10)</label>
         <label><input type="checkbox" id="s-ovl"> Only OB / breaker zones that overlap an FVG (N5 · V07)</label>
       </div>
-      <p class="hint" style="margin:10px 0 0">Fable rules (FABLE_PLAN.md). Their defaults follow the plan's confirm outcome; each one is a switch, and the alert / card text says which were on.</p>
+      <p class="hint" style="margin:10px 0 0">Fable rules (FABLE_PLAN.md): all off by default because none survived the 2024–26 check. Each is a switch so you can inspect setups under it; the card text says which were on.</p>
       <p class="hint" style="margin:10px 0 0">Saved in this browser. Account and risk update the position sizes at once; universe and profile changes start a new scan.</p>
     </details>
     <div id="board"></div>
@@ -266,7 +266,7 @@ const agoSpan = (ts) => `<span data-ago="${ts}">${ago(Date.now() - ts)}</span>`;
 
 // ───────────────────────── settings (localStorage may throw: always wrapped) ─────────────────────────
 const SKEY = 'maynefable.settings.v1', PKEY = 'maynefable.prevscan.v1';   // separate from the v1.1 and v1.2 boards' storage
-// Fable rule defaults: set from FABLE_PLAN §7 after the one CONFIRM look (pending → v1.2 behaviour)
+// Fable rule defaults: FABLE_PLAN §7 ended in FAIL (16 Oct 2026), so every switch is off = v1.2 behaviour
 const FABLE_DEF = { trail: 'trigger', plFrom: 'trigger', dailyBias: '', session: '', pathOnly: '', po3: false, poiKind: '' };
 const DEF = Object.assign({ acct: 10000, riskBase: 1, riskAP: 2, universe: 100, P1: true, P2: true, P3: false, P1D: false, P2D: false, notify: false }, FABLE_DEF);
 function sanitize(c) {
@@ -846,7 +846,7 @@ function evidenceHTML() {
 function renderResults() {
   const I = RES.index, el = $('#results');
   if (!I) {
-    el.innerHTML = evidenceHTML() + '<div class="sec"><h2>Forward test</h2><div class="notice"><b>Starts after the merge.</b> The Fable rules are frozen when the confirm look is logged. A daily job scores every setup that arms after that, with the same fills and costs, and writes <code>data/forward-index.json</code> and <code>forward-trades.json</code> next to this page.<p style="margin:12px 0 0"><button class="btn ghost" type="button" id="res-reload">Check again</button></p></div></div>';
+    el.innerHTML = evidenceHTML() + '<div class="sec"><h2>Forward test</h2><div class="notice"><b>Starts after the merge.</b> The Fable rules were frozen on 16 Oct 2026. A daily job scores every setup that arms from 17 Oct 2026 on, with the same fills and costs, and writes <code>data/forward-index.json</code> and <code>forward-trades.json</code> next to this page.<p style="margin:12px 0 0"><button class="btn ghost" type="button" id="res-reload">Check again</button></p></div></div>';
     return;
   }
   const cov = I.coverage || {}, rules = I.rules || {};

@@ -111,6 +111,24 @@ One look at 2024-01-01 → latest for: B0, B1 and F per profile (P1, P2, P1D, P2
 |---|---|---|
 | 16 Oct 2026 | CONFIRM run `confirm`: B0, B1 and F per profile (P1 F = E3 + N2 + N5; P2 F = E4 + N6b; P1D F = B1 = E4; P2D F = B0), with the baseline diagnostics on B0, B1 and both F variants | The one planned look (§7). Configuration fixed by addendum 1 and the `decide-F` run (P1 F = +0.062R on 356 trades on DECIDE, ≥ N2 alone −0.025R, ≥ 150 trades). Logged before the run was started. |
 
+## 9b. Outcome (16 Oct 2026, the one look)
+| Profile | F | DECIDE 2021–23 | CONFIRM 2024–26 | B0 on CONFIRM | B1 on CONFIRM | Verdict |
+|---|---|---|---|---|---|---|
+| P1 | E3 + N2 + N5 | +0.062R (356) | **−0.045R** (281; 90% CI −0.22 … +0.16) | −0.060R (1,162) | −0.087R (1,075) | **FAIL** |
+| P2 | E4 + N6b | −0.065R (B1) / N6b +0.100 over B1 | **−0.481R** (962; −0.60 … −0.36) | −0.155R (5,078) | −0.285R (4,246) | **FAIL** |
+| P1D | B1 = E4 | −0.118R (169) | **−0.407R** (173; −0.58 … −0.22) | −0.220R (177) | same | **FAIL** |
+| P2D | B0 | −0.038R (1,016) | **−0.109R** (1,086; −0.19 … −0.03) | same | same | **FAIL** |
+
+- **Exit change not confirmed:** B1 is worse than B0 on CONFIRM for every profile where it differs (P1 −0.028R,
+  P2 −0.129R, P1D −0.187R). B1 is not adopted.
+- **Kill rule applied (§7):** Fable ships with every switch off (defaults = v1.2 behaviour), ARMED stays "not
+  validated", and nothing is tuned further on this history. The forward test tracks B0, B1 and both F sets from
+  17 Oct 2026 as information only.
+- D2 on CONFIRM: P1's F beat bias-only random entries by +0.10R gross (90% CI −0.08 … +0.29), P2's F lost to them by
+  −0.27R. Random entries in a random direction still beat random entries with the W/D bias on every profile.
+- D2 note: 20 of ~69,000 pseudo-trades carry |R| > 50 (one coin's price gap inside the random window); they only touch
+  the "random direction" column (P2D's shows −523), and without them that column reads +0.040 for P2D. Diagnostic only.
+
 ## 10. Addenda
 **Addendum 1 (16 Oct 2026, after the Stage A and Stage B DECIDE runs, before any CONFIRM look).** DECIDE outcomes,
 recorded here so the CONFIRM configuration is fixed before it is opened:
