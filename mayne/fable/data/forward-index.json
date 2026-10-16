@@ -1,0 +1,39 @@
+{
+ "version": 1,
+ "engine": "mayne.fable-js.1",
+ "updated": "2026-10-16T12:09:21.487Z",
+ "shipped": {
+  "P1": "B0",
+  "P2": "B0",
+  "P1D": "B0",
+  "P2D": "B0"
+ },
+ "tracked": {
+  "P1": [
+   "B1",
+   "F_P1"
+  ],
+  "P2": [
+   "B1",
+   "F_P2"
+  ],
+  "P1D": [
+   "B1"
+  ],
+  "P2D": []
+ },
+ "coverage": {
+  "from": "2026-10-17",
+  "through": "2026-10-17",
+  "coins": 0
+ },
+ "rules": {
+  "universe": "daily top 100 Binance USDT-M perpetuals by the previous day’s volume",
+  "engine": "mayne/fable/lib/engine.js with the shipped set B0 (= v1.2 behaviour; FABLE_PLAN §7 ended in FAIL) and the tracked sets B1 / F per profile, frozen on 16 Oct 2026",
+  "counted": "setups that arm on or after 17 Oct 2026 on a day their coin is in the top 100",
+  "costs": "maker 0.02% for limit entries and targets, taker 0.05% + 0.03% slippage for stops, limits must trade through by 0.02%, funding charged",
+  "R": "net PnL ÷ planned risk; the profile’s shipped exit",
+  "krillin": "M3 flag: an opposite Krillin signal on the same coin in the 24 h (P1) / 6 h (P2) before the arm (tracked only)"
+ },
+ "summary": {}
+}
