@@ -1,0 +1,179 @@
+{
+ "engine": "mayne.fable-js.1",
+ "lastDay": "2026-10-14",
+ "armFrom": "2024-01-01",
+ "armTo": "2099-12-31",
+ "variants": [
+  "B0",
+  "B1",
+  "F_P1",
+  "F_P2"
+ ],
+ "specs": {
+  "B0": {},
+  "B1": {
+   "fable": "exit"
+  },
+  "F_P1": {
+   "fable": "exit",
+   "pathOnly": "cont",
+   "poiKind": "overlap",
+   "only": [
+    "P1"
+   ]
+  },
+  "F_P2": {
+   "fable": "exit",
+   "session": "sb",
+   "only": [
+    "P2"
+   ]
+  }
+ },
+ "extra": {},
+ "exec": {
+  "X11": {
+   "maker": 0.065,
+   "taker": 0.065
+  },
+  "X12": {
+   "maker": 0.02,
+   "taker": 0.08
+  },
+  "THRU": 0.02
+ },
+ "cols": [
+  "v",
+  "sym",
+  "prof",
+  "dir",
+  "tArm",
+  "tFill",
+  "tExit",
+  "st",
+  "how",
+  "grade",
+  "cont",
+  "zone",
+  "slWhy",
+  "en",
+  "sl0",
+  "pl",
+  "pt",
+  "ft",
+  "rr",
+  "riskAtr",
+  "riskPct",
+  "R",
+  "Rg",
+  "Rn",
+  "Rn11",
+  "fR",
+  "rank",
+  "reg",
+  "swV11",
+  "swHtf",
+  "swZone",
+  "swLtf",
+  "extSw",
+  "tagN",
+  "sameBar",
+  "ote",
+  "stacked",
+  "aligned",
+  "nBoost",
+  "btc",
+  "rs30",
+  "hr",
+  "dow",
+  "part",
+  "att",
+  "mkt",
+  "qty",
+  "boost",
+  "turnHow",
+  "trailed",
+  "dLoc",
+  "dbOK",
+  "dbSw",
+  "po3",
+  "kz",
+  "sb",
+  "direct"
+ ],
+ "dcols": [
+  "v",
+  "sym",
+  "prof",
+  "tArm",
+  "mfeX",
+  "maeX",
+  "mfeH",
+  "maeH",
+  "best",
+  "same"
+ ],
+ "pcols": [
+  "v",
+  "prof",
+  "kind",
+  "dir",
+  "tArm",
+  "Rg",
+  "Rn",
+  "realRg"
+ ],
+ "of": 8,
+ "shards": [
+  {
+   "shard": 0,
+   "coins": 94,
+   "rows": 2142,
+   "made": "2026-10-16T03:14:46.469Z"
+  },
+  {
+   "shard": 1,
+   "coins": 93,
+   "rows": 2202,
+   "made": "2026-10-16T03:15:10.592Z"
+  },
+  {
+   "shard": 2,
+   "coins": 93,
+   "rows": 2357,
+   "made": "2026-10-16T03:14:39.893Z"
+  },
+  {
+   "shard": 3,
+   "coins": 93,
+   "rows": 1905,
+   "made": "2026-10-16T03:15:02.380Z"
+  },
+  {
+   "shard": 4,
+   "coins": 93,
+   "rows": 2390,
+   "made": "2026-10-16T03:15:06.565Z"
+  },
+  {
+   "shard": 5,
+   "coins": 93,
+   "rows": 2102,
+   "made": "2026-10-16T03:14:32.991Z"
+  },
+  {
+   "shard": 6,
+   "coins": 93,
+   "rows": 1796,
+   "made": "2026-10-16T03:14:56.679Z"
+  },
+  {
+   "shard": 7,
+   "coins": 93,
+   "rows": 3138,
+   "made": "2026-10-16T03:15:05.890Z"
+  }
+ ],
+ "merged": "2026-10-16T03:15:36.300Z",
+ "rows": 18032
+}
