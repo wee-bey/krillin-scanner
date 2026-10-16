@@ -61,9 +61,9 @@ ok('gates: a clean, regime-aligned 4h long passes; the rest of the week of rules
   bad({ warnings: ['4h highs shrinking: momentum waning'] }, /highs shrinking/);
   bad({ warnings: ['Daily stoch RSI maxed (stop-milking signal)', 'Only 2 touches: a weaker trend line'] }, /2 warnings/);
   bad({ stopPct: 0.8 }, /under 1%/);
-  bad({ ctx: { btcAtRes: true } }, /BTC at HTF resistance/);
+  { const g = Gates.evaluate({ ...base, ctx: { btcAtRes: true } }, on, []); assert.strictEqual(g.pass, true, 'BTC at HTF resistance is a flag, not a gate'); assert.ok(g.soft.some((x) => /HTF resistance/.test(x))); }
   bad({ setup: 'RG' }, /regime trade/);
-  assert.strictEqual(Gates.evaluate({ ...base, S: 'BTC', ctx: { btcAtRes: true } }, on, []).pass, true, 'BTC itself is not an alt long');
+  assert.deepStrictEqual(Gates.evaluate({ ...base, S: 'BTC', ctx: { btcAtRes: true } }, on, []).soft, [], 'BTC itself is not an alt long: no flag');
   assert.strictEqual(Gates.evaluate({ ...base, dir: 'short', missing: [] }, off, []).pass, true, 'a short passes in risk-off');
   assert.strictEqual(Gates.evaluate({ ...base, dir: 'short', missing: ['A+ requires a bearish daily bias'] }, off, []).pass, false);
   assert.strictEqual(Gates.evaluate(base, () => 0, []).pass, false, 'no regime known → no pass');
@@ -86,4 +86,23 @@ ok('the repo data is readable and the latest day has 4h/1d signals the gates can
   const s = m.find((x) => ['4h', '1d'].includes(x.tf) && x.setup !== 'RG'); assert.ok(s && Array.isArray(s.warnings) && Array.isArray(s.missing) && Number.isFinite(s.stopPct) && s.ctx);
   const g = Gates.evaluate(s, () => 1, []); assert.ok(typeof g.pass === 'boolean' && Array.isArray(g.hard));
 });
-console.log(process.exitCode ? 'FAILED' : `all ${n} checks passed`);
+
+// live-scan wiring: the engine on real archive candles for a few symbols (the exchange APIs are not reachable from
+// the test runner, so the archive stands in for fetchKlines); the output must be in the replay's record shape
+(async () => {
+  const Scan = require('../lib/scan.js'); const K = require('../../tools/lib/engine.js'); const { Archive, DAY } = require('./archive.js');
+  const A = new Archive(process.env.FABLE_CACHE || path.join(__dirname, '..', '..', '.fcache'));
+  let lastDay; try { lastDay = await A.lastDay(); } catch (e) { console.log('skip live-scan check: archive unreachable'); console.log(process.exitCode ? 'FAILED' : `all ${n} checks passed`); return; }
+  const until = Date.parse(lastDay + 'T00:00:00Z') + DAY;
+  const fetchKlines = async (ex, sym, tf) => A.klines(sym, tf, until - (Scan.HIST + 2) * K.TF_MS[tf], until, lastDay);
+  const universe = async () => [{ sym: 'BTCUSDT', S: 'BTC', mult: 1, vol: 3, rank: 1 }, { sym: 'ETHUSDT', S: 'ETH', mult: 1, vol: 2, rank: 2 }, { sym: 'SOLUSDT', S: 'SOL', mult: 1, vol: 1, rank: 3 }];
+  try {
+    const r = await Scan.scan({ K, fetchKlines, universe, cache: false, concurrency: 2 });
+    assert.strictEqual(r.scanned, 3, 'three coins scanned'); assert.deepStrictEqual(r.failed, []); assert.ok(r.btc && Number.isFinite(r.btc.px) && r.btc.bias1d);
+    for (const s of r.signals) { assert.ok(s.key && s.tf && s.dir && Array.isArray(s.bids) && Number.isFinite(s.stopPct) && Array.isArray(s.warnings) && Array.isArray(s.missing) && s.ctx, 'record shape'); }
+    const g = Scan.gate(r, 1, Gates); assert.ok(Array.isArray(g.watch) && typeof g.rejected === 'object');
+    for (const s of g.watch) assert.ok(['4h', '1d'].includes(s.tf) && s.dir === 'long', 'risk-on watch list holds 4h/1d longs only');
+    n++; console.log(`ok  live scan: ${r.signals.length} active signals on BTC/ETH/SOL as of ${lastDay}, ${g.watch.length} on the watch list in risk-on, rejected ${JSON.stringify(g.rejected)}`);
+  } catch (e) { console.log('FAIL live scan: ' + e.message); process.exitCode = 1; }
+  console.log(process.exitCode ? 'FAILED' : `all ${n} checks passed`);
+})();

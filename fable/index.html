@@ -40,6 +40,7 @@ table{border-collapse:collapse;width:100%;font-size:13px}th,td{padding:6px 8px;b
 .dir-long{color:var(--long)}.dir-short{color:var(--short)}
 .note{font-size:13px;color:var(--ink);background:var(--info-soft);border:1px solid var(--line);padding:8px 12px;border-radius:var(--r-sm);margin:10px 0}
 .warn{background:var(--warn-soft)}
+button.btn{font:600 13px var(--f-body);padding:7px 14px;border-radius:var(--r-sm);border:1px solid var(--accent);background:var(--accent);color:#fff;cursor:pointer}button.btn:disabled{opacity:.6;cursor:default}
 input[type=number]{font:14px var(--f-mono);width:110px;padding:4px 8px;border:1px solid var(--line-2);border-radius:var(--r-sm);background:var(--surface);color:var(--ink)}
 svg text{font:11px var(--f-mono);fill:var(--muted)}
 details summary{cursor:pointer;color:var(--accent);font-size:13px}
@@ -59,6 +60,16 @@ footer{font-size:12.5px;color:var(--muted);margin-top:24px}
   <div class="note" id="regNote"></div>
 </section>
 
+<section class="card" id="live">
+  <h2>Live scan <span id="liveStatus" class="muted small"></span></h2>
+  <div class="small muted">The top 100 Binance USDT-M perpetuals by 24 h volume, scanned in your browser with the same engine as the scanner and the replay, then gated like the watch list below (direction with the live regime, the coin's daily bias, no pre-pump / shrinking-highs warning, fewer than 2 warnings, stop ≥ 1%, no D4@1d right after a D4@1h; 4h and daily only). The first scan fetches about 300 candle sets; later scans fetch only the new candles.</div>
+  <div style="margin:10px 0;display:flex;flex-wrap:wrap;gap:10px;align-items:center"><button id="scanBtn" class="btn">Scan now</button><label class="small muted"><input type="checkbox" id="autoScan"> rescan every 15 min while this page is open</label><span id="scanProg" class="small mono muted"></span></div>
+  <div id="liveCtx" class="small muted"></div>
+  <div id="liveWatch"></div>
+  <div id="liveRejected" class="small muted"></div>
+  <details id="liveAll"><summary>All active 4h/daily signals from this scan, including the rejected ones</summary><div id="liveAllList"></div></details>
+</section>
+
 <section class="card" id="book">
   <h2>Regime book (paper portfolio)</h2>
   <div class="small muted" id="bookRule"></div>
@@ -70,11 +81,11 @@ footer{font-size:12.5px;color:var(--muted);margin-top:24px}
 </section>
 
 <section class="card" id="digest">
-  <h2>Watch list <span id="digestDay" class="muted small"></span></h2>
+  <h2>Replay watch list <span id="digestDay" class="muted small"></span></h2>
   <div id="digestCtx" class="small muted"></div>
   <div id="watch"></div>
   <div id="rejected" class="small muted"></div>
-  <div class="note">The watch list follows the Krillin replay, which is about a day behind the archive: these are the 4h and daily setups from that day that passed every gate (direction with the BTC regime, the coin's own daily bias, no pre-pump / shrinking-highs warning, fewer than 2 warnings, stop at least 1%, no alt longs with BTC at HTF resistance, no D4@1d right after a D4@1h). Planned trades, not trade calls: check the chart, set your own alert, journal it.</div>
+  <div class="note">The watch list follows the Krillin replay, which is about a day behind the archive: these are the 4h and daily setups from that day that passed every gate (direction with the BTC regime, the coin's own daily bias, no pre-pump / shrinking-highs warning, fewer than 2 warnings, stop at least 1%, no D4@1d right after a D4@1h; "BTC at HTF resistance" is shown as a flag, not a gate, since the engine raises it on 95% of days). Planned trades, not trade calls: check the chart, set your own alert, journal it.</div>
 </section>
 
 <section class="card" id="subset">
@@ -92,7 +103,10 @@ footer{font-size:12.5px;color:var(--muted);margin-top:24px}
 
 <footer>Fable version · built 2026-10-16 from the course's regime rule (HANDOFF §5f) · every MA names its timeframe: the switch line is BTC's <b>daily</b> MA100 (SMA of 100 daily closes); the second opinion is the daily "EMA200", which Krillin's script computes as SMMA(99) · data from Binance's public archive and API · planning aid only, not financial advice.</footer>
 </div>
+<script src="../tools/lib/engine.js"></script>
 <script src="lib/regime.js"></script>
+<script src="lib/gates.js"></script>
+<script src="lib/scan.js"></script>
 <script>
 (() => {
 'use strict';
@@ -179,6 +193,32 @@ function showDigest(d) {
   const rejAll = Object.entries(S.rejected); if (rejAll.length) $('#rejected').innerHTML += `<div style="margin-top:6px">Over the whole history: ${rejAll.map(([k, v]) => `${v} × ${esc(k)}`).join(' · ')}</div>`;
 }
 function showAlerts(a) { $('#alertList').innerHTML = a.length ? a.slice().reverse().slice(0, 20).map((x) => `<div class="sig"><div class="t"><span class="pill ${x.kind === 'flip' ? 'off' : 'na'}">${esc(x.kind)}</span><span class="muted">${esc(new Date(x.t).toISOString().slice(0, 16).replace('T', ' '))} UTC · ${x.sent ? 'sent to Telegram' : esc(x.why || 'not sent')}</span></div><pre class="small" style="white-space:pre-wrap;margin:6px 0 0;font-family:var(--f-mono)">${esc(x.text)}</pre></div>`).join('') : '<div class="muted">No alerts yet.</div>'; }
+
+// ── live scan ──
+let scanning = false, autoTimer = null;
+function renderScan(r, g, when) {
+  const b = r.btc; $('#liveCtx').textContent = b ? `BTC ${fmt(b.px)} · daily bias ${b.bias1d}, 4h ${b.bias4h}, weekly ${b.bias1w} · daily regime ${b.reg1d} · at HTF resistance: ${b.atRes ? 'yes (flag)' : 'no'} · ${r.scanned} of ${r.coins} coins scanned${r.failed.length ? ` (${r.failed.length} failed)` : ''} · exchange ${r.exchange === 'bn' ? 'Binance' : 'Bybit'}` : 'No BTC data in this scan.';
+  $('#liveStatus').textContent = `${when} · ${g.watch.length} of ${g.n4h1d} active 4h/daily signals passed`;
+  $('#liveWatch').innerHTML = g.watch.length ? g.watch.map(signalCard).join('') : '<div class="sig muted">Nothing active passes the gates right now.</div>';
+  const rej = Object.entries(g.rejected).sort((a, b) => b[1] - a[1]); $('#liveRejected').innerHTML = rej.length ? 'Rejected: ' + rej.map(([k, v]) => `${v} × ${esc(k)}`).join(' · ') : '';
+  const all = r.signals.filter((s) => ['4h', '1d'].includes(s.tf)).sort((a, b) => (b.pot || 0) - (a.pot || 0)); $('#liveAllList').innerHTML = all.length ? all.map(signalCard).join('') : '<div class="muted small">none</div>';
+}
+async function runScan() {
+  if (scanning) return; if (!window.KE || !window.FableScan) { $('#liveStatus').textContent = 'engine not loaded'; return; }
+  const l = window.__latest; if (!l) { $('#liveStatus').textContent = 'wait for the regime first'; return; }
+  scanning = true; $('#scanBtn').disabled = true; $('#scanProg').textContent = 'starting…';
+  try {
+    const r = await FableScan.scan({ onProgress: (d, n, sym) => { $('#scanProg').textContent = `${d}/${n} ${sym}`; } });
+    const g = FableScan.gate(r, l.state, FableGates); const when = new Date(r.t).toISOString().slice(0, 16).replace('T', ' ') + ' UTC';
+    renderScan(r, g, when); $('#scanProg').textContent = '';
+    try { localStorage.setItem('fable.lastScan', JSON.stringify({ r: { ...r, signals: r.signals.filter((s) => ['4h', '1d'].includes(s.tf)) }, when, state: l.state })); } catch (e) {}
+  } catch (e) { $('#scanProg').textContent = ''; $('#liveStatus').textContent = 'scan failed: ' + (e && e.message || e); }
+  scanning = false; $('#scanBtn').disabled = false;
+}
+$('#scanBtn').addEventListener('click', runScan);
+$('#autoScan').addEventListener('change', () => { try { localStorage.setItem('fable.autoScan', $('#autoScan').checked ? '1' : '0'); } catch (e) {} clearInterval(autoTimer); autoTimer = null; if ($('#autoScan').checked) autoTimer = setInterval(() => { if (document.visibilityState === 'visible') runScan(); }, 15 * 60e3); });
+try { $('#autoScan').checked = localStorage.getItem('fable.autoScan') === '1'; if ($('#autoScan').checked) $('#autoScan').dispatchEvent(new Event('change')); } catch (e) {}
+try { const last = JSON.parse(localStorage.getItem('fable.lastScan') || 'null'); if (last && last.r) { const g = FableScan.gate(last.r, last.state, FableGates); renderScan(last.r, g, last.when + ' (saved)'); } } catch (e) {}
 
 (async () => {
   let R = null; try { R = await get('data/regime.json'); } catch (e) {}

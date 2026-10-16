@@ -3,7 +3,7 @@
    Applied to the Krillin replay's signal records (data/signals-YYYY-MM.json). A record passes when every hard gate
    holds; the course's timing rules are returned as soft warnings. The gates are the summary's "don't trade when"
    list plus the patterns that were negative in BOTH halves of the replay year (HANDOFF §5d-§5f). They remove the
-   reliably bad; they do not by themselves make a setup profitable.
+   reliably bad; they do not by themselves make a setup profitable. "BTC at HTF resistance" is a soft flag (see below).
 
    regimeOf(day): the Fable regime state (1 risk-on / -1 risk-off) as of the daily close BEFORE that day, or 0/undefined.
 */
@@ -37,7 +37,9 @@
     if (w.length >= 2) hard.push(`${w.length} warnings`);
     if (!(s.stopPct >= MIN_STOP)) hard.push(`stop ${Number.isFinite(s.stopPct) ? s.stopPct.toFixed(2) : '?'}% is under ${MIN_STOP}%`);
     else if (s.stopPct < PREF_STOP) soft.push(`stop ${s.stopPct.toFixed(2)}% is under ${PREF_STOP}%: costs weigh more`);
-    if (s.dir === 'long' && s.S !== 'BTC' && s.ctx && s.ctx.btcAtRes) hard.push('BTC at HTF resistance: no alt longs');
+    // The course says no alt longs with BTC at HTF resistance, but the engine's flag fires on 95% of days and alt longs do
+    // no worse when it is on (notes/regime_alignment_funding.md §2), so since 2026-10-16 it is a flag, not a gate.
+    if (s.dir === 'long' && s.S !== 'BTC' && s.ctx && s.ctx.btcAtRes) soft.push('BTC at HTF resistance (the engine flags this on 95% of days)');
     if (badStack(s, prior)) hard.push('D4@1d right after a D4@1h on the same coin (a reliably bad stack)');
     // course timing rules, untested here: soft only
     const d = new Date(s.t); const dow = d.getUTCDay(), hr = d.getUTCHours();
