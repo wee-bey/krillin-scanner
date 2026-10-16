@@ -1,0 +1,14 @@
+{
+ "name": "decide-F",
+ "armFrom": "2021-01-01",
+ "armTo": "2023-12-31",
+ "variants": "B1,F",
+ "profiles": "P1",
+ "diag": "F",
+ "set": "",
+ "custom": {
+  "B1": { "fable": "exit" },
+  "F":  { "fable": "exit", "pathOnly": "cont", "poiKind": "overlap" }
+ },
+ "note": "FABLE_PLAN §6 step 3: P1's combination F = B1 (E3 exit) + N2 + N5 on DECIDE. Must keep ≥ 150 closed trades and not be worse than N2 alone (−0.025R). P2's F = B1 + N6b needs no combination run (one kept candidate); P1D and P2D kept nothing (F = B1)."
+}
