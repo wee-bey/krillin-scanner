@@ -1,10 +1,20 @@
 {
- "name": "decide-A",
+ "name": "decide-B",
  "armFrom": "2021-01-01",
  "armTo": "2023-12-31",
- "variants": "B0,E1,E3,E2a,E2b,E4",
+ "variants": "B1,N2,N3a,N3b,N4,N5,N6a,N6b",
  "profiles": "P1,P2,P1D,P2D",
- "diag": "B0,E1,E4",
+ "diag": "B1",
  "set": "",
- "note": "FABLE_PLAN §3 Stage A (the exit) on DECIDE: B0 and the exit candidates on P1, P2 and the direct profiles P1D, P2D; diagnostics for B0, E1 and E4."
+ "custom": {
+  "B1":  { "fable": "exit" },
+  "N2":  { "fable": "exit", "pathOnly": "cont" },
+  "N3a": { "fable": "exit", "dailyBias": "close" },
+  "N3b": { "fable": "exit", "dailyBias": "sweep" },
+  "N4":  { "fable": "exit", "po3": true },
+  "N5":  { "fable": "exit", "poiKind": "overlap" },
+  "N6a": { "fable": "exit", "session": "kz" },
+  "N6b": { "fable": "exit", "session": "sb" }
+ },
+ "note": "FABLE_PLAN §4 Stage B on DECIDE: each N-rule on top of B1 = B0 + the profile's Stage A exit E* (P1: trail=zone; P1D and P2: trail=none + plFrom=dailyEq; P2D: B0's exit). 'fable: exit' is resolved per profile by research.js."
 }

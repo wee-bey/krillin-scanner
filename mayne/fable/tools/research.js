@@ -56,6 +56,8 @@ const VARIANTS = {
   C9a: { session: '08-21' }, C9b: { noWeekend: true }, C10: { entryMode: 'ladder' },
   'A-noD2': { abl: 'noD2' }, 'A-noTurn': { abl: 'noTurn' }, 'A-noDsync': { abl: 'noDsync' }, 'A-noRR': { abl: 'noRR' },
 };
+// Stage A outcome per profile (FABLE_PLAN §3, decide-A): the exit E* that B1 and every Stage B variant use
+const STAGE_A_EXIT = { P1: { trail: 'zone' }, P1D: { trail: 'none', plFrom: 'dailyEq' }, P2: { trail: 'none', plFrom: 'dailyEq' }, P2D: {} };
 // custom variants (e.g. the combinations of TEST_PLAN §7.3): --custom '{"F2":{"gate":"btc","maxTagN":2}}'
 if (args.custom) Object.assign(VARIANTS, JSON.parse(String(args.custom)));
 const VLIST = args.variants ? String(args.variants).split(',') : ['B0', 'E1', 'E3', 'E2a', 'E2b', 'E4'];
@@ -217,6 +219,8 @@ async function main() {
       for (const v of VLIST) {
         if (VARIANTS[v].only && !VARIANTS[v].only.includes(prof)) continue;      // a variant meant for one profile only
         const spec = Object.assign({ fillThruPct: THRU }, VARIANTS[v] || {}, EXTRA); delete spec.only;
+        // FABLE_PLAN §3 → §4: 'fable: "exit"' means this profile's Stage A exit E* (decide-A outcome, 16 Oct 2026)
+        if (spec.fable === 'exit') { Object.assign(spec, STAGE_A_EXIT[prof] || {}); delete spec.fable; }
         const o = Object.assign({}, spec); if (typeof o.gate === 'string') o.gate = gates[o.gate]; if (o.gate === undefined) delete o.gate;
         if (EVENTS && v === 'B0') o.trackState = true;
         const res = M.simulate(prep, o);
