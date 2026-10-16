@@ -1,7 +1,7 @@
 # Trader Mayne System: HANDOFF — Fable version (read this first in a new chat)
 
 _Last updated: 16 Oct 2026, 07:00 Beirut. Fable is built and tested: no edge found on 2024–26, kill rule applied. Fable
-lives in `mayne/fable/` on branch `mayne-fable` (PR to main open); v1.1 (`mayne/`) and v1.2 (`mayne/v1.2/`) are untouched.
+lives in `mayne/fable/` on branch `mayne-fable` (PR #7 to main open); v1.1 (`mayne/`) and v1.2 (`mayne/v1.2/`) are untouched.
 The v1.2 handoff is `../v1.2/HANDOFF.md`._
 
 ## Goal of the Fable version
@@ -24,7 +24,7 @@ NEW version ("fable"), nothing existing overwritten. The education section = the
 ## Where things stand
 | What | Where |
 |---|---|
-| Code, plan, fidelity, results, reports | GitHub `wee-bey/krillin-scanner` branch `mayne-fable`, folder `mayne/fable/` — PR to main for Jeffrey to merge |
+| Code, plan, fidelity, results, reports | GitHub `wee-bey/krillin-scanner` branch `mayne-fable`, folder `mayne/fable/` — PR #7 (https://github.com/wee-bey/krillin-scanner/pull/7) for Jeffrey to merge |
 | Research data | orphan branch `mayne-fable-results` (`decide-A/`, `decide-B/`, `decide-F/`, `confirm/`) |
 | Board | `/mayne/fable/` → https://wee-bey.github.io/krillin-scanner/mayne/fable/ after the merge |
 | Forward test | `.github/workflows/mayne-fable-forward.yml`, daily 08:41 UTC on main after the merge; setups from 17 Oct 2026; shipped set B0, tracked B1 / F_P1 / F_P2 |
@@ -38,7 +38,7 @@ labelled · uncluttered chart · no tuning on one regime, relative parameters on
 log every look, kill rule · Opus for core logic, cheaper models for grunt work.
 
 ## NEXT
-1. **Jeffrey:** merge the `mayne-fable` PR (GitHub → Pull requests). The forward test starts with the first daily run
+1. **Jeffrey:** merge PR #7 (GitHub → Pull requests → #7 → Merge). The forward test starts with the first daily run
    after the merge. Open the board and the Evidence tab.
 2. **Jeffrey:** add `mayne.fable` to a BTCUSDT H1 chart (P1) and compare its tally with
    `node mayne/fable/tools/fidelity.js --sym BTCUSDT --market spot --profile P1 --chart-from 2024-01-01` (defaults
