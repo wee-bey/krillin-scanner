@@ -1,37 +1,37 @@
-[12:52:23] archive through 2026-10-14; signals from 2021-01-01; profiles P1, P2
-[12:52:24] 884 symbols in the archive (after filters)
-[12:52:41] daily candles loaded for 884 symbols (887 downloads so far)
-[12:52:42] 745 coins were in the daily top 100 at least once since 2021-01-01
-[12:52:50] 25/745 coins · 762 armed setups so far · 915 downloads
-[12:52:56] 50/745 coins · 1350 armed setups so far · 940 downloads
-[12:53:02] 75/745 coins · 2067 armed setups so far · 965 downloads
-[12:53:08] 100/745 coins · 2762 armed setups so far · 990 downloads
-[12:53:14] 125/745 coins · 3166 armed setups so far · 1015 downloads
-[12:53:19] 150/745 coins · 3460 armed setups so far · 1040 downloads
-[12:53:24] 175/745 coins · 3741 armed setups so far · 1065 downloads
-[12:53:30] 200/745 coins · 4270 armed setups so far · 1090 downloads
-[12:53:36] 225/745 coins · 4728 armed setups so far · 1115 downloads
-[12:53:42] 250/745 coins · 5417 armed setups so far · 1140 downloads
-[12:53:48] 275/745 coins · 5843 armed setups so far · 1165 downloads
-[12:53:53] 300/745 coins · 6258 armed setups so far · 1190 downloads
-[12:53:58] 325/745 coins · 6700 armed setups so far · 1215 downloads
-[12:54:05] 350/745 coins · 7265 armed setups so far · 1240 downloads
-[12:54:10] 375/745 coins · 7614 armed setups so far · 1265 downloads
-[12:54:18] 400/745 coins · 8456 armed setups so far · 1290 downloads
-[12:54:23] 425/745 coins · 8866 armed setups so far · 1315 downloads
-[12:54:27] 450/745 coins · 9150 armed setups so far · 1340 downloads
-[12:54:33] 475/745 coins · 9600 armed setups so far · 1365 downloads
-[12:54:38] 500/745 coins · 10282 armed setups so far · 1390 downloads
-[12:54:42] 525/745 coins · 10447 armed setups so far · 1415 downloads
-[12:54:48] 550/745 coins · 10743 armed setups so far · 1440 downloads
-[12:54:54] 575/745 coins · 11324 armed setups so far · 1465 downloads
-[12:55:00] 600/745 coins · 11839 armed setups so far · 1490 downloads
-[12:55:05] 625/745 coins · 12135 armed setups so far · 1515 downloads
-[12:55:11] 650/745 coins · 12696 armed setups so far · 1540 downloads
-[12:55:16] 675/745 coins · 13261 armed setups so far · 1565 downloads
-[12:55:22] 700/745 coins · 13798 armed setups so far · 1590 downloads
-[12:55:29] 725/745 coins · 14583 armed setups so far · 1615 downloads
-[12:55:33] 745/745 coins · 15067 armed setups so far · 1632 downloads
-[12:55:34] P1: 2834 armed · 2444 filled · 2440 closed · win 0.284 · avg -0.0914R net (-0.051R gross) · PF 0.8772 · ΣR -223.0602 · max DD 337.5598R
-[12:55:34] P2: 12233 armed · 10533 filled · 10531 closed · win 0.2862 · avg -0.1226R net (-0.0387R gross) · PF 0.8416 · ΣR -1291.4218 · max DD 1404.0369R
-[12:55:34] done in 191 s · 1632 downloads
+[12:45:11] archive through 2026-10-15; signals from 2021-01-01; profiles P1, P2
+[12:45:11] 884 symbols in the archive (after filters)
+[12:45:30] daily candles loaded for 884 symbols (914 downloads so far)
+[12:45:30] 745 coins were in the daily top 100 at least once since 2021-01-01
+[12:45:40] 25/745 coins · 762 armed setups so far · 943 downloads
+[12:45:46] 50/745 coins · 1350 armed setups so far · 970 downloads
+[12:45:54] 75/745 coins · 2067 armed setups so far · 997 downloads
+[12:46:00] 100/745 coins · 2712 armed setups so far · 1023 downloads
+[12:46:07] 125/745 coins · 3190 armed setups so far · 1048 downloads
+[12:46:13] 150/745 coins · 3460 armed setups so far · 1074 downloads
+[12:46:18] 175/745 coins · 3748 armed setups so far · 1103 downloads
+[12:46:24] 200/745 coins · 4269 armed setups so far · 1129 downloads
+[12:46:32] 225/745 coins · 4715 armed setups so far · 1154 downloads
+[12:46:39] 250/745 coins · 5429 armed setups so far · 1182 downloads
+[12:46:46] 275/745 coins · 5847 armed setups so far · 1207 downloads
+[12:46:52] 300/745 coins · 6262 armed setups so far · 1234 downloads
+[12:46:58] 325/745 coins · 6645 armed setups so far · 1260 downloads
+[12:47:05] 350/745 coins · 7267 armed setups so far · 1285 downloads
+[12:47:12] 375/745 coins · 7620 armed setups so far · 1311 downloads
+[12:47:20] 400/745 coins · 8443 armed setups so far · 1336 downloads
+[12:47:26] 425/745 coins · 8870 armed setups so far · 1364 downloads
+[12:47:30] 450/745 coins · 9155 armed setups so far · 1389 downloads
+[12:47:37] 475/745 coins · 9638 armed setups so far · 1415 downloads
+[12:47:44] 500/745 coins · 10267 armed setups so far · 1440 downloads
+[12:47:49] 525/745 coins · 10468 armed setups so far · 1465 downloads
+[12:47:55] 550/745 coins · 10763 armed setups so far · 1490 downloads
+[12:48:03] 575/745 coins · 11330 armed setups so far · 1516 downloads
+[12:48:08] 600/745 coins · 11832 armed setups so far · 1541 downloads
+[12:48:14] 625/745 coins · 12145 armed setups so far · 1567 downloads
+[12:48:21] 650/745 coins · 12629 armed setups so far · 1594 downloads
+[12:48:27] 675/745 coins · 13273 armed setups so far · 1619 downloads
+[12:48:33] 700/745 coins · 13761 armed setups so far · 1644 downloads
+[12:48:40] 725/745 coins · 14581 armed setups so far · 1669 downloads
+[12:48:46] 745/745 coins · 15079 armed setups so far · 1687 downloads
+[12:48:46] P1: 2835 armed · 2445 filled · 2441 closed · win 0.2839 · avg -0.0918R net (-0.0514R gross) · PF 0.8767 · ΣR -224.1117 · max DD 337.5598R
+[12:48:46] P2: 12244 armed · 10540 filled · 10540 closed · win 0.2861 · avg -0.1229R net (-0.0389R gross) · PF 0.8413 · ΣR -1295.1103 · max DD 1408.6158R
+[12:48:46] done in 216 s · 1687 downloads

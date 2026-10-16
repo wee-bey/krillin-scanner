@@ -1,4 +1,4 @@
-mayne.v1 JS engine mayne.v1.1-js.1 · BINANCE:BTCUSDT · P2 H4–M15 · trigger M15 · data 2017-08-17 04:00 → 2026-10-14 23:45 UTC · full daily history for W/D
+mayne.v1 JS engine mayne.v1.1-js.1 · BINANCE:BTCUSDT · P2 H4–M15 · trigger M15 · data 2017-08-17 04:00 → 2026-10-15 23:45 UTC · full daily history for W/D
 This chart: 225 armed · 192 filled · 47W/145L · -37.7R · 251 expired · 347 invalidated
 [2017-10-18 13:45 UTC] TAG LONG H4 FVG 5010.2-5173.1 rev
 [2017-10-18 16:00 UTC] TURN LONG SFP H1
