@@ -112,4 +112,15 @@ One look at 2024-01-01 → latest for: B0, B1 and F per profile (P1, P2, P1D, P2
 | (none yet) | | |
 
 ## 10. Addenda
-(none)
+**Addendum 1 (16 Oct 2026, after the Stage A and Stage B DECIDE runs, before any CONFIRM look).** DECIDE outcomes,
+recorded here so the CONFIRM configuration is fixed before it is opened:
+- Stage A (`research/decide-A/`): P1 kept E3 (+0.052, 3/3 years) → E\* = E3. P1D kept E1, E2b, E4; E4 is by definition the kept
+  trail (E1) + the kept partial (E2b), so E\* = E4 (+0.156; the single gains, +0.085 and +0.106, do not add up, which is
+  expected since both act on the same runner). P2 kept E4 only (+0.035; E3 was +0.030, under the 0.03 bar) → E\* = E4. P2D kept nothing → E\* = B0's
+  exit. B1 per profile = B0 + that E\*.
+- Stage B (`research/decide-B/`, each candidate on B1): P1 kept N2 (+0.070, 2/3) and N5 (+0.059, 2/3); P2 kept N6b
+  (+0.100, 2/3, 987 trades); P1D kept nothing (N5 +0.045 and N6b on 13 trades fail (a)/(c)); P2D kept nothing (N3a
+  +0.058 on 213 trades fails the 300 floor).
+- F per profile: **P1 = B1 + N2 + N5** (combination run `decide-F`, must hold ≥ 150 trades and ≥ N2 alone, −0.025R;
+  else drop N5 then N2 per §6); **P2 = B1 + N6b**; **P1D = B1 (E4)**; **P2D = B0**.
+- The CONFIRM look (§7) will open B0, B1 and F for all four profiles at once.

@@ -11,7 +11,7 @@ dated, journalled trade in the whole Bootcamp? Engine log: `data/fidelity/BTCUSD
 | HTF turn | Daily MSS bearish, then an SFP into a daily bearish OB |
 | Entry | H1: sweep of the high, bearish MSB, breaker + FVG; short **at ~77,000 on 21 May 2026** ("edge of the red box") |
 | Stop | Just above the sweep / SFP high ("not at the fair value gap") |
-| Partial | ~2/3 off at **74,000** ("internal range liquidity… all those lows that had built up"), about 4.5R per unit |
+| Partial | ~2/3 off at **74,000** ("internal range liquidity… all those lows that had built up") |
 | Runner | ~1/3 held with the original stop to **60,000** (weekly range low), closed **5 June** |
 | Result | ~$22,000 on $2,000 risk ≈ 11R; one position throughout |
 
@@ -36,10 +36,16 @@ low 59,131.
 | Entry | ~77,000 | 77,678 (+0.9%) ✅ |
 | Stop | above the sweep high (~78.2k area) | 78,288, "sweep extreme (reversal)" ✅ |
 | Final target | 60,000 (weekly range low) | FT 60,000 ✅ |
-| Partial level | 74,000 (daily-level lows, ~4.5R) | 76,457 (first H1 pool ≥ 2R, 2.0R) ❌ |
+| Partial level | 74,000 (daily-level lows; "like 2R" in speech, more by the journal maths) | 76,457 (first H1 pool ≥ 2R, 2.0R) ❌ |
 | Runner management | original stop kept; runner to 60,000 | stop trailed to H1 swings; stopped 23 May ❌ |
 | Positions | one, 21 May → 5 June | three; two re-entries after the early exit, both −1R ❌ |
 | Outcome | ≈ +11R | +2.82 − 1.00 − 1.00 = **+0.82R** |
+
+_Sources for the table: the engine log (TAG/TURN/ARM/CLOSE lines, abbreviated above; `att`, `turn` and `tagged` fields
+dropped) gives the dates, levels, stops, targets, the 23 May exit and the two re-entries. The daily candles quoted come
+from the Binance spot archive read during the check (not in the log). Mayne's side is the V24 transcript and journal
+frames; his partial is quoted as "like 2R" in speech while the journal numbers imply more (notes/24 §7) — the exact R of
+his partial is not needed here, only its level (74,000) and the fact that the runner was held._
 
 ## Reading
 1. **The entry pipeline reproduces his system** on this trade: same bar-day, same level within 1%, same stop logic,
