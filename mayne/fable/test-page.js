@@ -181,7 +181,7 @@ async function main() {
   fs.mkdirSync(SHOTS, { recursive: true });
   const replayDir = buildReplay(WORK);
   const files = {}; for (const f of ['index', 'trades', 'sweep', 'market']) files[f] = fs.readFileSync(path.join(replayDir, f + '.json'), 'utf8');
-  files['forward-index'] = files.index; files['forward-trades'] = files.trades; files.evidence = fs.readFileSync(path.join(REPO, 'mayne', 'v1.2', 'data', 'evidence.json'), 'utf8');
+  files['forward-index'] = files.index; files['forward-trades'] = files.trades; files.evidence = fs.readFileSync(path.join(REPO, 'mayne', 'fable', 'data', 'evidence.json'), 'utf8');
   const idx = JSON.parse(files.index);
   console.log(`synthetic replay: P1 ${idx.summary.P1.all.closed} closed, P2 ${idx.summary.P2.all.closed} closed`);
 
@@ -219,7 +219,7 @@ async function main() {
   const scanDone = (page) => page.waitForFunction(() => /Last scan/.test(document.querySelector('#st-text').textContent) && !document.querySelector('#scan-now').disabled, null, { timeout: 60000 });
   // screenshots of single sections (the full-page results shot is too tall to look at)
   const shotSections = async (page, tag) => {
-    const sel = { equity: '.chartbox', profile: '#prof-block', evidence: () => { const h = Array.from(document.querySelectorAll('h2')).find((x) => /Every rule idea/.test(x.textContent)); return h.parentElement; }, trades: () => { const h = Array.from(document.querySelectorAll('h2')).find((x) => /Trade list/.test(x.textContent)); return h.parentElement; } };
+    const sel = { equity: '.chartbox', profile: '#prof-block', evidence: () => { const h = Array.from(document.querySelectorAll('h2')).find((x) => /Stage A/.test(x.textContent)); return h.parentElement; }, trades: () => { const h = Array.from(document.querySelectorAll('h2')).find((x) => /Trade list/.test(x.textContent)); return h.parentElement; } };
     for (const [name, q] of Object.entries(sel)) {
       const h = typeof q === 'string' ? await page.$(q) : (await page.evaluateHandle(q)).asElement();
       await h.scrollIntoViewIfNeeded(); const bb = await h.boundingBox();
@@ -308,8 +308,8 @@ async function main() {
     assert.ok((await page.$$('#eq-svg svg polyline')).length >= 2, 'a line per profile');
     assert.ok(await page.$('#eq-svg svg text'), 'axis labels');
     const heads = await page.$$eval('#results h2', (e) => e.map((x) => x.textContent));
-    for (const hd of ['Verdict: no edge found', 'Every rule idea, 2021–23', 'Do the setups beat random entries?', 'Confluence with Krillin', 'Forward test', 'Forward equity curve']) assert.ok(heads.some((x) => x.includes(hd)), 'evidence section ' + hd + ': ' + heads.join(' | '));
-    assert.strictEqual(await page.$$eval('.ev-card', (e) => e.length), 2, 'two verdict cards');
+    for (const hd of ['Verdict', 'Stage A · the exit, 2021–23', 'Stage B · entry filters', 'Do the setups beat random entries?', 'Forward test', 'Forward equity curve']) assert.ok(heads.some((x) => x.includes(hd)), 'evidence section ' + hd + ': ' + heads.join(' | '));
+    assert.strictEqual(await page.$$eval('.ev-card', (e) => e.length), 4, 'four verdict cards');
     const evRows = await page.$$eval('#results .sec table tbody tr', (e) => e.length); assert.ok(evRows > 40, 'evidence tables have rows: ' + evRows);
     const breakdowns = await page.$$eval('#prof-block h3', (e) => e.map((x) => x.textContent)); assert.ok(breakdowns.length >= 7, 'breakdown tables: ' + breakdowns.join(', '));
     assert.ok(await page.$('#prof-block tr.small .ss'), 'small-sample hint appears for thin cells');

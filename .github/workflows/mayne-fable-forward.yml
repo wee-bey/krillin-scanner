@@ -1,0 +1,70 @@
+name: Mayne Fable · forward test
+
+# Trader Mayne Fable forward test (separate from Krillin, v1.1 and v1.2). The Fable rules were frozen on 16 Oct 2026;
+# every day this replays the Fable engine (each profile's shipped rule set, realistic fills and costs) on the daily
+# top-100 universe for setups that arm from 17 Oct 2026 on, and commits mayne/fable/data/forward-*.json for the
+# board's Evidence tab.
+on:
+  schedule:
+    - cron: '41 8 * * *'     # after the v1.1 Mayne replay (07:43) and the v1.2 forward test (08:13)
+  push:
+    branches: [main]
+    paths:
+      - 'mayne/fable/tools/forward.js'
+      - '.github/workflows/mayne-fable-forward.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+concurrency:
+  group: mayne-fable-forward
+  cancel-in-progress: false
+
+jobs:
+  forward:
+    runs-on: ubuntu-latest
+    timeout-minutes: 90
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Restore the Mayne candle cache
+        uses: actions/cache/restore@v4
+        with:
+          path: .mcache
+          key: mayne-candles-${{ github.run_id }}
+          restore-keys: mayne-candles-
+      - name: Restore the funding cache
+        uses: actions/cache/restore@v4
+        with:
+          path: .mcache/funding
+          key: mayne-fable-funding-fwd-${{ github.run_id }}
+          restore-keys: |
+            mayne-fable-funding-fwd-
+            mayne-fable-funding-
+            mayne-v12-funding-fwd-
+            mayne-v12-funding-
+      - name: Engine checks
+        run: node mayne/fable/tools/test-engine.js
+      - name: Forward replay (setups armed from 17 Oct 2026)
+        env:
+          NODE_OPTIONS: --max-old-space-size=6144
+        run: |
+          node mayne/fable/tools/research.js --arm-from 2026-10-17 --variants B0,B1,F_P1,F_P2 --custom '{"B1":{"fable":"exit"},"F_P1":{"fable":"exit","pathOnly":"cont","poiKind":"overlap","only":["P1"]},"F_P2":{"fable":"exit","session":"sb","only":["P2"]}}' --cands-from 2026-10-17 --out "$RUNNER_TEMP/fwd"
+          node mayne/fable/tools/forward.js --in "$RUNNER_TEMP/fwd" --krillin data --out mayne/fable/data
+      - name: Save the funding cache
+        if: always()
+        uses: actions/cache/save@v4
+        with:
+          path: .mcache/funding
+          key: mayne-fable-funding-fwd-${{ github.run_id }}
+      - name: Commit the forward files
+        run: |
+          git config user.name "mayne-fable-forward"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add mayne/fable/data/forward-index.json mayne/fable/data/forward-trades.json
+          if git diff --cached --quiet; then echo "no changes"; exit 0; fi
+          git commit -m "Mayne Fable forward test $(date -u '+%Y-%m-%d %H:%M') UTC"
+          for i in 1 2 3 4 5; do git pull --rebase --autostash && git push && break; sleep 7; done

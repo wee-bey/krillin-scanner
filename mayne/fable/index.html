@@ -800,46 +800,47 @@ function evidenceHTML() {
   const E = RES.evidence;
   if (!E) return '<div class="notice">The evidence file (<code>data/evidence.json</code>) is missing.</div>';
   const r3 = (x) => (x == null ? '—' : sgn(x, 3)), ci = (c) => (c ? `${sgn(c[0], 2)} … ${sgn(c[1], 2)}` : '—'), cls = (x, n) => (n != null && n < SMALL_N ? 'dim' : x > 0 ? 'pos' : x < 0 ? 'neg' : '');
-  let h = `<div class="sec" style="margin-top:0"><h2>Verdict: no edge found</h2><p style="margin:6px 0 0">${esc(E.verdict.text)}</p></div><div class="ev-grid">`;
-  for (const p of ['P1', 'P2']) {
-    const rows = (E.confirm.rows || {})[p] || [], b = rows.find((r) => r.v === 'B0'), f = rows.find((r) => r.v !== 'B0');
-    h += `<div class="ev-card"><div class="muted">${p} · ${esc(ME && ME.PROFILES[p] ? ME.PROFILES[p].name : p)} · 2024–26, checked once</div><div class="big num ${b ? cls(b.avg) : ''}">${b ? r3(b.avg) + 'R' : '—'}</div><div class="muted num">Mayne's rules as coded · ${b ? b.n : 0} closed trades · 90% CI ${b ? ci(b.ci) : '—'}</div>`;
-    if (f) h += `<div style="margin-top:8px">Best rule set chosen on 2021–23 (${esc(f.label)}): <b class="num ${cls(f.avg)}">${r3(f.avg)}R</b> on ${f.n} trades · 90% CI <span class="num">${ci(f.ci)}</span></div>`;
+  const PROFS = ['P1', 'P2', 'P1D', 'P2D'], V = E.verdict || {}, per = V.per || {}, ship = E.shipped || {};
+  const pname = (p) => (ME && ME.PROFILES[p] ? ME.PROFILES[p].name : p);
+  let h = `<div class="sec" style="margin-top:0"><h2>Verdict</h2><p style="margin:6px 0 0">${esc(V.text || '')}</p></div><div class="ev-grid">`;
+  for (const p of PROFS) {
+    const rows = (E.confirm && E.confirm.rows[p]) || [], b = rows.find((r) => r.v === 'B0'), f = rows.find((r) => r.v === ship[p]) || rows.find((r) => r.v === 'B1');
+    const vd = per[p] || (E.confirm ? '—' : 'pending');
+    h += `<div class="ev-card"><div class="muted">${p} · ${esc(pname(p))} · 2024–26, checked once · <b>${esc(vd)}</b></div><div class="big num ${f ? cls(f.avg) : ''}">${f ? r3(f.avg) + 'R' : '—'}</div><div class="muted num">${f ? esc(f.label) + ' · ' + f.n + ' closed trades · 90% CI ' + ci(f.ci) : 'confirm look pending'}</div>`;
+    if (b && f && b.v !== f.v) h += `<div style="margin-top:8px">Mayne's rules as coded on the same period: <b class="num ${cls(b.avg)}">${r3(b.avg)}R</b> on ${b.n} trades</div>`;
     h += '</div>';
   }
   h += '</div>';
   const M = E.method || {};
-  h += `<details class="how panel"><summary>How it was tested</summary><dl>${[['Universe', M.universe], ['Split', M.split], ['Fills and costs', M.costs], ['Statistics', M.stats], ['Plan', M.plan]].filter((x) => x[1]).map((x) => `<div><dt>${x[0]}</dt><dd>${esc(x[1])}</dd></div>`).join('')}</dl></details>`;
-  // every rule idea on 2021–23
-  const ord = (v) => (v === 'B0' ? 0 : v === 'B0touch' ? 1 : /^C/.test(v) ? 2 : /^F/.test(v) ? 3 : 4);
-  h += '<div class="sec"><h2>Every rule idea, 2021–23</h2><p class="muted" style="margin:0 0 8px">Average net R per closed trade. "Kept" means it beat the baseline by at least 0.03R in at least 2 of the 3 years, with enough trades left. Muted rows have fewer than ' + SMALL_N + ' trades.</p>';
-  for (const p of ['P1', 'P2']) {
-    const rows = ((E.decide.rows || {})[p] || []).concat(p === 'P1' ? ((E.combos && E.combos.rows.P1) || []).filter((r) => /^F/.test(r.v)) : []).sort((a, b) => ord(a.v) - ord(b.v) || a.v.localeCompare(b.v, 'en', { numeric: true }));
-    const b = rows.find((r) => r.v === 'B0'), kept = new Set((E.decide.kept || {})[p] || []), yrs = ['2021', '2022', '2023'];
-    h += `<h3 style="margin:14px 0 6px">${p}</h3><div class="tablewrap"><table><thead><tr><th class="l">Rule</th><th>Closed</th><th>Avg R</th><th>90% CI</th><th>Δ vs baseline</th>${yrs.map((y) => `<th>${y}</th>`).join('')}<th>Kept</th></tr></thead><tbody>`;
-    for (const r of rows) {
-      const d = b && r.v !== 'B0' ? r.avg - b.avg : null, small = r.n < SMALL_N;
-      h += `<tr class="${r.v === 'B0' ? 'base' : ''}${small ? ' small' : ''}"><td>${esc(r.label)}</td><td class="num">${r.n}</td><td class="num ${cls(r.avg, r.n)}">${r3(r.avg)}</td><td class="num">${ci(r.ci)}</td><td class="num">${d == null ? '' : r3(d)}</td>${yrs.map((y) => { const x = r.year && r.year[y]; return `<td class="num ${x ? cls(x.avg, x.n) : ''}">${x ? sgn(x.avg, 2) : '—'}</td>`; }).join('')}<td class="${kept.has(r.v) ? 'kept' : ''}">${kept.has(r.v) ? 'kept' : /^F3$/.test(r.v) ? 'chosen' : ''}</td></tr>`;
+  h += `<details class="how panel"><summary>How it was tested</summary><dl>${[['Universe', M.universe], ['Split', M.split], ['Fills and costs', M.costs], ['Statistics', M.stats], ['Plan', M.plan], ['Fidelity', M.fidelity]].filter((x) => x[1]).map((x) => `<div><dt>${x[0]}</dt><dd>${esc(x[1])}</dd></div>`).join('')}</dl></details>`;
+  const stage = (title, intro, T, baseV, yrs) => {
+    if (!T) return '';
+    let o = `<div class="sec"><h2>${title}</h2><p class="muted" style="margin:0 0 8px">${intro}</p>`;
+    for (const p of PROFS) {
+      const rows = (T.rows[p] || []).slice().sort((a, b) => (a.v === baseV ? -1 : b.v === baseV ? 1 : a.v.localeCompare(b.v, 'en', { numeric: true })));
+      if (!rows.length) continue;
+      const b = rows.find((r) => r.v === baseV), kept = new Set((T.kept || {})[p] || []);
+      o += `<h3 style="margin:14px 0 6px">${p} · ${esc(pname(p))}</h3><div class="tablewrap"><table><thead><tr><th class="l">Rule</th><th>Closed</th><th>Avg R</th><th>90% CI</th><th>Δ vs ${baseV}</th>${yrs.map((y) => `<th>${y}</th>`).join('')}<th>Kept</th></tr></thead><tbody>`;
+      for (const r of rows) {
+        const d = b && r.v !== baseV ? r.avg - b.avg : null, small = r.n < SMALL_N;
+        o += `<tr class="${r.v === baseV ? 'base' : ''}${small ? ' small' : ''}"><td>${esc(r.label)}</td><td class="num">${r.n}</td><td class="num ${cls(r.avg, r.n)}">${r3(r.avg)}</td><td class="num">${ci(r.ci)}</td><td class="num">${d == null ? '' : r3(d)}</td>${yrs.map((y) => { const x = r.year && r.year[y]; return `<td class="num ${x ? cls(x.avg, x.n) : ''}">${x ? sgn(x.avg, 2) : '—'}</td>`; }).join('')}<td class="${kept.has(r.v) ? 'kept' : ''}">${kept.has(r.v) ? 'kept' : ship[p] === r.v && baseV !== r.v ? 'shipped' : ''}</td></tr>`;
+      }
+      o += '</tbody></table></div>';
     }
-    h += '</tbody></table></div>';
-  }
-  h += '</div>';
-  // random-entry baselines
-  const d2 = (x) => x && x.D2;
-  h += '<div class="sec"><h2>Do the setups beat random entries?</h2><p class="muted" style="margin:0 0 8px">Gross R per trade (before costs). "Random, same direction" enters at a random time within ±30 days when the W/D bias points the same way, with the same stop distance and targets and the same exit. If the setups do not beat it, the zone and trigger rules add nothing.</p><div class="tablewrap"><table><thead><tr><th class="l">Period · profile</th><th>Mayne setups</th><th>Random, same direction</th><th>Random direction</th><th>Setups − random (90% CI)</th></tr></thead><tbody>';
-  for (const [lab, src] of [['2021–23', E.decide.diag], ['2024–26', E.confirm.diag]]) for (const p of ['P1', 'P2']) {
-    const x = d2(src) && d2(src)[p]; if (!x) continue;
-    h += `<tr><td>${lab} · ${p}</td><td class="num">${r3(x.real)}</td><td class="num">${r3(x.bias)}</td><td class="num">${r3(x.none)}</td><td class="num">${r3(x.real - x.bias)} (${ci(x.realVsBias)})</td></tr>`;
+    return o + '</div>';
+  };
+  const Y = ['2021', '2022', '2023'];
+  h += stage('Stage A · the exit, 2021–23', 'Average net R per closed trade. "Kept" = beat the baseline by ≥ 0.03R in ≥ 2 of 3 years with enough trades left. Muted rows have fewer than ' + SMALL_N + ' trades.', E.stageA, 'B0', Y);
+  h += stage('Stage B · entry filters on top of the kept exit, 2021–23', 'Each Mayne rule tested on B1 (the baseline with that profile’s Stage A exit).', E.stageB, 'B1', Y);
+  h += stage('P1 combination, 2021–23', 'The kept Stage B rules together, as FABLE_PLAN §6 requires before the confirm look.', E.stageF, 'B1', Y);
+  h += stage('The one confirm look, 2024–26', 'Opened once, after everything above was fixed and logged.', E.confirm, 'B0', ['2024', '2025', '2026']);
+  // random-entry baselines (diag keys are "variant|profile")
+  h += '<div class="sec"><h2>Do the setups beat random entries?</h2><p class="muted" style="margin:0 0 8px">Gross R per trade (before costs). "Random, same direction" enters at a random time within ±30 days when the W/D bias points the same way, with the same stop distance, targets and exit. If the setups do not beat it, the zone and trigger rules add nothing.</p><div class="tablewrap"><table><thead><tr><th class="l">Period · variant · profile</th><th>Mayne setups</th><th>Random, same direction</th><th>Random direction</th><th>Setups − random (90% CI)</th></tr></thead><tbody>';
+  for (const [lab, T] of [['2021–23 A', E.stageA], ['2021–23 B', E.stageB], ['2021–23 F', E.stageF], ['2024–26', E.confirm]]) {
+    const D2 = T && T.diag && T.diag.D2; if (!D2) continue;
+    for (const [k, x] of Object.entries(D2)) h += `<tr><td>${lab} · ${esc(k.replace('|', ' · '))}</td><td class="num">${r3(x.real)}</td><td class="num">${r3(x.bias)}</td><td class="num">${r3(x.none)}</td><td class="num">${r3(x.real - x.bias)} (${ci(x.realVsBias)})</td></tr>`;
   }
   h += '</tbody></table></div></div>';
-  // confluence with Krillin
-  const C = E.confluence;
-  if (C && C.confirm) {
-    h += '<div class="sec"><h2>Confluence with Krillin (Sep 2025 – Oct 2026)</h2><p class="muted" style="margin:0 0 8px">Separate research at Jeffrey\'s request; neither system was changed. Filters chosen on Sep–Mar, checked once on Apr–Oct.</p><div class="tablewrap"><table><thead><tr><th class="l">Filter</th><th>Base avg R (n)</th><th>Filtered avg R (n)</th><th>90% CI</th><th>Verdict</th></tr></thead><tbody>';
-    const nm = { K2: 'Krillin signal while a Mayne P2 zone is live (same direction)', M3: 'Mayne P1 trade with no opposite Krillin signal in the prior 24 h' };
-    for (const x of C.confirm) h += `<tr><td>${esc(nm[x.c] || x.c)}</td><td class="num">${r3(x.base.avg)} (${x.base.n})</td><td class="num ${cls(x.avg)}">${r3(x.avg)} (${x.n})</td><td class="num">${x.ci ? sgn(x.ci.lo90, 2) + ' … ' + sgn(x.ci.hi90, 2) : '—'}</td><td>${esc(x.verdict)}</td></tr>`;
-    h += '</tbody></table></div><p class="hint" style="margin:8px 0 0">Agreement between the systems removes some of the worst trades but leaves no edge after costs. The Mayne P1 veto is tracked in the forward test below; it is not a trading rule.</p></div>';
-  }
   return h;
 }
 function renderResults() {
