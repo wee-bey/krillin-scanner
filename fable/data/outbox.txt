@@ -25,3 +25,17 @@ Rejected: 59 coin daily bias against · 28 against the BTC regime (risk-on) · 1
 
 Gated subset so far: 2486 closed, -0.004R avg, PF 0.99 (first half 0.011R / second half -0.026R). Everything: -0.074R, PF 0.84.
 Planning aid only, not financial advice. https://wee-bey.github.io/krillin-scanner/fable/
+--- 2026-10-17T12:16:31.779Z
+Fable · BTC 81,578 vs daily MA100 73,845 (+10.473%) → RISK-ON (58 d since the flip; daily EMA200/SMMA99 above)
+Book A target +0.692x BTC (6,920 on 10,000) · Book C 0.692x
+Context 2026-10-16: BTC daily neutral / 4h range / weekly neutral · daily regime chop · 30-day +8.7% · BTC at HTF resistance: yes
+
+Watch list 2026-10-16 (4h/1d, gated): 2 of 46 signals passed
+• TRUTH · A2 4h long · grade A · bids 0.017961–0.017659 · stop 0.017000 (4.3%) · TP1 0.018401 (0.844R, 4h bearish inefficiency (unfilled)) · TP2 0.020842 (4.06R) · TP3 0.023023 (6.93R) · ⚠ BTC at HTF resistance (the engine flags this on 95% of days)
+  4h trend continuation: 4h structure HH/LL, 4h trend up, 1 tap(s)
+• AAVE · C6 4h long · grade C · bids 156.202000–155.452000 · stop 152.820000 (1.9%) · TP1 161.065000 (1.86R, HTF S/R flip) · TP2 167.455000 (4.08R) · TP3 171.768000 (5.57R) · ⚠ stop 1.85% is under 2%: costs weigh more; BTC at HTF resistance (the engine flags this on 95% of days)
+  4h EMA200 sweep and reclaim: 4h candle wicked below EMA200 and closed back above
+Rejected: 37 coin daily bias against · 18 2+ warnings · 13 against the BTC regime (risk-on) · 9 stop under 1% · 2 D4@1d right after a D4@1h on the same coin (a reliably bad stack)
+
+Gated subset so far: 2486 closed, -0.004R avg, PF 0.99 (first half 0.011R / second half -0.026R). Everything: -0.074R, PF 0.84.
+Planning aid only, not financial advice. https://wee-bey.github.io/krillin-scanner/fable/
