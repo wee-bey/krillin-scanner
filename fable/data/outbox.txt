@@ -94,3 +94,17 @@ Rejected: 33 coin daily bias against · 17 2+ warnings · 14 against the BTC reg
 
 Gated subset so far: 2496 closed, -0.006R avg, PF 0.98 (first half 0.011R / second half -0.032R). Everything: -0.074R, PF 0.84.
 Planning aid only, not financial advice. https://wee-bey.github.io/krillin-scanner/fable/
+--- 2026-10-21T13:57:42.684Z
+Fable · BTC 82,985 vs daily MA100 74,580 (+11.269%) → RISK-ON (62 d since the flip; daily EMA200/SMMA99 above)
+Book A target +0.874x BTC (8,740 on 10,000) · Book C 0.874x
+Context 2026-10-20: BTC daily neutral / 4h bearish / weekly bullish · daily regime chop · 30-day +0.8% · BTC at HTF resistance: yes
+
+Watch list 2026-10-20 (4h/1d, gated): 2 of 46 signals passed
+• AAPL · B2 4h long · grade B · bids 339.822000–336.511000 · stop 333.016000 (1.4%) · TP1 342.940000 (1.16R, 4h EMA13) · TP2 344.956000 (1.6R) · TP3 350.834000 (2.87R) · ⚠ stop 1.36% is under 2%: costs weigh more; BTC at HTF resistance (the engine flags this on 95% of days)
+  4h compression breakout-retest: 4h compression broke up 17 bar(s) ago (weak break, 0.4× the average candle)
+• BZ · B2 4h long · grade B · bids 103.519000–101.278000 · stop 99.862100 (2.1%) · TP1 103.899000 (0.867R, HTF swing high) · TP2 105.689000 (1.69R) · TP3 106.329000 (1.99R) · ⚠ BTC at HTF resistance (the engine flags this on 95% of days)
+  4h compression breakout-retest: 4h compression broke up 19 bar(s) ago (weak break, 0.6× the average candle)
+Rejected: 38 coin daily bias against · 14 against the BTC regime (risk-on) · 11 2+ warnings · 8 stop under 1% · 1 D4@1d right after a D4@1h on the same coin (a reliably bad stack)
+
+Gated subset so far: 2500 closed, -0.003R avg, PF 0.99 (first half 0.011R / second half -0.024R). Everything: -0.074R, PF 0.84.
+Planning aid only, not financial advice. https://wee-bey.github.io/krillin-scanner/fable/
