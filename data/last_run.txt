@@ -1,3 +1,4 @@
-[04:42:47] archive through 2026-10-19; replaying nothing new
-[04:42:48] BTC regime (daily MA100): 12 trades since 2025-09-01, 11 closed (-0.0774R), open long from 2026-08-20 (2.944R)
-[04:42:48] done in 2 s · 2 downloads · 62203 signals (61958 resolved)
+[11:45:09] archive through 2026-10-20; replaying 2026-10-20
+[11:46:32] 2026-10-20: 100 coins, 187 new signals, 82 s
+[11:46:33] BTC regime (daily MA100): 12 trades since 2025-09-01, 11 closed (-0.0774R), open long from 2026-08-20 (3.198R)
+[11:46:34] done in 85 s · 1808 downloads · 62390 signals (62141 resolved)
