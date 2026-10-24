@@ -1,3 +1,3 @@
-[17:30:20] regime: 2026-10-23 BTC 81,160 vs daily MA100 75,126 (+8.032%) → risk-on, 65 d since the flip · book A 91.7% since 2021-06-01, replay year 23.6%; book C replay year 1.4%
-[17:30:21] gates: 19650 4h/1d signals in the history, 2530 pass (2512 closed: -0.003R, PF 0.99; first half 0.011R, second half -0.023R) · 2026-10-23: 66 4h/1d signals, 7 on the watch list
-[17:30:21] done in 3 s · 2 downloads
+[22:35:06] regime: 2026-10-23 BTC 81,160 vs daily MA100 75,126 (+8.032%) → risk-on, 65 d since the flip · book A 91.7% since 2021-06-01, replay year 23.6%; book C replay year 1.4%
+[22:35:06] gates: 19650 4h/1d signals in the history, 2530 pass (2512 closed: -0.003R, PF 0.99; first half 0.011R, second half -0.023R) · 2026-10-23: 66 4h/1d signals, 7 on the watch list
+[22:35:06] done in 2 s · 2 downloads
