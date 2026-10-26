@@ -173,3 +173,17 @@ Rejected: 28 coin daily bias against · 17 against the BTC regime (risk-on) · 1
 
 Gated subset so far: 2521 closed, -0.004R avg, PF 0.99 (first half 0.011R / second half -0.026R). Everything: -0.075R, PF 0.84.
 Planning aid only, not financial advice. https://wee-bey.github.io/krillin-scanner/fable/
+--- 2026-10-26T15:18:32.666Z
+Fable · BTC 80,114 vs daily MA100 75,458 (+6.17%) → RISK-ON (67 d since the flip; daily EMA200/SMMA99 above)
+Book A target +0.858x BTC (8,580 on 10,000) · Book C 0.858x
+Context 2026-10-25: BTC daily neutral / 4h bearish / weekly bullish · daily regime chop · 30-day -4.2% · BTC at HTF resistance: yes
+
+Watch list 2026-10-25 (4h/1d, gated): 2 of 37 signals passed
+• ASTER · C3 4h long · grade B · bids 0.712474–0.706062 · stop 0.685108 (3.3%) · TP1 0.730729 (0.976R, HTF swing high) · TP2 0.742929 (1.5R) · TP3 0.754629 (2.01R) · ⚠ BTC at HTF resistance (the engine flags this on 95% of days); weekend signal; dead hour (after the US close, before Asia)
+  4h EMA200 retest: 4h EMA200 flat; price 0.0 ATR above it
+• NEAR · C3 4h long · grade C · bids 4.687450–4.589770 · stop 4.252440 (8.0%) · TP1 4.965230 (0.927R, 4h MA100 curling down: de-risk there) · TP2 5.174300 (1.49R) · TP3 5.379300 (2.05R) · ⚠ BTC at HTF resistance (the engine flags this on 95% of days); dead hour (after the US close, before Asia)
+  4h EMA200 retest: 4h EMA200 flat; price -0.3 ATR above it
+Rejected: 22 coin daily bias against · 16 against the BTC regime (risk-on) · 7 2+ warnings · 3 stop under 1% · 1 pre-pump: daily MA100 descending above price
+
+Gated subset so far: 2522 closed, -0.004R avg, PF 0.99 (first half 0.011R / second half -0.027R). Everything: -0.076R, PF 0.84.
+Planning aid only, not financial advice. https://wee-bey.github.io/krillin-scanner/fable/
