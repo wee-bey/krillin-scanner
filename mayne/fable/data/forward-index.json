@@ -1,7 +1,7 @@
 {
  "version": 1,
  "engine": "mayne.fable-js.1",
- "updated": "2026-10-31T14:45:50.486Z",
+ "updated": "2026-11-01T15:29:48.508Z",
  "shipped": {
   "P1": "B0",
   "P2": "B0",
@@ -24,8 +24,8 @@
  },
  "coverage": {
   "from": "2026-10-17",
-  "through": "2026-10-30",
-  "coins": 29
+  "through": "2026-10-31",
+  "coins": 32
  },
  "rules": {
   "universe": "daily top 100 Binance USDT-M perpetuals by the previous day’s volume",
@@ -38,18 +38,18 @@
  "summary": {
   "P1": {
    "all": {
-    "armed": 5,
-    "filled": 5,
+    "armed": 6,
+    "filled": 6,
     "closed": 5,
-    "open": 0,
+    "open": 1,
     "expired": 0,
     "cancelled": 0,
     "win": 0.4,
-    "avgR": 0.2634,
-    "sumR": 1.3172,
+    "avgR": 0.2694,
+    "sumR": 1.347,
     "avgRgross": 0.2754,
-    "pf": 1.435,
-    "maxDD": 2.0228
+    "pf": 1.4481,
+    "maxDD": 2.0253
    },
    "regime": {
     "bull": {
@@ -60,41 +60,41 @@
      "expired": 0,
      "cancelled": 0,
      "win": 0.5,
-     "avgR": 0.7132,
-     "sumR": 1.4264,
+     "avgR": 0.7218,
+     "sumR": 1.4437,
      "avgRgross": 0.7252,
-     "pf": 2.4193,
-     "maxDD": 1.005
+     "pf": 2.4721,
+     "maxDD": 0.9807
     },
     "chop": {
-     "armed": 3,
-     "filled": 3,
+     "armed": 4,
+     "filled": 4,
      "closed": 3,
-     "open": 0,
+     "open": 1,
      "expired": 0,
      "cancelled": 0,
      "win": 0.3333,
-     "avgR": -0.0364,
-     "sumR": -0.1092,
+     "avgR": -0.0322,
+     "sumR": -0.0967,
      "avgRgross": -0.0245,
-     "pf": 0.946,
-     "maxDD": 2.0228
+     "pf": 0.9523,
+     "maxDD": 2.0253
     }
    },
    "year": {
     "2026-10": {
-     "armed": 5,
-     "filled": 5,
+     "armed": 6,
+     "filled": 6,
      "closed": 5,
-     "open": 0,
+     "open": 1,
      "expired": 0,
      "cancelled": 0,
      "win": 0.4,
-     "avgR": 0.2634,
-     "sumR": 1.3172,
+     "avgR": 0.2694,
+     "sumR": 1.347,
      "avgRgross": 0.2754,
-     "pf": 1.435,
-     "maxDD": 2.0228
+     "pf": 1.4481,
+     "maxDD": 2.0253
     }
    },
    "grade": {
@@ -106,25 +106,25 @@
      "expired": 0,
      "cancelled": 0,
      "win": 0.6667,
-     "avgR": 1.1105,
-     "sumR": 3.3316,
+     "avgR": 1.1111,
+     "sumR": 3.3332,
      "avgRgross": 1.1257,
-     "pf": 4.2875,
-     "maxDD": 1.0134
+     "pf": 4.2685,
+     "maxDD": 1.0198
     },
     "A": {
-     "armed": 1,
-     "filled": 1,
+     "armed": 2,
+     "filled": 2,
      "closed": 1,
-     "open": 0,
+     "open": 1,
      "expired": 0,
      "cancelled": 0,
      "win": 0,
-     "avgR": -1.0094,
-     "sumR": -1.0094,
+     "avgR": -1.0055,
+     "sumR": -1.0055,
      "avgRgross": -1,
      "pf": 0,
-     "maxDD": 1.0094
+     "maxDD": 1.0055
     },
     "B": {
      "armed": 1,
@@ -134,11 +134,11 @@
      "expired": 0,
      "cancelled": 0,
      "win": 0,
-     "avgR": -1.005,
-     "sumR": -1.005,
+     "avgR": -0.9807,
+     "sumR": -0.9807,
      "avgRgross": -1,
      "pf": 0,
-     "maxDD": 1.005
+     "maxDD": 0.9807
     }
    },
    "dir": {
@@ -150,25 +150,25 @@
      "expired": 0,
      "cancelled": 0,
      "win": 0.3333,
-     "avgR": 0.1377,
-     "sumR": 0.413,
+     "avgR": 0.1413,
+     "sumR": 0.4239,
      "avgRgross": 0.1502,
-     "pf": 1.2046,
-     "maxDD": 1.0134
+     "pf": 1.2119,
+     "maxDD": 1.0198
     },
     "short": {
-     "armed": 2,
-     "filled": 2,
+     "armed": 3,
+     "filled": 3,
      "closed": 2,
-     "open": 0,
+     "open": 1,
      "expired": 0,
      "cancelled": 0,
      "win": 0.5,
-     "avgR": 0.4521,
-     "sumR": 0.9042,
+     "avgR": 0.4616,
+     "sumR": 0.9231,
      "avgRgross": 0.4633,
-     "pf": 1.8958,
-     "maxDD": 1.0094
+     "pf": 1.9181,
+     "maxDD": 1.0055
     }
    },
    "path": {
@@ -180,25 +180,25 @@
      "expired": 0,
      "cancelled": 0,
      "win": 0,
-     "avgR": -1.0114,
-     "sumR": -2.0228,
+     "avgR": -1.0126,
+     "sumR": -2.0253,
      "avgRgross": -1,
      "pf": 0,
-     "maxDD": 2.0228
+     "maxDD": 2.0253
     },
     "reversal": {
-     "armed": 3,
-     "filled": 3,
+     "armed": 4,
+     "filled": 4,
      "closed": 3,
-     "open": 0,
+     "open": 1,
      "expired": 0,
      "cancelled": 0,
      "win": 0.6667,
-     "avgR": 1.1133,
-     "sumR": 3.34,
+     "avgR": 1.1241,
+     "sumR": 3.3723,
      "avgRgross": 1.1257,
-     "pf": 4.3234,
-     "maxDD": 1.005
+     "pf": 4.4387,
+     "maxDD": 0.9807
     }
    },
    "krillin": {
@@ -210,72 +210,72 @@
      "expired": 0,
      "cancelled": 0,
      "win": 0,
-     "avgR": -1.0094,
-     "sumR": -1.0094,
+     "avgR": -1.0055,
+     "sumR": -1.0055,
      "avgRgross": -1,
      "pf": 0,
-     "maxDD": 1.0094
+     "maxDD": 1.0055
     },
     "opposite Krillin signal": {
-     "armed": 4,
-     "filled": 4,
+     "armed": 5,
+     "filled": 5,
      "closed": 4,
-     "open": 0,
+     "open": 1,
      "expired": 0,
      "cancelled": 0,
      "win": 0.5,
-     "avgR": 0.5817,
-     "sumR": 2.3266,
+     "avgR": 0.5881,
+     "sumR": 2.3525,
      "avgRgross": 0.5943,
-     "pf": 2.1527,
-     "maxDD": 1.0134
+     "pf": 2.176,
+     "maxDD": 1.0198
     }
    },
    "tracked": {
     "B1": {
-     "armed": 5,
-     "filled": 5,
+     "armed": 6,
+     "filled": 6,
      "closed": 5,
-     "open": 0,
+     "open": 1,
      "expired": 0,
      "cancelled": 0,
      "win": 0.4,
-     "avgR": 0.083,
-     "sumR": 0.4149,
+     "avgR": 0.0924,
+     "sumR": 0.4619,
      "avgRgross": 0.0939,
-     "pf": 1.137,
-     "maxDD": 2.0228
+     "pf": 1.1537,
+     "maxDD": 2.0253
     },
     "F_P1": {
-     "armed": 2,
-     "filled": 2,
+     "armed": 3,
+     "filled": 3,
      "closed": 2,
-     "open": 0,
+     "open": 1,
      "expired": 0,
      "cancelled": 0,
      "win": 0,
-     "avgR": -1.0114,
-     "sumR": -2.0228,
+     "avgR": -1.0126,
+     "sumR": -2.0253,
      "avgRgross": -1,
      "pf": 0,
-     "maxDD": 2.0228
+     "maxDD": 2.0253
     }
    }
   },
   "P2": {
    "all": {
-    "armed": 61,
-    "filled": 49,
-    "closed": 48,
+    "armed": 67,
+    "filled": 52,
+    "closed": 51,
     "open": 1,
-    "expired": 12,
+    "expired": 15,
     "cancelled": 0,
-    "win": 0.2292,
-    "avgR": -0.3403,
-    "sumR": -16.336,
-    "avgRgross": -0.2562,
-    "pf": 0.5965,
-    "maxDD": 22.2211
+    "win": 0.2353,
+    "avgR": -0.3299,
+    "sumR": -16.8254,
+    "avgRgross": -0.2431,
+    "pf": 0.6071,
+    "maxDD": 22.6843
    },
    "regime": {
     "bull": {
@@ -286,71 +286,71 @@
      "expired": 7,
      "cancelled": 0,
      "win": 0.3636,
-     "avgR": 0.2409,
-     "sumR": 5.3004,
+     "avgR": 0.2401,
+     "sumR": 5.2814,
      "avgRgross": 0.3016,
-     "pf": 1.3562,
-     "maxDD": 10.6371
+     "pf": 1.3543,
+     "maxDD": 10.659
     },
     "chop": {
-     "armed": 32,
-     "filled": 27,
-     "closed": 26,
+     "armed": 38,
+     "filled": 30,
+     "closed": 29,
      "open": 1,
-     "expired": 5,
+     "expired": 8,
      "cancelled": 0,
-     "win": 0.1154,
-     "avgR": -0.8322,
-     "sumR": -21.6364,
-     "avgRgross": -0.7282,
-     "pf": 0.1548,
-     "maxDD": 23.2434
+     "win": 0.1379,
+     "avgR": -0.7623,
+     "sumR": -22.1068,
+     "avgRgross": -0.6564,
+     "pf": 0.2082,
+     "maxDD": 23.7057
     }
    },
    "year": {
     "2026-10": {
-     "armed": 61,
-     "filled": 49,
-     "closed": 48,
+     "armed": 67,
+     "filled": 52,
+     "closed": 51,
      "open": 1,
-     "expired": 12,
+     "expired": 15,
      "cancelled": 0,
-     "win": 0.2292,
-     "avgR": -0.3403,
-     "sumR": -16.336,
-     "avgRgross": -0.2562,
-     "pf": 0.5965,
-     "maxDD": 22.2211
+     "win": 0.2353,
+     "avgR": -0.3299,
+     "sumR": -16.8254,
+     "avgRgross": -0.2431,
+     "pf": 0.6071,
+     "maxDD": 22.6843
     }
    },
    "grade": {
     "A+": {
-     "armed": 37,
-     "filled": 29,
-     "closed": 28,
+     "armed": 42,
+     "filled": 32,
+     "closed": 31,
      "open": 1,
-     "expired": 8,
+     "expired": 10,
      "cancelled": 0,
-     "win": 0.3929,
-     "avgR": 0.2127,
-     "sumR": 5.9567,
-     "avgRgross": 0.2751,
-     "pf": 1.3275,
-     "maxDD": 6.3045
+     "win": 0.3871,
+     "avgR": 0.1762,
+     "sumR": 5.4635,
+     "avgRgross": 0.2452,
+     "pf": 1.266,
+     "maxDD": 6.781
     },
     "A": {
-     "armed": 21,
+     "armed": 22,
      "filled": 17,
      "closed": 17,
      "open": 0,
-     "expired": 4,
+     "expired": 5,
      "cancelled": 0,
      "win": 0,
-     "avgR": -1.1041,
-     "sumR": -18.7693,
+     "avgR": -1.1039,
+     "sumR": -18.7655,
      "avgRgross": -1,
      "pf": 0,
-     "maxDD": 18.7693
+     "maxDD": 18.7655
     },
     "B": {
      "armed": 3,
@@ -369,122 +369,122 @@
    },
    "dir": {
     "long": {
-     "armed": 47,
-     "filled": 38,
-     "closed": 37,
+     "armed": 49,
+     "filled": 39,
+     "closed": 38,
      "open": 1,
-     "expired": 9,
+     "expired": 10,
      "cancelled": 0,
-     "win": 0.2703,
-     "avgR": -0.2024,
-     "sumR": -7.4891,
-     "avgRgross": -0.1188,
-     "pf": 0.7465,
-     "maxDD": 14.5574
+     "win": 0.2895,
+     "avgR": -0.1493,
+     "sumR": -5.6731,
+     "avgRgross": -0.0657,
+     "pf": 0.8083,
+     "maxDD": 14.5788
     },
     "short": {
-     "armed": 14,
-     "filled": 11,
-     "closed": 11,
+     "armed": 18,
+     "filled": 13,
+     "closed": 13,
      "open": 0,
-     "expired": 3,
+     "expired": 5,
      "cancelled": 0,
-     "win": 0.0909,
-     "avgR": -0.8043,
-     "sumR": -8.8469,
-     "avgRgross": -0.7184,
-     "pf": 0.1911,
-     "maxDD": 9.8435
+     "win": 0.0769,
+     "avgR": -0.8579,
+     "sumR": -11.1523,
+     "avgRgross": -0.7617,
+     "pf": 0.1576,
+     "maxDD": 12.145
     }
    },
    "path": {
     "continuation": {
-     "armed": 10,
-     "filled": 8,
-     "closed": 8,
+     "armed": 13,
+     "filled": 10,
+     "closed": 10,
      "open": 0,
-     "expired": 2,
+     "expired": 3,
      "cancelled": 0,
-     "win": 0.125,
-     "avgR": -0.8156,
-     "sumR": -6.5252,
-     "avgRgross": -0.7278,
-     "pf": 0.1507,
-     "maxDD": 6.5252
+     "win": 0.1,
+     "avgR": -0.8813,
+     "sumR": -8.8134,
+     "avgRgross": -0.7822,
+     "pf": 0.1162,
+     "maxDD": 8.8134
     },
     "reversal": {
-     "armed": 51,
-     "filled": 41,
-     "closed": 40,
+     "armed": 54,
+     "filled": 42,
+     "closed": 41,
      "open": 1,
-     "expired": 10,
+     "expired": 12,
      "cancelled": 0,
-     "win": 0.25,
-     "avgR": -0.2453,
-     "sumR": -9.8108,
-     "avgRgross": -0.1619,
-     "pf": 0.7009,
-     "maxDD": 16.6637
+     "win": 0.2683,
+     "avgR": -0.1954,
+     "sumR": -8.012,
+     "avgRgross": -0.1117,
+     "pf": 0.7562,
+     "maxDD": 16.7013
     }
    },
    "krillin": {
     "no opposite Krillin signal (M3)": {
-     "armed": 49,
-     "filled": 41,
-     "closed": 40,
-     "open": 1,
-     "expired": 8,
+     "armed": 53,
+     "filled": 42,
+     "closed": 42,
+     "open": 0,
+     "expired": 11,
      "cancelled": 0,
-     "win": 0.2,
-     "avgR": -0.4637,
-     "sumR": -18.5486,
-     "avgRgross": -0.3781,
-     "pf": 0.4725,
-     "maxDD": 21.1582
+     "win": 0.2143,
+     "avgR": -0.4275,
+     "sumR": -17.9535,
+     "avgRgross": -0.3388,
+     "pf": 0.5066,
+     "maxDD": 21.1592
     },
     "opposite Krillin signal": {
-     "armed": 12,
-     "filled": 8,
-     "closed": 8,
-     "open": 0,
+     "armed": 14,
+     "filled": 10,
+     "closed": 9,
+     "open": 1,
      "expired": 4,
      "cancelled": 0,
-     "win": 0.375,
-     "avgR": 0.2766,
-     "sumR": 2.2126,
-     "avgRgross": 0.3535,
-     "pf": 1.4159,
-     "maxDD": 3.2109
+     "win": 0.3333,
+     "avgR": 0.1253,
+     "sumR": 1.1281,
+     "avgRgross": 0.2031,
+     "pf": 1.1752,
+     "maxDD": 3.2204
     }
    },
    "tracked": {
     "B1": {
-     "armed": 56,
-     "filled": 47,
-     "closed": 44,
+     "armed": 61,
+     "filled": 49,
+     "closed": 46,
      "open": 3,
-     "expired": 9,
+     "expired": 12,
      "cancelled": 0,
      "win": 0,
-     "avgR": -1.0967,
-     "sumR": -48.2563,
+     "avgR": -1.1069,
+     "sumR": -50.9196,
      "avgRgross": -1,
      "pf": 0,
-     "maxDD": 48.2563
+     "maxDD": 50.9196
     },
     "F_P2": {
-     "armed": 7,
-     "filled": 5,
+     "armed": 9,
+     "filled": 7,
      "closed": 5,
-     "open": 0,
+     "open": 2,
      "expired": 2,
      "cancelled": 0,
      "win": 0,
-     "avgR": -1.0549,
-     "sumR": -5.2746,
+     "avgR": -1.0582,
+     "sumR": -5.2912,
      "avgRgross": -1,
      "pf": 0,
-     "maxDD": 5.2746
+     "maxDD": 5.2912
     }
    }
   },
@@ -497,11 +497,11 @@
     "expired": 0,
     "cancelled": 0,
     "win": 0,
-    "avgR": -1.0092,
-    "sumR": -1.0092,
+    "avgR": -1.0088,
+    "sumR": -1.0088,
     "avgRgross": -1,
     "pf": 0,
-    "maxDD": 1.0092
+    "maxDD": 1.0088
    },
    "regime": {
     "chop": {
@@ -512,11 +512,11 @@
      "expired": 0,
      "cancelled": 0,
      "win": 0,
-     "avgR": -1.0092,
-     "sumR": -1.0092,
+     "avgR": -1.0088,
+     "sumR": -1.0088,
      "avgRgross": -1,
      "pf": 0,
-     "maxDD": 1.0092
+     "maxDD": 1.0088
     }
    },
    "year": {
@@ -528,11 +528,11 @@
      "expired": 0,
      "cancelled": 0,
      "win": 0,
-     "avgR": -1.0092,
-     "sumR": -1.0092,
+     "avgR": -1.0088,
+     "sumR": -1.0088,
      "avgRgross": -1,
      "pf": 0,
-     "maxDD": 1.0092
+     "maxDD": 1.0088
     }
    },
    "grade": {
@@ -544,11 +544,11 @@
      "expired": 0,
      "cancelled": 0,
      "win": 0,
-     "avgR": -1.0092,
-     "sumR": -1.0092,
+     "avgR": -1.0088,
+     "sumR": -1.0088,
      "avgRgross": -1,
      "pf": 0,
-     "maxDD": 1.0092
+     "maxDD": 1.0088
     }
    },
    "dir": {
@@ -560,11 +560,11 @@
      "expired": 0,
      "cancelled": 0,
      "win": 0,
-     "avgR": -1.0092,
-     "sumR": -1.0092,
+     "avgR": -1.0088,
+     "sumR": -1.0088,
      "avgRgross": -1,
      "pf": 0,
-     "maxDD": 1.0092
+     "maxDD": 1.0088
     }
    },
    "path": {
@@ -576,11 +576,11 @@
      "expired": 0,
      "cancelled": 0,
      "win": 0,
-     "avgR": -1.0092,
-     "sumR": -1.0092,
+     "avgR": -1.0088,
+     "sumR": -1.0088,
      "avgRgross": -1,
      "pf": 0,
-     "maxDD": 1.0092
+     "maxDD": 1.0088
     }
    },
    "krillin": {
@@ -592,11 +592,11 @@
      "expired": 0,
      "cancelled": 0,
      "win": 0,
-     "avgR": -1.0092,
-     "sumR": -1.0092,
+     "avgR": -1.0088,
+     "sumR": -1.0088,
      "avgRgross": -1,
      "pf": 0,
-     "maxDD": 1.0092
+     "maxDD": 1.0088
     }
    },
    "tracked": {
@@ -608,28 +608,28 @@
      "expired": 0,
      "cancelled": 0,
      "win": 0,
-     "avgR": -1.0092,
-     "sumR": -1.0092,
+     "avgR": -1.0088,
+     "sumR": -1.0088,
      "avgRgross": -1,
      "pf": 0,
-     "maxDD": 1.0092
+     "maxDD": 1.0088
     }
    }
   },
   "P2D": {
    "all": {
-    "armed": 8,
-    "filled": 7,
+    "armed": 9,
+    "filled": 8,
     "closed": 7,
-    "open": 0,
+    "open": 1,
     "expired": 1,
     "cancelled": 0,
     "win": 0.2857,
-    "avgR": -0.1347,
-    "sumR": -0.9427,
+    "avgR": -0.1341,
+    "sumR": -0.9389,
     "avgRgross": -0.0217,
-    "pf": 0.8366,
-    "maxDD": 3.8924
+    "pf": 0.8381,
+    "maxDD": 3.9073
    },
    "regime": {
     "bull": {
@@ -640,41 +640,41 @@
      "expired": 1,
      "cancelled": 0,
      "win": 0.3333,
-     "avgR": 0.2932,
-     "sumR": 0.8795,
+     "avgR": 0.2953,
+     "sumR": 0.8858,
      "avgRgross": 0.3193,
-     "pf": 1.4248,
-     "maxDD": 2.0702
+     "pf": 1.4253,
+     "maxDD": 2.0826
     },
     "chop": {
-     "armed": 4,
-     "filled": 4,
+     "armed": 5,
+     "filled": 5,
      "closed": 4,
-     "open": 0,
+     "open": 1,
      "expired": 0,
      "cancelled": 0,
      "win": 0.25,
-     "avgR": -0.4556,
-     "sumR": -1.8222,
+     "avgR": -0.4562,
+     "sumR": -1.8247,
      "avgRgross": -0.2775,
-     "pf": 0.5074,
-     "maxDD": 2.6528
+     "pf": 0.5091,
+     "maxDD": 2.6704
     }
    },
    "year": {
     "2026-10": {
-     "armed": 8,
-     "filled": 7,
+     "armed": 9,
+     "filled": 8,
      "closed": 7,
-     "open": 0,
+     "open": 1,
      "expired": 1,
      "cancelled": 0,
      "win": 0.2857,
-     "avgR": -0.1347,
-     "sumR": -0.9427,
+     "avgR": -0.1341,
+     "sumR": -0.9389,
      "avgRgross": -0.0217,
-     "pf": 0.8366,
-     "maxDD": 3.8924
+     "pf": 0.8381,
+     "maxDD": 3.9073
     }
    },
    "grade": {
@@ -686,17 +686,17 @@
      "expired": 1,
      "cancelled": 0,
      "win": 0.3333,
-     "avgR": 0.115,
-     "sumR": 0.6902,
+     "avgR": 0.1157,
+     "sumR": 0.694,
      "avgRgross": 0.1413,
-     "pf": 1.1669,
-     "maxDD": 3.1165
+     "pf": 1.1666,
+     "maxDD": 3.1289
     },
     "A": {
-     "armed": 1,
-     "filled": 1,
+     "armed": 2,
+     "filled": 2,
      "closed": 1,
-     "open": 0,
+     "open": 1,
      "expired": 0,
      "cancelled": 0,
      "win": 0,
@@ -716,25 +716,25 @@
      "expired": 1,
      "cancelled": 0,
      "win": 0.25,
-     "avgR": -0.1825,
-     "sumR": -0.73,
+     "avgR": -0.1822,
+     "sumR": -0.7289,
      "avgRgross": -0.0105,
-     "pf": 0.8016,
-     "maxDD": 3.6797
+     "pf": 0.8029,
+     "maxDD": 3.6973
     },
     "short": {
-     "armed": 3,
-     "filled": 3,
+     "armed": 4,
+     "filled": 4,
      "closed": 3,
-     "open": 0,
+     "open": 1,
      "expired": 0,
      "cancelled": 0,
      "win": 0.3333,
-     "avgR": -0.0709,
-     "sumR": -0.2127,
+     "avgR": -0.07,
+     "sumR": -0.21,
      "avgRgross": -0.0367,
-     "pf": 0.8982,
-     "maxDD": 2.0896
+     "pf": 0.9001,
+     "maxDD": 2.102
     }
    },
    "path": {
@@ -746,25 +746,25 @@
      "expired": 0,
      "cancelled": 0,
      "win": 0,
-     "avgR": -1.0433,
-     "sumR": -1.0433,
+     "avgR": -1.0557,
+     "sumR": -1.0557,
      "avgRgross": -1,
      "pf": 0,
-     "maxDD": 1.0433
+     "maxDD": 1.0557
     },
     "reversal": {
-     "armed": 7,
-     "filled": 6,
+     "armed": 8,
+     "filled": 7,
      "closed": 6,
-     "open": 0,
+     "open": 1,
      "expired": 1,
      "cancelled": 0,
      "win": 0.3333,
-     "avgR": 0.0168,
-     "sumR": 0.1006,
+     "avgR": 0.0195,
+     "sumR": 0.1168,
      "avgRgross": 0.1413,
-     "pf": 1.0213,
-     "maxDD": 2.8491
+     "pf": 1.0246,
+     "maxDD": 2.8516
     }
    },
    "krillin": {
@@ -776,24 +776,24 @@
      "expired": 1,
      "cancelled": 0,
      "win": 0,
-     "avgR": -1.1807,
-     "sumR": -4.723,
+     "avgR": -1.1882,
+     "sumR": -4.753,
      "avgRgross": -1,
      "pf": 0,
-     "maxDD": 4.723
+     "maxDD": 4.753
     },
     "opposite Krillin signal": {
-     "armed": 3,
-     "filled": 3,
+     "armed": 4,
+     "filled": 4,
      "closed": 3,
-     "open": 0,
+     "open": 1,
      "expired": 0,
      "cancelled": 0,
      "win": 0.6667,
-     "avgR": 1.2601,
-     "sumR": 3.7803,
+     "avgR": 1.2714,
+     "sumR": 3.8141,
      "avgRgross": 1.2826,
-     "pf": 4.613,
+     "pf": 4.6453,
      "maxDD": 1.0463
     }
    },
