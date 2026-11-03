@@ -1,7 +1,7 @@
 {
  "version": 1,
  "engine": "mayne.fable-js.1",
- "updated": "2026-11-02T18:51:15.922Z",
+ "updated": "2026-11-03T16:33:22.286Z",
  "shipped": {
   "P1": "B0",
   "P2": "B0",
@@ -24,7 +24,7 @@
  },
  "coverage": {
   "from": "2026-10-17",
-  "through": "2026-11-01",
+  "through": "2026-11-02",
   "coins": 32
  },
  "rules": {
@@ -38,10 +38,10 @@
  "summary": {
   "P1": {
    "all": {
-    "armed": 6,
-    "filled": 6,
+    "armed": 8,
+    "filled": 8,
     "closed": 5,
-    "open": 1,
+    "open": 3,
     "expired": 0,
     "cancelled": 0,
     "win": 0.4,
@@ -67,10 +67,10 @@
      "maxDD": 0.9807
     },
     "chop": {
-     "armed": 4,
-     "filled": 4,
+     "armed": 6,
+     "filled": 6,
      "closed": 3,
-     "open": 1,
+     "open": 3,
      "expired": 0,
      "cancelled": 0,
      "win": 0.3333,
@@ -95,14 +95,28 @@
      "avgRgross": 0.2754,
      "pf": 1.4481,
      "maxDD": 2.0253
+    },
+    "2026-11": {
+     "armed": 2,
+     "filled": 2,
+     "closed": 0,
+     "open": 2,
+     "expired": 0,
+     "cancelled": 0,
+     "win": null,
+     "avgR": null,
+     "sumR": 0,
+     "avgRgross": null,
+     "pf": null,
+     "maxDD": 0
     }
    },
    "grade": {
     "A+": {
-     "armed": 3,
-     "filled": 3,
+     "armed": 4,
+     "filled": 4,
      "closed": 3,
-     "open": 0,
+     "open": 1,
      "expired": 0,
      "cancelled": 0,
      "win": 0.6667,
@@ -113,10 +127,10 @@
      "maxDD": 1.0198
     },
     "A": {
-     "armed": 2,
-     "filled": 2,
+     "armed": 3,
+     "filled": 3,
      "closed": 1,
-     "open": 1,
+     "open": 2,
      "expired": 0,
      "cancelled": 0,
      "win": 0,
@@ -143,10 +157,10 @@
    },
    "dir": {
     "long": {
-     "armed": 3,
-     "filled": 3,
+     "armed": 5,
+     "filled": 5,
      "closed": 3,
-     "open": 0,
+     "open": 2,
      "expired": 0,
      "cancelled": 0,
      "win": 0.3333,
@@ -187,10 +201,10 @@
      "maxDD": 2.0253
     },
     "reversal": {
-     "armed": 4,
-     "filled": 4,
+     "armed": 6,
+     "filled": 6,
      "closed": 3,
-     "open": 1,
+     "open": 3,
      "expired": 0,
      "cancelled": 0,
      "win": 0.6667,
@@ -203,10 +217,10 @@
    },
    "krillin": {
     "no opposite Krillin signal (M3)": {
-     "armed": 1,
-     "filled": 1,
+     "armed": 3,
+     "filled": 3,
      "closed": 1,
-     "open": 0,
+     "open": 2,
      "expired": 0,
      "cancelled": 0,
      "win": 0,
@@ -233,10 +247,10 @@
    },
    "tracked": {
     "B1": {
-     "armed": 6,
-     "filled": 6,
+     "armed": 8,
+     "filled": 8,
      "closed": 5,
-     "open": 1,
+     "open": 3,
      "expired": 0,
      "cancelled": 0,
      "win": 0.4,
@@ -249,32 +263,32 @@
     "F_P1": {
      "armed": 4,
      "filled": 4,
-     "closed": 3,
-     "open": 1,
+     "closed": 4,
+     "open": 0,
      "expired": 0,
      "cancelled": 0,
      "win": 0,
-     "avgR": -1.032,
-     "sumR": -3.0959,
+     "avgR": -1.0373,
+     "sumR": -4.1493,
      "avgRgross": -1,
      "pf": 0,
-     "maxDD": 3.0959
+     "maxDD": 4.1493
     }
    }
   },
   "P2": {
    "all": {
-    "armed": 74,
-    "filled": 59,
-    "closed": 58,
-    "open": 1,
+    "armed": 80,
+    "filled": 65,
+    "closed": 63,
+    "open": 2,
     "expired": 14,
     "cancelled": 0,
-    "win": 0.2241,
-    "avgR": -0.3784,
-    "sumR": -21.9482,
-    "avgRgross": -0.2898,
-    "pf": 0.5562,
+    "win": 0.2381,
+    "avgR": -0.3207,
+    "sumR": -20.2012,
+    "avgRgross": -0.2255,
+    "pf": 0.6186,
     "maxDD": 29.3145
    },
    "regime": {
@@ -293,17 +307,17 @@
      "maxDD": 10.659
     },
     "chop": {
-     "armed": 46,
-     "filled": 37,
-     "closed": 36,
-     "open": 1,
+     "armed": 52,
+     "filled": 43,
+     "closed": 41,
+     "open": 2,
      "expired": 8,
      "cancelled": 0,
-     "win": 0.1389,
-     "avgR": -0.7564,
-     "sumR": -27.2296,
-     "avgRgross": -0.6511,
-     "pf": 0.2119,
+     "win": 0.1707,
+     "avgR": -0.6215,
+     "sumR": -25.4826,
+     "avgRgross": -0.5083,
+     "pf": 0.3305,
      "maxDD": 30.3359
     }
    },
@@ -323,33 +337,33 @@
      "maxDD": 23.7261
     },
     "2026-11": {
-     "armed": 8,
-     "filled": 7,
-     "closed": 6,
-     "open": 1,
+     "armed": 14,
+     "filled": 13,
+     "closed": 11,
+     "open": 2,
      "expired": 0,
      "cancelled": 0,
-     "win": 0.1667,
-     "avgR": -0.6802,
-     "sumR": -4.081,
-     "avgRgross": -0.5676,
-     "pf": 0.2697,
+     "win": 0.2727,
+     "avgR": -0.2122,
+     "sumR": -2.334,
+     "avgRgross": -0.0732,
+     "pf": 0.7435,
      "maxDD": 5.5884
     }
    },
    "grade": {
     "A+": {
-     "armed": 47,
-     "filled": 37,
-     "closed": 36,
-     "open": 1,
+     "armed": 52,
+     "filled": 42,
+     "closed": 40,
+     "open": 2,
      "expired": 9,
      "cancelled": 0,
-     "win": 0.3611,
-     "avgR": 0.0702,
-     "sumR": 2.5282,
-     "avgRgross": 0.1443,
-     "pf": 1.1012,
+     "win": 0.375,
+     "avgR": 0.1443,
+     "sumR": 5.7739,
+     "avgRgross": 0.2199,
+     "pf": 1.2139,
      "maxDD": 11.2237
     },
     "A": {
@@ -367,34 +381,34 @@
      "maxDD": 20.953
     },
     "B": {
-     "armed": 3,
-     "filled": 3,
-     "closed": 3,
+     "armed": 4,
+     "filled": 4,
+     "closed": 4,
      "open": 0,
      "expired": 0,
      "cancelled": 0,
      "win": 0,
-     "avgR": -1.1745,
-     "sumR": -3.5234,
+     "avgR": -1.2555,
+     "sumR": -5.0221,
      "avgRgross": -1,
      "pf": 0,
-     "maxDD": 3.5234
+     "maxDD": 5.0221
     }
    },
    "dir": {
     "long": {
-     "armed": 56,
-     "filled": 45,
-     "closed": 44,
-     "open": 1,
+     "armed": 62,
+     "filled": 51,
+     "closed": 49,
+     "open": 2,
      "expired": 10,
      "cancelled": 0,
-     "win": 0.25,
-     "avgR": -0.2796,
-     "sumR": -12.3033,
-     "avgRgross": -0.1931,
-     "pf": 0.6603,
-     "maxDD": 19.3493
+     "win": 0.2653,
+     "avgR": -0.2154,
+     "sumR": -10.5563,
+     "avgRgross": -0.1203,
+     "pf": 0.7343,
+     "maxDD": 20.3573
     },
     "short": {
      "armed": 18,
@@ -413,10 +427,10 @@
    },
    "path": {
     "continuation": {
-     "armed": 14,
-     "filled": 12,
+     "armed": 15,
+     "filled": 13,
      "closed": 12,
-     "open": 0,
+     "open": 1,
      "expired": 2,
      "cancelled": 0,
      "win": 0.1667,
@@ -427,34 +441,34 @@
      "maxDD": 9.8868
     },
     "reversal": {
-     "armed": 60,
-     "filled": 47,
-     "closed": 46,
+     "armed": 65,
+     "filled": 52,
+     "closed": 51,
      "open": 1,
      "expired": 12,
      "cancelled": 0,
-     "win": 0.2391,
-     "avgR": -0.295,
-     "sumR": -13.5688,
-     "avgRgross": -0.2082,
-     "pf": 0.6468,
-     "maxDD": 20.3984
+     "win": 0.2549,
+     "avgR": -0.2318,
+     "sumR": -11.8218,
+     "avgRgross": -0.1368,
+     "pf": 0.718,
+     "maxDD": 21.4064
     }
    },
    "krillin": {
     "no opposite Krillin signal (M3)": {
-     "armed": 58,
-     "filled": 47,
-     "closed": 46,
-     "open": 1,
+     "armed": 64,
+     "filled": 53,
+     "closed": 51,
+     "open": 2,
      "expired": 10,
      "cancelled": 0,
-     "win": 0.1957,
-     "avgR": -0.4887,
-     "sumR": -22.48,
-     "avgRgross": -0.3963,
-     "pf": 0.4506,
-     "maxDD": 25.0386
+     "win": 0.2157,
+     "avgR": -0.4065,
+     "sumR": -20.733,
+     "avgRgross": -0.3064,
+     "pf": 0.5333,
+     "maxDD": 26.0466
     },
     "opposite Krillin signal": {
      "armed": 16,
@@ -473,18 +487,18 @@
    },
    "tracked": {
     "B1": {
-     "armed": 67,
-     "filled": 55,
-     "closed": 51,
+     "armed": 71,
+     "filled": 59,
+     "closed": 55,
      "open": 4,
      "expired": 12,
      "cancelled": 0,
-     "win": 0.0196,
-     "avgR": -1.0681,
-     "sumR": -54.4733,
-     "avgRgross": -0.9596,
-     "pf": 0.0175,
-     "maxDD": 55.4461
+     "win": 0.0182,
+     "avgR": -1.0732,
+     "sumR": -59.0277,
+     "avgRgross": -0.9625,
+     "pf": 0.0162,
+     "maxDD": 59.0277
     },
     "F_P2": {
      "armed": 10,
@@ -504,7 +518,7 @@
   },
   "P1D": {
    "all": {
-    "armed": 1,
+    "armed": 2,
     "filled": 1,
     "closed": 1,
     "open": 0,
@@ -519,7 +533,7 @@
    },
    "regime": {
     "chop": {
-     "armed": 1,
+     "armed": 2,
      "filled": 1,
      "closed": 1,
      "open": 0,
@@ -547,6 +561,20 @@
      "avgRgross": -1,
      "pf": 0,
      "maxDD": 1.0088
+    },
+    "2026-11": {
+     "armed": 1,
+     "filled": 0,
+     "closed": 0,
+     "open": 0,
+     "expired": 0,
+     "cancelled": 0,
+     "win": null,
+     "avgR": null,
+     "sumR": 0,
+     "avgRgross": null,
+     "pf": null,
+     "maxDD": 0
     }
    },
    "grade": {
@@ -563,11 +591,25 @@
      "avgRgross": -1,
      "pf": 0,
      "maxDD": 1.0088
+    },
+    "A": {
+     "armed": 1,
+     "filled": 0,
+     "closed": 0,
+     "open": 0,
+     "expired": 0,
+     "cancelled": 0,
+     "win": null,
+     "avgR": null,
+     "sumR": 0,
+     "avgRgross": null,
+     "pf": null,
+     "maxDD": 0
     }
    },
    "dir": {
     "long": {
-     "armed": 1,
+     "armed": 2,
      "filled": 1,
      "closed": 1,
      "open": 0,
@@ -583,7 +625,7 @@
    },
    "path": {
     "reversal": {
-     "armed": 1,
+     "armed": 2,
      "filled": 1,
      "closed": 1,
      "open": 0,
@@ -598,6 +640,20 @@
     }
    },
    "krillin": {
+    "no opposite Krillin signal (M3)": {
+     "armed": 1,
+     "filled": 0,
+     "closed": 0,
+     "open": 0,
+     "expired": 0,
+     "cancelled": 0,
+     "win": null,
+     "avgR": null,
+     "sumR": 0,
+     "avgRgross": null,
+     "pf": null,
+     "maxDD": 0
+    },
     "opposite Krillin signal": {
      "armed": 1,
      "filled": 1,
@@ -615,7 +671,7 @@
    },
    "tracked": {
     "B1": {
-     "armed": 1,
+     "armed": 2,
      "filled": 1,
      "closed": 1,
      "open": 0,
@@ -632,18 +688,18 @@
   },
   "P2D": {
    "all": {
-    "armed": 8,
-    "filled": 7,
-    "closed": 6,
+    "armed": 9,
+    "filled": 8,
+    "closed": 7,
     "open": 1,
     "expired": 1,
     "cancelled": 0,
-    "win": 0.3333,
-    "avgR": 0.0195,
-    "sumR": 0.1168,
-    "avgRgross": 0.1413,
-    "pf": 1.0246,
-    "maxDD": 2.8516
+    "win": 0.2857,
+    "avgR": -0.1303,
+    "sumR": -0.9119,
+    "avgRgross": -0.0217,
+    "pf": 0.842,
+    "maxDD": 3.8803
    },
    "regime": {
     "bull": {
@@ -661,18 +717,18 @@
      "maxDD": 1.0269
     },
     "chop": {
-     "armed": 5,
-     "filled": 5,
-     "closed": 4,
+     "armed": 6,
+     "filled": 6,
+     "closed": 5,
      "open": 1,
      "expired": 0,
      "cancelled": 0,
-     "win": 0.25,
-     "avgR": -0.4562,
-     "sumR": -1.8247,
-     "avgRgross": -0.2775,
-     "pf": 0.5091,
-     "maxDD": 2.6704
+     "win": 0.2,
+     "avgR": -0.5707,
+     "sumR": -2.8534,
+     "avgRgross": -0.422,
+     "pf": 0.3987,
+     "maxDD": 3.6991
     }
    },
    "year": {
@@ -689,22 +745,36 @@
      "avgRgross": 0.1413,
      "pf": 1.0246,
      "maxDD": 2.8516
+    },
+    "2026-11": {
+     "armed": 1,
+     "filled": 1,
+     "closed": 1,
+     "open": 0,
+     "expired": 0,
+     "cancelled": 0,
+     "win": 0,
+     "avgR": -1.0287,
+     "sumR": -1.0287,
+     "avgRgross": -1,
+     "pf": 0,
+     "maxDD": 1.0287
     }
    },
    "grade": {
     "A+": {
-     "armed": 6,
-     "filled": 5,
-     "closed": 5,
+     "armed": 7,
+     "filled": 6,
+     "closed": 6,
      "open": 0,
      "expired": 1,
      "cancelled": 0,
-     "win": 0.4,
-     "avgR": 0.3499,
-     "sumR": 1.7497,
-     "avgRgross": 0.3696,
-     "pf": 1.5625,
-     "maxDD": 2.0732
+     "win": 0.3333,
+     "avgR": 0.1202,
+     "sumR": 0.721,
+     "avgRgross": 0.1413,
+     "pf": 1.1742,
+     "maxDD": 2.2474
     },
     "A": {
      "armed": 2,
@@ -723,18 +793,18 @@
    },
    "dir": {
     "long": {
-     "armed": 5,
-     "filled": 4,
-     "closed": 4,
+     "armed": 6,
+     "filled": 5,
+     "closed": 5,
      "open": 0,
      "expired": 1,
      "cancelled": 0,
-     "win": 0.25,
-     "avgR": -0.1822,
-     "sumR": -0.7289,
-     "avgRgross": -0.0105,
-     "pf": 0.8029,
-     "maxDD": 3.6973
+     "win": 0.2,
+     "avgR": -0.3515,
+     "sumR": -1.7576,
+     "avgRgross": -0.2084,
+     "pf": 0.6281,
+     "maxDD": 4.726
     },
     "short": {
      "armed": 3,
@@ -753,18 +823,18 @@
    },
    "path": {
     "reversal": {
-     "armed": 8,
-     "filled": 7,
-     "closed": 6,
+     "armed": 9,
+     "filled": 8,
+     "closed": 7,
      "open": 1,
      "expired": 1,
      "cancelled": 0,
-     "win": 0.3333,
-     "avgR": 0.0195,
-     "sumR": 0.1168,
-     "avgRgross": 0.1413,
-     "pf": 1.0246,
-     "maxDD": 2.8516
+     "win": 0.2857,
+     "avgR": -0.1303,
+     "sumR": -0.9119,
+     "avgRgross": -0.0217,
+     "pf": 0.842,
+     "maxDD": 3.8803
     }
    },
    "krillin": {
@@ -783,17 +853,17 @@
      "maxDD": 3.6973
     },
     "opposite Krillin signal": {
-     "armed": 4,
-     "filled": 4,
-     "closed": 3,
+     "armed": 5,
+     "filled": 5,
+     "closed": 4,
      "open": 1,
      "expired": 0,
      "cancelled": 0,
-     "win": 0.6667,
-     "avgR": 1.2714,
-     "sumR": 3.8141,
-     "avgRgross": 1.2826,
-     "pf": 4.6453,
+     "win": 0.5,
+     "avgR": 0.6964,
+     "sumR": 2.7854,
+     "avgRgross": 0.712,
+     "pf": 2.3424,
      "maxDD": 1.0463
     }
    },
