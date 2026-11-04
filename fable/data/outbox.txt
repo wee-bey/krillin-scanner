@@ -283,3 +283,21 @@ Rejected: 26 coin daily bias against · 25 2+ warnings · 8 against the BTC regi
 
 Gated subset so far: 2538 closed, -0.007R avg, PF 0.98 (first half 0.011R / second half -0.034R). Everything: -0.076R, PF 0.84.
 Planning aid only, not financial advice. https://wee-bey.github.io/krillin-scanner/fable/
+--- 2026-11-04T16:25:51.170Z
+Fable · BTC 77,442 vs daily MA100 76,513 (+1.214%) → RISK-ON (76 d since the flip; daily EMA200/SMMA99 above)
+Book A target +0.905x BTC (9,050 on 10,000) · Book C 0.905x
+Context 2026-11-03: BTC daily bearish / 4h bearish / weekly bullish · daily regime trend_down · 30-day -9.1% · BTC at HTF resistance: yes
+
+Watch list 2026-11-03 (4h/1d, gated): 4 of 54 signals passed
+• BZ · C6 4h long · grade A · bids 106.700000–106.210000 · stop 105.141000 (1.2%) · TP1 109.218000 (2.31R, 4h MA100) · TP2 110.809000 (3.6R) · TP3 112.439000 (4.92R) · ⚠ stop 1.16% is under 2%: costs weigh more; BTC at HTF resistance (the engine flags this on 95% of days)
+  4h EMA200 sweep and reclaim: 4h candle wicked below EMA200 and closed back above
+• BZ · B4 4h long · grade B · bids 106.484000–105.813000 · stop 104.605000 (1.4%) · TP1 108.055000 (1.41R, HTF S/R flip) · TP2 109.179000 (2.2R) · TP3 109.891000 (2.69R) · ⚠ stop 1.35% is under 2%: costs weigh more; BTC at HTF resistance (the engine flags this on 95% of days)
+  Early 4h EMA200 bid (MA100 lost): 4h MA100 lost for the first time after an expansion ("wait for EMA200")
+• BZ · B4 4h long · grade B · bids 106.507000–105.643000 · stop 104.088000 (1.7%) · TP1 109.152000 (1.75R, 4h MA100 (partial: EMA200 bounce → sell MA100)) · TP2 110.738000 (2.61R) · TP3 112.368000 (3.49R) · ⚠ stop 1.74% is under 2%: costs weigh more; BTC at HTF resistance (the engine flags this on 95% of days)
+  Early 4h EMA200 bid (MA100 lost): 4h MA100 lost for the first time after an expansion ("wait for EMA200")
+• BZ · C3 4h long · grade B · bids 106.631000–105.780000 · stop 103.886000 (2.1%) · TP1 108.035000 (0.906R, HTF S/R flip) · TP2 108.755000 (1.24R) · TP3 109.551000 (1.6R) · ⚠ BTC at HTF resistance (the engine flags this on 95% of days)
+  4h EMA200 retest: 4h EMA200 flat; price 0.3 ATR above it
+Rejected: 36 coin daily bias against · 21 against the BTC regime (risk-on) · 18 2+ warnings · 4 pre-pump: daily MA100 descending above price · 3 stop under 1%
+
+Gated subset so far: 2543 closed, -0.009R avg, PF 0.98 (first half 0.011R / second half -0.037R). Everything: -0.076R, PF 0.84.
+Planning aid only, not financial advice. https://wee-bey.github.io/krillin-scanner/fable/
