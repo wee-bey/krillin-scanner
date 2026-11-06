@@ -313,3 +313,8 @@ Rejected: 51 coin daily bias against · 33 against the BTC regime (risk-on) · 3
 
 Gated subset so far: 2545 closed, -0.009R avg, PF 0.98 (first half 0.011R / second half -0.037R). Everything: -0.076R, PF 0.84.
 Planning aid only, not financial advice. https://wee-bey.github.io/krillin-scanner/fable/
+--- 2026-11-06T16:00:57.610Z
+🔔 REGIME FLIP at the 2026-11-05 daily close → RISK-OFF
+Fable · BTC 76,050 vs daily MA100 76,787 (-0.96%) → RISK-OFF (0 d since the flip; daily EMA200/SMMA99 below)
+Book A target -0.813x BTC (-8,130 on 10,000) · Book C 0x
+Execute the same morning (a 24 h delay removed the replay-year gain).
