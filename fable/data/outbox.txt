@@ -318,3 +318,27 @@ Planning aid only, not financial advice. https://wee-bey.github.io/krillin-scann
 Fable · BTC 76,050 vs daily MA100 76,787 (-0.96%) → RISK-OFF (0 d since the flip; daily EMA200/SMMA99 below)
 Book A target -0.813x BTC (-8,130 on 10,000) · Book C 0x
 Execute the same morning (a 24 h delay removed the replay-year gain).
+--- 2026-11-07T00:09:35.198Z
+Fable · BTC 76,050 vs daily MA100 76,787 (-0.96%) → RISK-OFF (0 d since the flip; daily EMA200/SMMA99 below)
+Book A target -0.813x BTC (-8,130 on 10,000) · Book C 0x
+Context 2026-11-05: BTC daily bearish / 4h range / weekly bullish · daily regime trend_down · 30-day -7.0% · BTC at HTF resistance: yes
+
+Watch list 2026-11-05 (4h/1d, gated): 7 of 70 signals passed
+• TSLA · D1 4h long · grade B · bids 344.875000–330.176000 · stop 324.760000 (3.1%) · TP1 349.140000 (1.36R, HTF swing low) · TP2 357.400000 (2.16R) · TP3 363.802000 (2.78R) · ⚠ BTC at HTF resistance (the engine flags this on 95% of days)
+  4h range low: 4h range 22% wide; price in the bottom 5%
+• MSFT · C3 4h long · grade B · bids 528.554000–523.298000 · stop 513.798000 (2.1%) · TP1 539.890000 (1.32R, HTF swing high) · TP2 556.635000 (2.81R) · ⚠ BTC at HTF resistance (the engine flags this on 95% of days); dead hour (after the US close, before Asia)
+  4h EMA200 retest: 4h EMA200 up; price 1.6 ATR above it
+• AAPL · B2 4h long · grade B · bids 345.756000–340.170000 · stop 338.113000 (1.1%) · TP1 347.455000 (1.38R, HTF swing high) · TP2 351.395000 (2.39R) · TP3 362.007000 (5.1R) · ⚠ stop 1.15% is under 2%: costs weigh more; BTC at HTF resistance (the engine flags this on 95% of days)
+  4h compression breakout-retest: 4h compression broke up 6 bar(s) ago (weak break, 1.4× the average candle)
+• ZEC · C3 4h long · grade B · bids 1,252.970000–1,225.040000 · stop 1,142.810000 (7.4%) · TP1 1,334.080000 (1.09R, 4h descending trend line (3 touches) (moves each candle)) · TP2 1,383.450000 (1.63R) · TP3 1,505.110000 (2.96R) · ⚠ BTC at HTF resistance (the engine flags this on 95% of days)
+  4h EMA200 retest: 4h EMA200 flat; price 1.7 ATR above it
+• ZEC · C6 4h long · grade C · bids 1,248.590000–1,239.090000 · stop 1,209.450000 (2.6%) · TP1 1,274.910000 (0.995R, Last support before breakdown (4h)) · TP2 1,331.220000 (2.71R) · TP3 1,414.630000 (5.25R) · ⚠ BTC at HTF resistance (the engine flags this on 95% of days)
+  4h EMA200 sweep and reclaim: 4h candle wicked below EMA200 and closed back above
+• PEPE · B2 4h long · grade C · bids 0.004710–0.004431 · stop 0.004264 (5.7%) · TP1 0.004901 (1.45R, HTF S/R flip) · TP2 0.005209 (2.64R) · TP3 0.005436 (3.52R) · ⚠ BTC at HTF resistance (the engine flags this on 95% of days)
+  4h compression breakout-retest: 4h compression broke up 23 bar(s) ago (weak break, 0.5× the average candle)
+• MSFT · B2 4h long · grade C · bids 531.270000–524.174000 · stop 518.706000 (1.5%) · TP1 539.890000 (1.7R, HTF swing high) · TP2 556.635000 (3.84R) · ⚠ stop 1.49% is under 2%: costs weigh more; BTC at HTF resistance (the engine flags this on 95% of days); dead hour (after the US close, before Asia)
+  4h compression breakout-retest: 4h compression broke up 8 bar(s) ago (weak break, 1.0× the average candle)
+Rejected: 48 coin daily bias against · 31 2+ warnings · 19 against the BTC regime (risk-on) · 5 stop under 1% · 3 pre-pump: daily MA100 descending above price
+
+Gated subset so far: 2545 closed, -0.009R avg, PF 0.98 (first half 0.011R / second half -0.037R). Everything: -0.075R, PF 0.84.
+Planning aid only, not financial advice. https://wee-bey.github.io/krillin-scanner/fable/
