@@ -1,7 +1,7 @@
 {
  "version": 1,
  "engine": "mayne.fable-js.1",
- "updated": "2026-11-07T15:08:37.360Z",
+ "updated": "2026-11-08T15:38:06.528Z",
  "shipped": {
   "P1": "B0",
   "P2": "B0",
@@ -24,7 +24,7 @@
  },
  "coverage": {
   "from": "2026-10-17",
-  "through": "2026-11-06",
+  "through": "2026-11-07",
   "coins": 41
  },
  "rules": {
@@ -278,17 +278,17 @@
   },
   "P2": {
    "all": {
-    "armed": 104,
-    "filled": 85,
-    "closed": 81,
-    "open": 4,
-    "expired": 19,
+    "armed": 108,
+    "filled": 88,
+    "closed": 82,
+    "open": 6,
+    "expired": 20,
     "cancelled": 0,
-    "win": 0.2346,
-    "avgR": -0.2444,
-    "sumR": -19.7973,
-    "avgRgross": -0.1499,
-    "pf": 0.71,
+    "win": 0.2317,
+    "avgR": -0.2625,
+    "sumR": -21.5229,
+    "avgRgross": -0.1603,
+    "pf": 0.6925,
     "maxDD": 31.4378
    },
    "regime": {
@@ -307,17 +307,17 @@
      "maxDD": 10.659
     },
     "chop": {
-     "armed": 76,
-     "filled": 63,
-     "closed": 59,
-     "open": 4,
-     "expired": 13,
+     "armed": 80,
+     "filled": 66,
+     "closed": 60,
+     "open": 6,
+     "expired": 14,
      "cancelled": 0,
-     "win": 0.1864,
-     "avgR": -0.4251,
-     "sumR": -25.0787,
-     "avgRgross": -0.3183,
-     "pf": 0.5301,
+     "win": 0.1833,
+     "avgR": -0.4467,
+     "sumR": -26.8043,
+     "avgRgross": -0.3297,
+     "pf": 0.5135,
      "maxDD": 32.4592
     }
    },
@@ -337,33 +337,33 @@
      "maxDD": 23.7261
     },
     "2026-11": {
-     "armed": 38,
-     "filled": 33,
-     "closed": 29,
-     "open": 4,
-     "expired": 5,
+     "armed": 42,
+     "filled": 36,
+     "closed": 30,
+     "open": 6,
+     "expired": 6,
      "cancelled": 0,
-     "win": 0.2414,
-     "avgR": -0.0666,
-     "sumR": -1.9301,
-     "avgRgross": 0.0433,
-     "pf": 0.9209,
+     "win": 0.2333,
+     "avgR": -0.1219,
+     "sumR": -3.6557,
+     "avgRgross": 0.0085,
+     "pf": 0.8601,
      "maxDD": 8.9329
     }
    },
    "grade": {
     "A+": {
-     "armed": 65,
-     "filled": 52,
-     "closed": 51,
-     "open": 1,
-     "expired": 13,
+     "armed": 69,
+     "filled": 55,
+     "closed": 52,
+     "open": 3,
+     "expired": 14,
      "cancelled": 0,
-     "win": 0.3333,
-     "avgR": 0.0562,
-     "sumR": 2.8663,
-     "avgRgross": 0.1316,
-     "pf": 1.0783,
+     "win": 0.3269,
+     "avgR": 0.0219,
+     "sumR": 1.1407,
+     "avgRgross": 0.1099,
+     "pf": 1.0298,
      "maxDD": 11.2237
     },
     "A": {
@@ -397,25 +397,25 @@
    },
    "dir": {
     "long": {
-     "armed": 72,
-     "filled": 59,
-     "closed": 57,
-     "open": 2,
+     "armed": 74,
+     "filled": 61,
+     "closed": 58,
+     "open": 3,
      "expired": 13,
      "cancelled": 0,
-     "win": 0.2456,
-     "avgR": -0.2485,
-     "sumR": -14.1657,
-     "avgRgross": -0.1547,
-     "pf": 0.7001,
-     "maxDD": 21.2117
+     "win": 0.2414,
+     "avgR": -0.274,
+     "sumR": -15.8913,
+     "avgRgross": -0.1692,
+     "pf": 0.6754,
+     "maxDD": 22.9373
     },
     "short": {
-     "armed": 32,
-     "filled": 26,
+     "armed": 34,
+     "filled": 27,
      "closed": 24,
-     "open": 2,
-     "expired": 6,
+     "open": 3,
+     "expired": 7,
      "cancelled": 0,
      "win": 0.2083,
      "avgR": -0.2346,
@@ -427,25 +427,25 @@
    },
    "path": {
     "continuation": {
-     "armed": 25,
-     "filled": 20,
-     "closed": 20,
+     "armed": 26,
+     "filled": 21,
+     "closed": 21,
      "open": 0,
      "expired": 5,
      "cancelled": 0,
-     "win": 0.15,
-     "avgR": -0.6565,
-     "sumR": -13.13,
-     "avgRgross": -0.5696,
-     "pf": 0.2947,
-     "maxDD": 13.13
+     "win": 0.1429,
+     "avgR": -0.7074,
+     "sumR": -14.8556,
+     "avgRgross": -0.5901,
+     "pf": 0.2697,
+     "maxDD": 14.8556
     },
     "reversal": {
-     "armed": 79,
-     "filled": 65,
+     "armed": 82,
+     "filled": 67,
      "closed": 61,
-     "open": 4,
-     "expired": 14,
+     "open": 6,
+     "expired": 15,
      "cancelled": 0,
      "win": 0.2623,
      "avgR": -0.1093,
@@ -457,17 +457,17 @@
    },
    "krillin": {
     "no opposite Krillin signal (M3)": {
-     "armed": 85,
-     "filled": 70,
-     "closed": 66,
-     "open": 4,
-     "expired": 15,
+     "armed": 89,
+     "filled": 73,
+     "closed": 67,
+     "open": 6,
+     "expired": 16,
      "cancelled": 0,
-     "win": 0.2273,
-     "avgR": -0.2595,
-     "sumR": -17.1268,
-     "avgRgross": -0.1601,
-     "pf": 0.697,
+     "win": 0.2239,
+     "avgR": -0.2814,
+     "sumR": -18.8524,
+     "avgRgross": -0.1726,
+     "pf": 0.6764,
      "maxDD": 26.449
     },
     "opposite Krillin signal": {
@@ -487,17 +487,17 @@
    },
    "tracked": {
     "B1": {
-     "armed": 94,
-     "filled": 78,
-     "closed": 71,
-     "open": 7,
-     "expired": 16,
+     "armed": 97,
+     "filled": 80,
+     "closed": 72,
+     "open": 8,
+     "expired": 17,
      "cancelled": 0,
-     "win": 0.0423,
-     "avgR": -0.9195,
-     "sumR": -65.2826,
-     "avgRgross": -0.8147,
-     "pf": 0.1331,
+     "win": 0.0417,
+     "avgR": -0.9307,
+     "sumR": -67.0082,
+     "avgRgross": -0.8173,
+     "pf": 0.1301,
      "maxDD": 68.2974
     },
     "F_P2": {
@@ -688,10 +688,10 @@
   },
   "P2D": {
    "all": {
-    "armed": 16,
-    "filled": 14,
+    "armed": 19,
+    "filled": 16,
     "closed": 10,
-    "open": 4,
+    "open": 6,
     "expired": 2,
     "cancelled": 0,
     "win": 0.3,
@@ -717,10 +717,10 @@
      "maxDD": 1.0269
     },
     "chop": {
-     "armed": 13,
-     "filled": 12,
+     "armed": 16,
+     "filled": 14,
      "closed": 8,
-     "open": 4,
+     "open": 6,
      "expired": 1,
      "cancelled": 0,
      "win": 0.25,
@@ -747,10 +747,10 @@
      "maxDD": 2.8516
     },
     "2026-11": {
-     "armed": 8,
-     "filled": 7,
+     "armed": 11,
+     "filled": 9,
      "closed": 4,
-     "open": 3,
+     "open": 5,
      "expired": 1,
      "cancelled": 0,
      "win": 0.25,
@@ -763,7 +763,7 @@
    },
    "grade": {
     "A+": {
-     "armed": 11,
+     "armed": 12,
      "filled": 9,
      "closed": 8,
      "open": 1,
@@ -777,10 +777,10 @@
      "maxDD": 2.2474
     },
     "A": {
-     "armed": 4,
-     "filled": 4,
+     "armed": 5,
+     "filled": 5,
      "closed": 2,
-     "open": 2,
+     "open": 3,
      "expired": 0,
      "cancelled": 0,
      "win": 0,
@@ -791,10 +791,10 @@
      "maxDD": 2.6958
     },
     "B": {
-     "armed": 1,
-     "filled": 1,
+     "armed": 2,
+     "filled": 2,
      "closed": 0,
-     "open": 1,
+     "open": 2,
      "expired": 0,
      "cancelled": 0,
      "win": null,
@@ -807,7 +807,7 @@
    },
    "dir": {
     "long": {
-     "armed": 9,
+     "armed": 10,
      "filled": 8,
      "closed": 6,
      "open": 2,
@@ -821,10 +821,10 @@
      "maxDD": 4.726
     },
     "short": {
-     "armed": 7,
-     "filled": 6,
+     "armed": 9,
+     "filled": 8,
      "closed": 4,
-     "open": 2,
+     "open": 4,
      "expired": 1,
      "cancelled": 0,
      "win": 0.25,
@@ -837,10 +837,10 @@
    },
    "path": {
     "continuation": {
-     "armed": 3,
-     "filled": 2,
+     "armed": 4,
+     "filled": 3,
      "closed": 2,
-     "open": 0,
+     "open": 1,
      "expired": 1,
      "cancelled": 0,
      "win": 0.5,
@@ -851,10 +851,10 @@
      "maxDD": 1.0629
     },
     "reversal": {
-     "armed": 13,
-     "filled": 12,
+     "armed": 15,
+     "filled": 13,
      "closed": 8,
-     "open": 4,
+     "open": 5,
      "expired": 1,
      "cancelled": 0,
      "win": 0.25,
@@ -867,10 +867,10 @@
    },
    "krillin": {
     "no opposite Krillin signal (M3)": {
-     "armed": 9,
-     "filled": 7,
+     "armed": 12,
+     "filled": 9,
      "closed": 5,
-     "open": 2,
+     "open": 4,
      "expired": 2,
      "cancelled": 0,
      "win": 0.2,
