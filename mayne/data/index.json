@@ -1,12 +1,12 @@
 {
  "version": 1,
  "engine": "mayne.v1.1-js.1",
- "updated": "2026-11-08T14:35:55.695Z",
+ "updated": "2026-11-09T17:52:28.415Z",
  "coverage": {
   "from": "2021-01-01",
-  "through": "2026-11-07",
+  "through": "2026-11-08",
   "coins": 756,
-  "candles15m": 63633931
+  "candles15m": 63703819
  },
  "rules": {
   "universe": "top 100 Binance USDT-M perpetuals by the previous day's quote volume, each day (stablecoins, wrapped tokens, index and metal contracts excluded; delisted coins included)",
@@ -41,10 +41,10 @@
  "summary": {
   "P1": {
    "all": {
-    "armed": 2847,
-    "filled": 2456,
+    "armed": 2848,
+    "filled": 2457,
     "closed": 2452,
-    "open": 4,
+    "open": 5,
     "expired": 385,
     "cancelled": 6,
     "win": 0.2847,
@@ -84,10 +84,10 @@
      "maxDD": 176.4029
     },
     "chop": {
-     "armed": 801,
-     "filled": 683,
+     "armed": 802,
+     "filled": 684,
      "closed": 680,
-     "open": 3,
+     "open": 4,
      "expired": 116,
      "cancelled": 2,
      "win": 0.2897,
@@ -170,10 +170,10 @@
      "maxDD": 40.2987
     },
     "2026": {
-     "armed": 330,
-     "filled": 284,
+     "armed": 331,
+     "filled": 285,
      "closed": 280,
-     "open": 4,
+     "open": 5,
      "expired": 46,
      "cancelled": 0,
      "win": 0.325,
@@ -186,10 +186,10 @@
    },
    "grade": {
     "A+": {
-     "armed": 1544,
-     "filled": 1324,
+     "armed": 1545,
+     "filled": 1325,
      "closed": 1323,
-     "open": 1,
+     "open": 2,
      "expired": 217,
      "cancelled": 3,
      "win": 0.2774,
@@ -244,10 +244,10 @@
      "maxDD": 251.0013
     },
     "short": {
-     "armed": 1100,
-     "filled": 959,
+     "armed": 1101,
+     "filled": 960,
      "closed": 956,
-     "open": 3,
+     "open": 4,
      "expired": 138,
      "cancelled": 3,
      "win": 0.2992,
@@ -260,10 +260,10 @@
    },
    "path": {
     "continuation": {
-     "armed": 947,
-     "filled": 823,
+     "armed": 948,
+     "filled": 824,
      "closed": 822,
-     "open": 1,
+     "open": 2,
      "expired": 124,
      "cancelled": 0,
      "win": 0.3151,
@@ -346,10 +346,10 @@
      "maxDD": 97.6865
     },
     "H12 OB+FVG": {
-     "armed": 669,
-     "filled": 569,
+     "armed": 670,
+     "filled": 570,
      "closed": 567,
-     "open": 2,
+     "open": 3,
      "expired": 97,
      "cancelled": 3,
      "win": 0.2593,
@@ -474,10 +474,10 @@
      "maxDD": 299.0854
     },
     "trigger swing (continuation)": {
-     "armed": 947,
-     "filled": 823,
+     "armed": 948,
+     "filled": 824,
      "closed": 822,
-     "open": 1,
+     "open": 2,
      "expired": 124,
      "cancelled": 0,
      "win": 0.3151,
@@ -532,10 +532,10 @@
      "maxDD": 17.5061
     },
     "other": {
-     "armed": 2773,
-     "filled": 2387,
+     "armed": 2774,
+     "filled": 2388,
      "closed": 2383,
-     "open": 4,
+     "open": 5,
      "expired": 380,
      "cancelled": 6,
      "win": 0.2845,
@@ -549,10 +549,10 @@
   },
   "P2": {
    "all": {
-    "armed": 12357,
-    "filled": 10631,
+    "armed": 12358,
+    "filled": 10632,
     "closed": 10625,
-    "open": 6,
+    "open": 7,
     "expired": 1705,
     "cancelled": 21,
     "win": 0.2858,
@@ -592,10 +592,10 @@
      "maxDD": 563.8758
     },
     "chop": {
-     "armed": 3785,
-     "filled": 3266,
+     "armed": 3786,
+     "filled": 3267,
      "closed": 3260,
-     "open": 6,
+     "open": 7,
      "expired": 513,
      "cancelled": 6,
      "win": 0.2776,
@@ -678,10 +678,10 @@
      "maxDD": 178.0205
     },
     "2026": {
-     "armed": 1362,
-     "filled": 1169,
+     "armed": 1363,
+     "filled": 1170,
      "closed": 1163,
-     "open": 6,
+     "open": 7,
      "expired": 192,
      "cancelled": 1,
      "win": 0.2691,
@@ -722,10 +722,10 @@
      "maxDD": 712.3852
     },
     "B": {
-     "armed": 1331,
-     "filled": 1131,
+     "armed": 1332,
+     "filled": 1132,
      "closed": 1130,
-     "open": 1,
+     "open": 2,
      "expired": 197,
      "cancelled": 3,
      "win": 0.3097,
@@ -738,10 +738,10 @@
    },
    "dir": {
     "long": {
-     "armed": 6876,
-     "filled": 5921,
+     "armed": 6877,
+     "filled": 5922,
      "closed": 5918,
-     "open": 3,
+     "open": 4,
      "expired": 946,
      "cancelled": 9,
      "win": 0.2797,
@@ -768,10 +768,10 @@
    },
    "path": {
     "continuation": {
-     "armed": 3024,
-     "filled": 2602,
+     "armed": 3025,
+     "filled": 2603,
      "closed": 2602,
-     "open": 0,
+     "open": 1,
      "expired": 421,
      "cancelled": 1,
      "win": 0.2702,
@@ -854,10 +854,10 @@
      "maxDD": 44.5426
     },
     "H1 OB+FVG": {
-     "armed": 357,
-     "filled": 307,
+     "armed": 358,
+     "filled": 308,
      "closed": 307,
-     "open": 0,
+     "open": 1,
      "expired": 49,
      "cancelled": 1,
      "win": 0.2541,
@@ -982,10 +982,10 @@
      "maxDD": 1008.7784
     },
     "trigger swing (continuation)": {
-     "armed": 3024,
-     "filled": 2602,
+     "armed": 3025,
+     "filled": 2603,
      "closed": 2602,
-     "open": 0,
+     "open": 1,
      "expired": 421,
      "cancelled": 1,
      "win": 0.2702,
@@ -1040,10 +1040,10 @@
      "maxDD": 21.9072
     },
     "other": {
-     "armed": 12007,
-     "filled": 10337,
+     "armed": 12008,
+     "filled": 10338,
      "closed": 10331,
-     "open": 6,
+     "open": 7,
      "expired": 1650,
      "cancelled": 20,
      "win": 0.2863,
