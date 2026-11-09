@@ -1,10 +1,10 @@
 {
  "version": 1,
  "engine": "mayne.v1.2-js.1",
- "updated": "2026-11-08T15:07:47.751Z",
+ "updated": "2026-11-09T18:44:34.289Z",
  "coverage": {
   "from": "2026-10-12",
-  "through": "2026-11-07",
+  "through": "2026-11-08",
   "coins": 50
  },
  "rules": {
@@ -18,10 +18,10 @@
  "summary": {
   "P1": {
    "all": {
-    "armed": 18,
-    "filled": 17,
+    "armed": 19,
+    "filled": 18,
     "closed": 15,
-    "open": 2,
+    "open": 3,
     "expired": 1,
     "cancelled": 0,
     "win": 0.4,
@@ -47,10 +47,10 @@
      "maxDD": 6.1044
     },
     "chop": {
-     "armed": 10,
-     "filled": 9,
+     "armed": 11,
+     "filled": 10,
      "closed": 7,
-     "open": 2,
+     "open": 3,
      "expired": 1,
      "cancelled": 0,
      "win": 0.5714,
@@ -77,10 +77,10 @@
      "maxDD": 6.1044
     },
     "2026-11": {
-     "armed": 6,
-     "filled": 5,
+     "armed": 7,
+     "filled": 6,
      "closed": 4,
-     "open": 1,
+     "open": 2,
      "expired": 1,
      "cancelled": 0,
      "win": 0.75,
@@ -93,10 +93,10 @@
    },
    "grade": {
     "A+": {
-     "armed": 9,
-     "filled": 9,
+     "armed": 10,
+     "filled": 10,
      "closed": 9,
-     "open": 0,
+     "open": 1,
      "expired": 0,
      "cancelled": 0,
      "win": 0.3333,
@@ -151,10 +151,10 @@
      "maxDD": 6.1044
     },
     "short": {
-     "armed": 5,
-     "filled": 5,
+     "armed": 6,
+     "filled": 6,
      "closed": 3,
-     "open": 2,
+     "open": 3,
      "expired": 0,
      "cancelled": 0,
      "win": 0.6667,
@@ -167,10 +167,10 @@
    },
    "path": {
     "continuation": {
-     "armed": 4,
-     "filled": 4,
+     "armed": 5,
+     "filled": 5,
      "closed": 4,
-     "open": 0,
+     "open": 1,
      "expired": 0,
      "cancelled": 0,
      "win": 0.5,
@@ -211,10 +211,10 @@
      "maxDD": 5.0622
     },
     "opposite Krillin signal": {
-     "armed": 9,
-     "filled": 8,
+     "armed": 10,
+     "filled": 9,
      "closed": 6,
-     "open": 2,
+     "open": 3,
      "expired": 1,
      "cancelled": 0,
      "win": 0.3333,
@@ -228,10 +228,10 @@
   },
   "P2": {
    "all": {
-    "armed": 142,
-    "filled": 110,
+    "armed": 143,
+    "filled": 111,
     "closed": 104,
-    "open": 6,
+    "open": 7,
     "expired": 31,
     "cancelled": 1,
     "win": 0.2212,
@@ -257,10 +257,10 @@
      "maxDD": 24.0353
     },
     "chop": {
-     "armed": 80,
-     "filled": 66,
+     "armed": 81,
+     "filled": 67,
      "closed": 60,
-     "open": 6,
+     "open": 7,
      "expired": 14,
      "cancelled": 0,
      "win": 0.1833,
@@ -287,10 +287,10 @@
      "maxDD": 31.2435
     },
     "2026-11": {
-     "armed": 42,
-     "filled": 36,
+     "armed": 43,
+     "filled": 37,
      "closed": 30,
-     "open": 6,
+     "open": 7,
      "expired": 6,
      "cancelled": 0,
      "win": 0.2333,
@@ -331,10 +331,10 @@
      "maxDD": 33.5724
     },
     "B": {
-     "armed": 5,
-     "filled": 5,
+     "armed": 6,
+     "filled": 6,
      "closed": 4,
-     "open": 1,
+     "open": 2,
      "expired": 0,
      "cancelled": 0,
      "win": 0,
@@ -347,10 +347,10 @@
    },
    "dir": {
     "long": {
-     "armed": 103,
-     "filled": 82,
+     "armed": 104,
+     "filled": 83,
      "closed": 79,
-     "open": 3,
+     "open": 4,
      "expired": 20,
      "cancelled": 1,
      "win": 0.2152,
@@ -377,10 +377,10 @@
    },
    "path": {
     "continuation": {
-     "armed": 37,
-     "filled": 31,
+     "armed": 38,
+     "filled": 32,
      "closed": 31,
-     "open": 0,
+     "open": 1,
      "expired": 6,
      "cancelled": 0,
      "win": 0.0968,
@@ -407,10 +407,10 @@
    },
    "krillin": {
     "no opposite Krillin signal (M3)": {
-     "armed": 118,
-     "filled": 90,
+     "armed": 119,
+     "filled": 91,
      "closed": 84,
-     "open": 6,
+     "open": 7,
      "expired": 27,
      "cancelled": 1,
      "win": 0.2024,
