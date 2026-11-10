@@ -380,3 +380,17 @@ Rejected: 8 against the BTC regime (risk-off) · 7 coin daily bias against · 3 
 
 Gated subset so far: 2549 closed, -0.009R avg, PF 0.98 (first half 0.011R / second half -0.037R). Everything: -0.076R, PF 0.84.
 Planning aid only, not financial advice. https://wee-bey.github.io/krillin-scanner/fable/
+--- 2026-11-10T02:48:12.147Z
+Fable · BTC 74,824 vs daily MA100 77,126 (-2.985%) → RISK-OFF (3 d since the flip; daily EMA200/SMMA99 below)
+Book A target -0.816x BTC (-8,160 on 10,000) · Book C 0x
+Context 2026-11-08: BTC daily bearish / 4h bearish / weekly bullish · daily regime trend_down · 30-day -8.9% · BTC at HTF resistance: yes
+
+Watch list 2026-11-08 (4h/1d, gated): 2 of 24 signals passed
+• ZRO · D5 4h short · grade B · asks 1.608470–1.636340 · stop 1.678150 (3.1%) · TP1 1.545940 (1.59R, HTF S/R flip) · TP2 1.490200 (2.68R) · TP3 1.453100 (3.4R) · ⚠ weekend signal
+  4h trend-line breakdown retest (short): 4h ascending trend line (2 touches over 41 bars) broken 0 bar(s) ago
+• LSK · D5 1d short · grade B · asks 0.170965–0.188932 · stop 0.215882 (18.0%) · TP1 0.147484 (1.08R, HTF S/R flip) · TP2 0.100027 (2.52R) · TP3 -0.000656 (5.57R) · ⚠ dead hour (after the US close, before Asia)
+  Daily trend-line breakdown retest (short): Daily ascending trend line (4 touches over 69 bars) broken 0 bar(s) ago
+Rejected: 21 coin daily bias against · 16 against the BTC regime (risk-off) · 11 2+ warnings · 1 highs shrinking: momentum waning
+
+Gated subset so far: 2554 closed, -0.007R avg, PF 0.98 (first half 0.011R / second half -0.032R). Everything: -0.075R, PF 0.84.
+Planning aid only, not financial advice. https://wee-bey.github.io/krillin-scanner/fable/
