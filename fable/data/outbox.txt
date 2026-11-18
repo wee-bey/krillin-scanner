@@ -552,3 +552,30 @@ Rejected: 8 coin daily bias against · 2 against the BTC regime (risk-off) · 2 
 
 Gated subset so far: 2589 closed, -0.007R avg, PF 0.98 (first half 0.011R / second half -0.031R). Everything: -0.074R, PF 0.84.
 Planning aid only, not financial advice. https://wee-bey.github.io/krillin-scanner/fable/
+--- 2026-11-18T02:28:54.749Z
+Fable · BTC 64,856 vs daily MA100 77,591 (-16.413%) → RISK-OFF (11 d since the flip; daily EMA200/SMMA99 below)
+Book A target -0.728x BTC (-7,280 on 10,000) · Book C 0x
+Context 2026-11-16: BTC daily bearish / 4h bearish / weekly neutral · daily regime trend_down · 30-day -20.5% · BTC at HTF resistance: yes
+
+Watch list 2026-11-16 (4h/1d, gated): 10 of 27 signals passed
+• NVDA · D5 4h short · grade A · asks 159.993000–162.139000 · stop 165.358000 (2.4%) · TP1 146.718000 (3.74R, Daily channel bottom (resistance line cloned) (moves each candle)) · TP2 138.487000 (5.83R)
+  4h trend-line breakdown retest (short): 4h ascending trend line (2 touches over 14 bars) broken 0 bar(s) ago
+• ICP · B7 1d short · grade A · asks 2.552230–2.689700 · stop 2.749640 (4.0%) · TP1 2.388090 (2.42R, HTF S/R flip) · TP2 2.251090 (3.71R) · TP3 2.144090 (4.73R)
+  Bearish Daily compression short: Daily MA300 lost (continuation compression invalidated)
+• ICP · D5 1d short · grade A · asks 2.226220–2.320400 · stop 2.461670 (7.5%) · TP1 2.144090 (0.839R, HTF swing low)
+  Daily trend-line breakdown retest (short): Daily ascending trend line (4 touches over 98 bars) broken 1 bar(s) ago by a strong candle
+• BARD · B7 4h short · grade B · asks 0.108800–0.111951 · stop 0.120449 (8.6%) · TP1 0.102007 (0.932R, Daily bullish inefficiency (unfilled)) · TP2 0.092707 (1.91R) · TP3 0.085107 (2.7R)
+  Bearish 4h compression short: 4h compression resolved down
+• RARE · D5 1d short · grade B · asks 0.013643–0.014334 · stop 0.016056 (13.8%) · TP1 0.012105 (1.02R, HTF swing low) · TP2 0.010753 (1.72R) · TP3 0.009549 (2.33R)
+  Daily trend-line breakdown retest (short): Daily ascending trend line (3 touches over 57 bars) broken 22 bar(s) ago
+• RARE · D5 1d short · grade B · asks 0.013643–0.014334 · stop 0.016056 (13.8%) · TP1 0.012105 (1.02R, HTF swing low) · TP2 0.011197 (1.49R) · TP3 0.009434 (2.39R)
+  Daily trend-line breakdown retest (short): Daily ascending trend line (3 touches over 57 bars) broken 22 bar(s) ago
+• SKHY · D5 4h short · grade B · asks 126.786000–128.340000 · stop 130.672000 (2.2%) · TP1 121.847000 (2.1R, HTF swing low) · TP2 106.429000 (7.51R) · TP3 89.882900 (13.3R)
+  4h trend-line breakdown retest (short): 4h ascending trend line (3 touches over 54 bars) broken 0 bar(s) ago
+• RARE · B7 1d short · grade B · asks 0.013263–0.014868 · stop 0.015509 (8.2%) · TP1 0.013370 (0.818R, HTF S/R flip) · TP2 0.012105 (1.89R) · TP3 0.010753 (3.04R)
+  Bearish Daily compression short: Daily compression resolved down
+… and 2 more on the page
+Rejected: 13 coin daily bias against · 12 against the BTC regime (risk-off) · 7 2+ warnings · 5 stop under 1% · 2 highs shrinking: momentum waning
+
+Gated subset so far: 2596 closed, -0.007R avg, PF 0.98 (first half 0.011R / second half -0.031R). Everything: -0.074R, PF 0.84.
+Planning aid only, not financial advice. https://wee-bey.github.io/krillin-scanner/fable/
