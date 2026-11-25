@@ -1,4 +1,3 @@
-[19:34:26] regime: 2026-11-23 BTC 61,240 vs daily MA100 77,433 (-20.913%) → risk-off, 18 d since the flip · book A 112.9% since 2021-06-01, replay year 37.3%; book C replay year -4.3%
-[19:34:27] gates: 20695 4h/1d signals in the history, 2691 pass (2657 closed: 0.016R, PF 1.04; first half 0.011R, second half 0.022R) · 2026-11-23: 38 4h/1d signals, 21 on the watch list
-[19:34:27] digest alert: telegram not configured (TELEGRAM_BOT_TOKEN / TELEGRAM_CHAT_ID)
-[19:34:27] done in 2 s · 2 downloads
+[03:35:49] regime: 2026-11-23 BTC 61,240 vs daily MA100 77,433 (-20.913%) → risk-off, 18 d since the flip · book A 112.9% since 2021-06-01, replay year 37.3%; book C replay year -4.3%
+[03:35:49] gates: 20695 4h/1d signals in the history, 2691 pass (2657 closed: 0.016R, PF 1.04; first half 0.011R, second half 0.022R) · 2026-11-23: 38 4h/1d signals, 21 on the watch list
+[03:35:49] done in 2 s · 3 downloads
